@@ -1,0 +1,39 @@
+.geneviz {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.geneviz-header {
+  width: 100%;
+  background-color: #FFFFFF;
+  border-bottom: 1px solid #e2e2e2;
+}
+
+.geneviz-headline {
+  width: 90%;
+  margin: 0 auto;
+  max-width: 1400px;
+  font-size: 1.618em;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 15px;
+}
+
+.geneviz-content-wrapper {
+  width: 100%;
+  background-color: #f2f2f2;
+  height: 100%;
+  display: flex;
+}
+
+.geneviz-content {
+  width: 90%;
+  margin: 0 auto;
+  max-width: 1400px;
+  height: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}

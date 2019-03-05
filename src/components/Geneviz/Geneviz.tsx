@@ -5,6 +5,10 @@ import './Geneviz.css';
 
 class Geneviz extends React.Component {
 
+    componentDidMount() {
+        document.title = "GENEVIZ";
+    }
+
     render() {
         return (
             <div className="geneviz">

@@ -1,0 +1,8 @@
+.toolsMenu-add-vnfs {
+    border: 1px dashed #d2d2d2;
+    -webkit-border-radius: 10px 10px 10px 10px;
+    border-radius: 10px 10px 10px 10px;
+    padding: 25px 15px;
+    color: #666;
+    line-height: 1.3;
+}

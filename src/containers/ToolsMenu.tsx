@@ -1,7 +1,8 @@
 import ToolsMenu from '../components/ToolsMenu/ToolsMenu';
 import { connect } from 'react-redux';
+import {StoreState} from "../types";
 
-export function mapStateToProps(state) {
+export function mapStateToProps(state: StoreState) {
     return {
         vnfs: state.vnfs
     }

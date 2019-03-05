@@ -4,10 +4,14 @@ import { ADD_VNF, REMOVE_VNF } from '../constants/index';
 
 export function vnfs(state: VNFPackage[], action: GenevizAction): VNFPackage[] {
     switch(action.type) {
-        case ADD_VNF:
-            return state;
-        case REMOVE_VNF:
-            return state;
+        case ADD_VNF: {
+            let newState: VNFPackage[] = state.slice();
+            newState.push(action.vnfPackage as VNFPackage);
+            return newState;
+        }
+        case REMOVE_VNF: {
+            return state.filter(vnf => vnf.uuid !== action.uuid);
+        }
         default:
             return state;
     }

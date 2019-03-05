@@ -7,26 +7,30 @@ import { VNFPackage } from "../types";
 
 export interface AddVNF {
     type: constants.ADD_VNF;
+    vnfPackage: VNFPackage;
 }
 
 export interface RemoveVNF {
     type: constants.REMOVE_VNF;
+    uuid: string;
 }
 
-export type GenevizAction = AddVNF | RemoveVNF;
+type VNFAction = AddVNF | RemoveVNF;
+
+export type GenevizAction = VNFAction;
 
 // Action Creators
 
-export function addVNF(node: VNFPackage) {
+export function addVNF(vnfPackage: VNFPackage) {
     return {
         type: constants.ADD_VNF,
-        node
+        vnfPackage: vnfPackage
     }
 }
 
-export function removeVNF(node: VNFPackage) {
+export function removeVNF(uuid: string) {
     return {
-        type: constants.ADD_VNF,
-        node
+        type: constants.REMOVE_VNF,
+        uuid: uuid
     }
 }

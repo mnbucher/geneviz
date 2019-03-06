@@ -1,6 +1,5 @@
 import React from 'react';
 import './DrawingBoard.css';
-import { Graph } from 'react-d3-graph';
 
 class DrawingBoard extends React.Component {
 

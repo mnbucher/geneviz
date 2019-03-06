@@ -1,36 +1,56 @@
 import * as constants from '../constants';
-import { VNFPackage } from "../types";
+import {VNFPackage, VNFTemplate} from "../types";
 
 // Actions only describe what happened, but don't describe how the application's state changes.
 
 // Action Types
 
-export interface AddVNF {
-    type: constants.ADD_VNF;
-    vnfPackage: VNFPackage;
+export interface UploadVNFTemplate {
+    type: constants.UPLOAD_VNF_TEMPLATE;
+    vnfTemplate: VNFTemplate;
 }
 
-export interface RemoveVNF {
-    type: constants.REMOVE_VNF;
+export interface DeleteVNFTemplate {
+    type: constants.DELETE_VNF_TEMPLATE;
     uuid: string;
 }
 
-type VNFAction = AddVNF | RemoveVNF;
+export type VNFTemplateAction = UploadVNFTemplate | DeleteVNFTemplate;
 
-export type GenevizAction = VNFAction;
+export interface AddVNFToSFC {
+    type: constants.ADD_VNF_TO_SFC;
+    vnfPackage: VNFPackage;
+}
+
+export interface RemoveVNFFromSFC {
+    type: constants.REMOVE_VNF_FROM_SFC;
+    uuid: string;
+}
+
+export type SFCAction = AddVNFToSFC | RemoveVNFFromSFC
+
+export type GenevizAction = VNFTemplateAction | SFCAction;
+
 
 // Action Creators
 
-export function addVNF(vnfPackage: VNFPackage) {
+export function uploadVNFTemplate(vnfTemplate: VNFTemplate) {
     return {
-        type: constants.ADD_VNF,
-        vnfPackage: vnfPackage
+        type: constants.UPLOAD_VNF_TEMPLATE,
+        vnfTemplate: vnfTemplate
     }
 }
 
-export function removeVNF(uuid: string) {
+export function deleteVNFTemplate(uuid: string) {
     return {
-        type: constants.REMOVE_VNF,
+        type: constants.DELETE_VNF_TEMPLATE,
         uuid: uuid
+    }
+}
+
+export function addVNFToSFC(vnfPackage: VNFPackage) {
+    return {
+        type: constants.ADD_VNF_TO_SFC,
+        vnfPackage: vnfPackage
     }
 }

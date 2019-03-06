@@ -11,16 +11,17 @@ import './index.css';
 
 // Initialize Redux Store
 const store = createStore<StoreState, GenevizAction, any, any>(geneviz, {
-    sfcp: {
+    sfcPackage: {
+        vnfPackages: [],
         vnffgd: {},
         nsd: {},
     },
-    vnfs: [],
+    vnfTemplates: [],
 });
 
 const unsubscribe = store.subscribe(() => {
     console.log("Subsription in index.tsx is called!");
-    console.log((store.getState()).vnfs)
+    console.log((store.getState()))
 });
 
 ReactDOM.render(

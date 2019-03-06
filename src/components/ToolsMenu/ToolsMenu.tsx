@@ -8,7 +8,7 @@ class ToolsMenu extends React.Component {
     render() {
         return (
             <div className="tools-menu">
-                <div className="tools-menu-header"><p>All VNFs</p></div>
+                <div className="tools-menu-header"><p>Imported VNF Packages</p></div>
                 <div className="tools-menu-vnfs">
                     <ToolsMenuVNFList />
                     <ToolsMenuDropZone />

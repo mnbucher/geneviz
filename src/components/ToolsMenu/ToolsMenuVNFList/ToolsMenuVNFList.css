@@ -31,6 +31,15 @@
     padding-bottom: 1em;
 }
 
+.vnf-list-element-name {
+    margin-bottom: 1em;
+}
+
+.vnf-list-element-add-to-sfc {
+    color: blue;
+    text-decoration: underline;
+}
+
 .tools-menu-vnf-list-element-remove {
     position: absolute;
     top: 25px;

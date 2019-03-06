@@ -1,8 +1,11 @@
-export const ADD_VNF = 'ADD_VNF';
-export type ADD_VNF = typeof ADD_VNF;
+export const UPLOAD_VNF_TEMPLATE = 'UPLOAD_VNF_TEMPLATE';
+export type UPLOAD_VNF_TEMPLATE = typeof UPLOAD_VNF_TEMPLATE;
 
-export const REMOVE_VNF = 'REMOVE_VNF';
-export type REMOVE_VNF = typeof REMOVE_VNF;
+export const DELETE_VNF_TEMPLATE = 'DELETE_VNF_TEMPLATE';
+export type DELETE_VNF_TEMPLATE = typeof DELETE_VNF_TEMPLATE;
 
-export const VNF_DESCRIPTOR_PATH = '/Descriptors/vnfd.json';
-export type VNF_DESCRIPTOR_PATH = typeof VNF_DESCRIPTOR_PATH;
+export const ADD_VNF_TO_SFC = 'ADD_VNF_TO_SFC';
+export type ADD_VNF_TO_SFC = typeof ADD_VNF_TO_SFC;
+
+export const REMOVE_VNF_FROM_SFC = 'REMOVE_VNF_FROM_SFC';
+export type REMOVE_VNF_FROM_SFC = typeof REMOVE_VNF_FROM_SFC;

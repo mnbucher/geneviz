@@ -1,20 +1,20 @@
 import ToolsMenuDropZone from '../components/ToolsMenu/ToolsMenuDropZone/ToolsMenuDropZone';
 import { connect } from 'react-redux';
-import { StoreState, VNFPackage } from "../types";
-import { addVNF } from "../actions";
+import {StoreState, VNFTemplate} from "../types";
+import { uploadVNFTemplate } from "../actions";
 import { Dispatch } from "redux";
 
 export function mapStateToProps(state: StoreState) {
     return {
-        vnfs: state.vnfs
+        vnfTemplates: state.vnfTemplates
     }
 }
 
 export function mapDispatchToProps(dispatch: Dispatch) {
     return {
-        addVNF: (vnfPackage: VNFPackage) => {
+        addVNF: (vnfTemplate: VNFTemplate) => {
             console.log("add vnf is called!");
-            dispatch(addVNF(vnfPackage));
+            dispatch(uploadVNFTemplate(vnfTemplate));
         }
     }
 }

@@ -1,16 +1,15 @@
 import React from 'react';
 import classNames from 'classnames';
 import Dropzone from 'react-dropzone';
-import * as constants from '../../../constants';
-import { VNFPackage } from "../../../types";
+import { VNFTemplate} from "../../../types";
 const JSZip = require("jszip");
 const uuidv1 = require('uuid/v1');
 import './ToolsMenuDropZone.css';
 
-class ToolsMenuDropZone extends React.Component<{addVNF: any, vnfs: VNFPackage[]}> {
+class ToolsMenuDropZone extends React.Component<{addVNF: any, vnfTemplates: VNFTemplate[]}> {
 
     isAlreadyAdded = (fileBase64: string) => {
-        const currentVNFs = this.props.vnfs as VNFPackage[];
+        const currentVNFs = this.props.vnfTemplates as VNFTemplate[];
         let sameFileWasFound: boolean = false;
 
         currentVNFs.map((vnf) => {
@@ -33,24 +32,14 @@ class ToolsMenuDropZone extends React.Component<{addVNF: any, vnfs: VNFPackage[]
                 let zip = new JSZip();
 
                 zip.loadAsync(zipAsBinaryString).then((zipFile: any) => {
-                    let pathForDescriptor: string;
 
-                    zipFile.forEach((path: any, file: any) => {
-                        if (file.name.indexOf(constants.VNF_DESCRIPTOR_PATH) != -1){
-                            pathForDescriptor = path;
-                            zip.files[pathForDescriptor].async('text').then((vnfd: object) => {
+                    let vnfTemplate: VNFTemplate = {
+                        name: fileName,
+                        fileBase64: zipAsBinaryString as string,
+                        uuid: uuidv1()
+                    };
 
-                                let vnfPackage: VNFPackage = {
-                                    name: fileName,
-                                    vnfd: vnfd,
-                                    fileBase64: zipAsBinaryString as string,
-                                    uuid: uuidv1()
-                                };
-
-                                this.isAlreadyAdded(zipAsBinaryString as string) ? alert('This File was already added!') : this.props.addVNF(vnfPackage);
-                            });
-                        }
-                    })
+                    this.isAlreadyAdded(zipAsBinaryString as string) ? alert('This File was already added!') : this.props.addVNF(vnfTemplate);
                 });
             };
             reader.readAsBinaryString(file);

@@ -4,7 +4,7 @@ import {StoreState} from "../types";
 
 export function mapStateToProps(state: StoreState) {
     return {
-        vnfs: state.vnfs
+        vnfTemplates: state.vnfTemplates
     }
 }
 

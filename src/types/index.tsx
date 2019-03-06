@@ -1,16 +1,21 @@
-export interface SFCP {
+export interface SFCPackage {
+    vnfPackages: VNFPackage[];
     vnffgd: object;
     nsd: object;
 }
 
 export interface VNFPackage {
     name: string;
-    vnfd: object;
+    uuid: string;
+}
+
+export interface VNFTemplate {
+    name: string;
     fileBase64: string;
     uuid: string;
 }
 
 export interface StoreState {
-    sfcp: SFCP;
-    vnfs: VNFPackage[];
+    sfcPackage: SFCPackage;
+    vnfTemplates: VNFTemplate[];
 }

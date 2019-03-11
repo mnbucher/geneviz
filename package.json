@@ -7,6 +7,7 @@
     "@types/jszip": "^3.1.5",
     "@types/react-redux": "^7.0.1",
     "classnames": "^2.2.6",
+    "cross-fetch": "^3.0.1",
     "fs": "0.0.1-security",
     "jszip": "^3.2.0",
     "react": "^16.8.3",
@@ -16,6 +17,7 @@
     "react-redux": "^6.0.1",
     "react-scripts-ts": "3.1.0",
     "redux": "^4.0.1",
+    "redux-thunk": "^2.3.0",
     "uuid": "^3.3.2"
   },
   "scripts": {

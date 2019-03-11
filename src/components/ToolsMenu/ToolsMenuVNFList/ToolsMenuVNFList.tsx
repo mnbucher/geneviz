@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from "react-redux";
 import {Dispatch} from "redux";
 import {StoreState, VNFPackage, VNFTemplate} from "../../../types";
-import {addVNFToSFC, deleteVNFTemplate} from "../../../actions";
+import {addVNFToSFC, createVNFPAndAddVNFTtoSFC, deleteVNFTemplate} from "../../../actions";
 const uuidv1 = require('uuid/v1');
 import './ToolsMenuVNFList.css';
 
@@ -48,11 +48,7 @@ export function mapDispatchToProps(dispatch: Dispatch) {
             dispatch(deleteVNFTemplate(uuid));
         },
         addVNFToSFC: (vnfTemplate: VNFTemplate) => {
-            const vnfPackage: VNFPackage = {
-                name: vnfTemplate.name,
-                uuid: uuidv1()
-            }
-            dispatch(addVNFToSFC(vnfPackage));
+            dispatch<any>(createVNFPAndAddVNFTtoSFC(vnfTemplate));
         }
     }
 }

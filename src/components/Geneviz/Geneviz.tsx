@@ -1,7 +1,9 @@
-import ToolsMenu from '../../containers/ToolsMenu';
-import DrawingBoard from '../../containers/DrawingBoard';
+import ToolsMenu from '../ToolsMenu/ToolsMenu';
+import DrawingBoard from '../DrawingBoard/DrawingBoard';
 import React from 'react';
 import './Geneviz.css';
+import {StoreState} from "../../types";
+import {connect} from "react-redux";
 
 class Geneviz extends React.Component {
 
@@ -26,4 +28,10 @@ class Geneviz extends React.Component {
     }
 }
 
-export default Geneviz;
+export function mapStateToProps(state: StoreState) {
+    return {
+        state
+    }
+}
+
+export default connect(mapStateToProps)(Geneviz);

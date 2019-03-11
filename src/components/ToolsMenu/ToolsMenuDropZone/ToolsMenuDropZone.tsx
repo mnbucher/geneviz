@@ -1,10 +1,13 @@
 import React from 'react';
 import classNames from 'classnames';
 import Dropzone from 'react-dropzone';
-import { VNFTemplate} from "../../../types";
+import { StoreState, VNFTemplate } from "../../../types";
 const JSZip = require("jszip");
 const uuidv1 = require('uuid/v1');
 import './ToolsMenuDropZone.css';
+import { connect } from "react-redux";
+import { uploadVNFTemplate } from "../../../actions";
+import { Dispatch } from "redux";
 
 class ToolsMenuDropZone extends React.Component<{addVNF: any, vnfTemplates: VNFTemplate[]}> {
 
@@ -25,21 +28,22 @@ class ToolsMenuDropZone extends React.Component<{addVNF: any, vnfTemplates: VNFT
     onDrop = (acceptedFiles: File[]) => {
         acceptedFiles.forEach(file => {
             const reader = new FileReader();
-            const fileName = file.name;
+            const fileName = file.name.replace(".zip", "");
 
             reader.onload = () => {
                 const zipAsBinaryString = reader.result;
                 let zip = new JSZip();
 
                 zip.loadAsync(zipAsBinaryString).then((zipFile: any) => {
+                    zipFile.generateAsync({type:"base64"}).then((fileBase64: string) => {
 
-                    let vnfTemplate: VNFTemplate = {
-                        name: fileName,
-                        fileBase64: zipAsBinaryString as string,
-                        uuid: uuidv1()
-                    };
-
-                    this.isAlreadyAdded(zipAsBinaryString as string) ? alert('This File was already added!') : this.props.addVNF(vnfTemplate);
+                        let vnfTemplate: VNFTemplate = {
+                            name: fileName,
+                            fileBase64: fileBase64,
+                            uuid: uuidv1()
+                        };
+                        this.isAlreadyAdded(fileBase64 as string) ? alert('This File was already added!') : this.props.addVNF(vnfTemplate);
+                    });
                 });
             };
             reader.readAsBinaryString(file);
@@ -71,4 +75,19 @@ class ToolsMenuDropZone extends React.Component<{addVNF: any, vnfTemplates: VNFT
     }
 }
 
-export default ToolsMenuDropZone;
+
+export function mapStateToProps(state: StoreState) {
+    return {
+        vnfTemplates: state.vnfTemplates
+    }
+}
+
+export function mapDispatchToProps(dispatch: Dispatch) {
+    return {
+        addVNF: (vnfTemplate: VNFTemplate) => {
+            dispatch(uploadVNFTemplate(vnfTemplate));
+        }
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ToolsMenuDropZone);

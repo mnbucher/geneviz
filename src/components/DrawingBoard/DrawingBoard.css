@@ -1,4 +1,18 @@
 .drawing-board {
     width: 70%;
     height: 90%;
+    padding: 30px 30px 10px;
+    box-sizing: border-box;
+    border: 1px dotted #d2d2d2;
+    -webkit-border-radius: 10px 10px 10px 10px;
+    border-radius: 10px 10px 10px 10px;
+}
+
+.drawing-board h1 {
+    font-size: 1.618rem;
+    margin-bottom: 1em;
+}
+
+.drawing-board-vnf-list {
+    padding-bottom: 2.618em;
 }

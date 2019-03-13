@@ -2,7 +2,6 @@ import React from 'react';
 import './ToolsMenu.css';
 import ToolsMenuVNFList from './ToolsMenuVNFList/ToolsMenuVNFList';
 import ToolsMenuDropZone from './ToolsMenuDropZone/ToolsMenuDropZone';
-import {StoreState} from "../../types";
 import {connect} from "react-redux";
 
 class ToolsMenu extends React.Component {
@@ -20,10 +19,4 @@ class ToolsMenu extends React.Component {
     }
 }
 
-export function mapStateToProps(state: StoreState) {
-    return {
-        vnfTemplates: state.vnfTemplates
-    }
-}
-
-export default connect(mapStateToProps)(ToolsMenu);
+export default connect()(ToolsMenu);

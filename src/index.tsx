@@ -13,7 +13,7 @@ import './index.css';
 // Redux Store
 const store = createStore<StoreState, GenevizAction, any, any>(geneviz, applyMiddleware(thunk));
 
-const unsubscribe = store.subscribe(() => {
+store.subscribe(() => {
     console.log("Subscription in index.tsx is called!");
     console.log((store.getState()))
 });

@@ -1,11 +1,12 @@
 .drawing-board {
     width: 70%;
     height: 90%;
-    padding: 30px 30px 10px;
     box-sizing: border-box;
+    position: relative;
     border: 1px dotted #d2d2d2;
     -webkit-border-radius: 10px 10px 10px 10px;
     border-radius: 10px 10px 10px 10px;
+    //overflow: hidden;
 }
 
 .drawing-board h1 {
@@ -13,6 +14,33 @@
     margin-bottom: 1em;
 }
 
+.drawing-board form {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+}
+
+.drawing-board form input {
+    font-size: 1.309rem;
+    padding: 0.309em 1em;
+    -webkit-appearance: none;
+}
+
+.drawing-board-vnfd-properties {
+    position: absolute;
+    right: 20px;
+    bottom: 80px;
+}
+
 .drawing-board-vnf-list {
     padding-bottom: 2.618em;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+#graph {
+    width: 100%;
+    height: 100%;
+    display: flex;
 }

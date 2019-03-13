@@ -1,42 +1,51 @@
-export interface SFCPackage {
-    vnfPackages: VNFPackage[];
+import { IGraphInput } from "react-digraph";
+
+export interface SFCPackageState {
+    vnfPackageState: VNFPackageState[];
     vnffgd: object;
     nsd: object;
 }
 
-export interface VNFPackage {
+export interface VNFPackageState {
     name: string;
     uuid: string;
 }
 
-export interface VNFTemplate {
+export interface VNFTemplateState {
     name: string;
     fileBase64: string;
     uuid: string;
 }
 
-export interface VNFDTO {
-    fileBase64: string;
-    uuid: string;
-}
-
-export interface VNFDProperties {
+export interface VNFDPropertiesState {
     numCPUs: string;
     memSize: string;
     diskSize: string;
 }
 
-export interface DrawingBoardState {
-    vnfdProperties: VNFDProperties;
+export interface GraphViewState {
+    graph: IGraphInput;
+    nodeKey: string;
+    selected: object;
 }
 
-export interface UserInterface {
-    error: string;
+export interface DrawingBoardState {
+    vnfdPropertiesState: VNFDPropertiesState;
+    graphViewState: GraphViewState;
+}
+
+export interface UserInterfaceState {
+    errorState: string;
     drawingBoardState: DrawingBoardState;
 }
 
 export interface StoreState {
-    sfcPackage: SFCPackage;
-    vnfTemplates: VNFTemplate[];
-    userInterface: UserInterface;
+    sfcPackageState: SFCPackageState;
+    vnfTemplateState: VNFTemplateState[];
+    userInterfaceState: UserInterfaceState;
+}
+
+export interface VNFDTO {
+    fileBase64: string;
+    uuid: string;
 }

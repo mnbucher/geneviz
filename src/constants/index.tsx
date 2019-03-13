@@ -21,6 +21,11 @@ export type REMOVE_VNF_FROM_SFC = typeof REMOVE_VNF_FROM_SFC;
 export const EXTRACT_PROPERTIES_FROM_VNFD = 'EXTRACT_PROPERTIES_FROM_VNFD';
 export type EXTRACT_PROPERTIES_FROM_VNFD = typeof EXTRACT_PROPERTIES_FROM_VNFD;
 
+export const UPDATE_EDGES = 'UPDATE_EDGES';
+export type UPDATE_EDGES = typeof UPDATE_EDGES;
+
+export const UPDATE_NODES = 'UPDATE_NODES';
+export type UPDATE_NODES = typeof UPDATE_NODES;
 
 // Error Handler Actions
 

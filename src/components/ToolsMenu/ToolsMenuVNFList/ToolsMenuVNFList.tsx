@@ -1,15 +1,14 @@
 import React from 'react';
 import {connect} from "react-redux";
 import {Dispatch} from "redux";
-import {StoreState, VNFPackage, VNFTemplate} from "../../../types";
-import {addVNFToSFC, createVNFPAndAddVNFTtoSFC, deleteVNFTemplate} from "../../../actions";
-const uuidv1 = require('uuid/v1');
+import {StoreState, VNFTemplateState} from "../../../types";
+import {createVNFPAndAddVNFTtoSFC, deleteVNFTemplate} from "../../../actions";
 import './ToolsMenuVNFList.css';
 
-class ToolsMenuVNFList extends React.Component<{ removeVNF: any, addVNFToSFC: any, vnfTemplates: VNFTemplate[] }> {
+class ToolsMenuVNFList extends React.Component<{ removeVNF: any, addVNFToSFC: any, vnfTemplateState: VNFTemplateState[] }> {
 
     allVNFs = () => {
-        const vnfTemplates = this.props.vnfTemplates;
+        const vnfTemplates = this.props.vnfTemplateState;
         let vnfDOM: any = [];
         let vnfCounter = 1;
         vnfTemplates.forEach((vnf) => {
@@ -38,7 +37,7 @@ class ToolsMenuVNFList extends React.Component<{ removeVNF: any, addVNFToSFC: an
 
 export function mapStateToProps(state: StoreState) {
     return {
-        vnfTemplates: state.vnfTemplates
+        vnfTemplateState: state.vnfTemplateState
     }
 }
 
@@ -47,7 +46,7 @@ export function mapDispatchToProps(dispatch: Dispatch) {
         removeVNF: (uuid: string) => {
             dispatch(deleteVNFTemplate(uuid));
         },
-        addVNFToSFC: (vnfTemplate: VNFTemplate) => {
+        addVNFToSFC: (vnfTemplate: VNFTemplateState) => {
             dispatch<any>(createVNFPAndAddVNFTtoSFC(vnfTemplate));
         }
     }

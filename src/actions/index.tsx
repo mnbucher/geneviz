@@ -1,9 +1,10 @@
 import * as constants from '../constants';
-import {VNFPackage, VNFTemplate, VNFDTO, VNFDProperties, StoreState} from "../types";
+import {VNFPackageState, VNFTemplateState, VNFDTO, VNFDPropertiesState } from "../types";
 import { Dispatch } from "redux";
 import fetch from "cross-fetch";
 import { GENEVIZ_FILE_API } from "../constants";
-const uuidv1 = require('uuid/v1');
+import uuidv1 from 'uuid';
+import {IEdge, INode} from "react-digraph";
 
 // Actions only describe what happened, but don't describe how the application's state changes.
 
@@ -13,7 +14,7 @@ const uuidv1 = require('uuid/v1');
 
 export interface UploadVNFTemplate {
     type: constants.UPLOAD_VNF_TEMPLATE;
-    vnfTemplate: VNFTemplate;
+    vnfTemplate: VNFTemplateState;
 }
 
 export interface DeleteVNFTemplate {
@@ -28,7 +29,7 @@ export type VNFTemplateAction = UploadVNFTemplate | DeleteVNFTemplate;
 
 export interface AddVNFToSFC {
     type: constants.ADD_VNF_TO_SFC;
-    vnfPackage: VNFPackage;
+    vnfPackage: VNFPackageState;
 }
 
 export interface RemoveVNFFromSFC {
@@ -43,12 +44,12 @@ export type SFCAction = AddVNFToSFC | RemoveVNFFromSFC ;
 
 export interface AddErrorFailedToCreateVNFP {
     type: constants.ADD_ERROR_FAILED_TO_CREATE_VNFP;
-    vnfTemplate: VNFTemplate;
+    vnfTemplate: VNFTemplateState;
 }
 
 export interface ExtractPropertiesFromVNFD {
     type: constants.EXTRACT_PROPERTIES_FROM_VNFD;
-    vnfdProperties: VNFDProperties;
+    vnfdProperties: VNFDPropertiesState;
     name: string;
 }
 
@@ -57,7 +58,17 @@ export interface AddErrorFailedToExtractPropertiesFromVNFD {
     name: string;
 }
 
-export type UserInterfaceAction = AddErrorFailedToCreateVNFP | AddErrorFailedToExtractPropertiesFromVNFD | ExtractPropertiesFromVNFD;
+export interface UpdateEdges {
+    type: constants.UPDATE_EDGES;
+    edges: IEdge[];
+}
+
+export interface UpdateNodes {
+    type: constants.UPDATE_NODES;
+    nodes: INode[];
+}
+
+export type UserInterfaceAction = AddErrorFailedToCreateVNFP | AddErrorFailedToExtractPropertiesFromVNFD | ExtractPropertiesFromVNFD | UpdateEdges | UpdateNodes;
 
 
 // GenevizAction
@@ -67,7 +78,7 @@ export type GenevizAction = VNFTemplateAction | SFCAction | UserInterfaceAction;
 
 // Action Creators (Like stamps for not using the raw object construct of Actions every time you need them
 
-export function uploadVNFTemplate(vnfTemplate: VNFTemplate) {
+export function uploadVNFTemplate(vnfTemplate: VNFTemplateState) {
     return {
         type: constants.UPLOAD_VNF_TEMPLATE,
         vnfTemplate: vnfTemplate
@@ -81,21 +92,21 @@ export function deleteVNFTemplate(uuid: string) {
     }
 }
 
-export function addVNFToSFC(vnfPackage: VNFPackage) {
+export function addVNFToSFC(vnfPackage: VNFPackageState) {
     return {
         type: constants.ADD_VNF_TO_SFC,
         vnfPackage: vnfPackage
     }
 }
 
-export function addErrorFailedToCreateVNFP(vnfTemplate: VNFTemplate) {
+export function addErrorFailedToCreateVNFP(vnfTemplate: VNFTemplateState) {
     return {
         type: constants.ADD_ERROR_FAILED_TO_CREATE_VNFP,
         vnfTemplate: vnfTemplate
     }
 }
 
-export function createVNFPAndAddVNFTtoSFC(vnfTemplate: VNFTemplate) {
+export function createVNFPAndAddVNFTtoSFC(vnfTemplate: VNFTemplateState) {
     return (dispatch: Dispatch) => {
 
         const vnfDTO: VNFDTO = {
@@ -113,7 +124,7 @@ export function createVNFPAndAddVNFTtoSFC(vnfTemplate: VNFTemplate) {
             return response.json();
         }).then(
             data => {
-                const vnfPackage: VNFPackage = {
+                const vnfPackage: VNFPackageState = {
                     name: vnfTemplate.name,
                     uuid: vnfDTO.uuid
                 };
@@ -134,7 +145,7 @@ export function addErrorFailedToExtractPropertiesFromVNFD(name: string) {
     }
 }
 
-export function addPropertiesFromVNFD(properties: VNFDProperties, name: string) {
+export function addPropertiesFromVNFD(properties: VNFDPropertiesState, name: string) {
     return {
         type: constants.EXTRACT_PROPERTIES_FROM_VNFD,
         vnfdProperties: properties,
@@ -155,7 +166,7 @@ export function getVNFD(uuid: string, name: string) {
         }).then(
             data => {
                 const rawProperties = data['vnfd']['attributes']['vnfd']['topology_template']['node_templates']['VDU1']['capabilities']['nfv_compute']['properties'];
-                let properties: VNFDProperties = {
+                let properties: VNFDPropertiesState = {
                     numCPUs: rawProperties['num_cpus'],
                     memSize: rawProperties['mem_size'],
                     diskSize: rawProperties['disk_size']
@@ -167,5 +178,19 @@ export function getVNFD(uuid: string, name: string) {
                 return dispatch(addErrorFailedToExtractPropertiesFromVNFD(name));
             }
         )
+    }
+}
+
+export function updateEdges(edges: IEdge[]) {
+    return {
+        type: constants.UPDATE_EDGES,
+        edges: edges
+    }
+}
+
+export function updateNodes(nodes: INode[]) {
+    return {
+        type: constants.UPDATE_NODES,
+        nodes: nodes
     }
 }

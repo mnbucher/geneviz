@@ -1,18 +1,18 @@
 import React from 'react';
 import classNames from 'classnames';
 import Dropzone from 'react-dropzone';
-import { StoreState, VNFTemplate } from "../../../types";
+import { StoreState, VNFTemplateState } from "../../../types";
 const JSZip = require("jszip");
-const uuidv1 = require('uuid/v1');
+import uuidv1 from 'uuid';
 import './ToolsMenuDropZone.css';
 import { connect } from "react-redux";
 import { uploadVNFTemplate } from "../../../actions";
 import { Dispatch } from "redux";
 
-class ToolsMenuDropZone extends React.Component<{addVNF: any, vnfTemplates: VNFTemplate[]}> {
+class ToolsMenuDropZone extends React.Component<{addVNF: any, vnfTemplateState: VNFTemplateState[]}> {
 
     isAlreadyAdded = (fileBase64: string) => {
-        const currentVNFs = this.props.vnfTemplates as VNFTemplate[];
+        const currentVNFs = this.props.vnfTemplateState as VNFTemplateState[];
         let sameFileWasFound: boolean = false;
 
         currentVNFs.map((vnf) => {
@@ -37,7 +37,7 @@ class ToolsMenuDropZone extends React.Component<{addVNF: any, vnfTemplates: VNFT
                 zip.loadAsync(zipAsBinaryString).then((zipFile: any) => {
                     zipFile.generateAsync({type:"base64"}).then((fileBase64: string) => {
 
-                        let vnfTemplate: VNFTemplate = {
+                        let vnfTemplate: VNFTemplateState = {
                             name: fileName,
                             fileBase64: fileBase64,
                             uuid: uuidv1()
@@ -78,13 +78,13 @@ class ToolsMenuDropZone extends React.Component<{addVNF: any, vnfTemplates: VNFT
 
 export function mapStateToProps(state: StoreState) {
     return {
-        vnfTemplates: state.vnfTemplates
+        vnfTemplateState: state.vnfTemplateState
     }
 }
 
 export function mapDispatchToProps(dispatch: Dispatch) {
     return {
-        addVNF: (vnfTemplate: VNFTemplate) => {
+        addVNF: (vnfTemplate: VNFTemplateState) => {
             dispatch(uploadVNFTemplate(vnfTemplate));
         }
     }

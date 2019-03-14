@@ -27,6 +27,9 @@ export type UPDATE_EDGES = typeof UPDATE_EDGES;
 export const UPDATE_NODES = 'UPDATE_NODES';
 export type UPDATE_NODES = typeof UPDATE_NODES;
 
+export const SELECT_NODE = 'SELECT_NODE';
+export type SELECT_NODE = typeof SELECT_NODE;
+
 // Error Handler Actions
 
 export const ADD_ERROR_FAILED_TO_CREATE_VNFP = 'ADD_ERROR_FAILED_TO_CREATE_VNFP';

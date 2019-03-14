@@ -14,15 +14,8 @@ class Geneviz extends React.Component {
     render() {
         return (
             <div className="geneviz">
-                <div className="geneviz-header">
-                    <p className="geneviz-headline">Geneviz</p>
-                </div>
-                <div className="geneviz-content-wrapper">
-                    <div className="geneviz-content">
-                        <DrawingBoard />
-                        <ToolsMenu />
-                    </div>
-                </div>
+                <DrawingBoard/>
+                <ToolsMenu/>
             </div>
         )
     }

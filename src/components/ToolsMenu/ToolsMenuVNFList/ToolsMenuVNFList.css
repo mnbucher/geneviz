@@ -1,27 +1,32 @@
 .tools-menu-vnf-list {
-    margin-bottom: 50px;
+    margin-bottom: 30px;
 }
 
-.tools-menu-vnf-list-imported-vnfs-title {
-    padding-bottom: 1.618em;
+.tools-menu-empty-state {
+    color: #d7d7d7;
+    padding: 50px;
+    width: 50%;
+    margin: 0 auto;
+    line-height: 1.5;
+    text-align: center;
 }
 
 .tools-menu-vnf-list-element {
-    border: 1px solid #e7efe0;
-    background-color: #ffffff;
-    -webkit-box-shadow: 0 3px 10px 5px #f2f2f2;
-    box-shadow: 0 3px 10px 5px #f2f2f2;
+    border: 1px solid #222;
+    background-color: #585f67;
+    -webkit-box-shadow: 0 3px 10px 5px #333;
+    box-shadow: 0 3px 10px 5px #333;
     -webkit-border-radius: 10px 10px 10px 10px;
     border-radius: 10px 10px 10px 10px;
     padding: 25px 15px;
-    margin-bottom: 30px;
+    margin: 0 30px 30px;
     position: relative;
 }
 
 .tools-menu-vnf-list-element-number {
     text-transform: uppercase;
     font-size: 1rem;
-    color: #666;
+    color: #3D4247;
     letter-spacing: 1px;
     padding-bottom: 0.618em;
 }
@@ -33,18 +38,27 @@
 
 .vnf-list-element-name {
     margin-bottom: 1em;
+    font-size: 1.309rem;
+    color: #ffffff;
+}
+
+.vnf-list-element-buttons span {
+    -webkit-border-radius: 5px 5px 5px 5px;
+    border-radius: 5px 5px 5px 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    margin-right: 10px;
 }
 
 .vnf-list-element-add-to-sfc {
-    color: blue;
-    text-decoration: underline;
+    background-color: #3D4247;
+    color: #C8CFE0;
 }
 
-.tools-menu-vnf-list-element-remove {
-    position: absolute;
-    top: 25px;
-    right: 15px;
-    color: red;
+.vnf-list-element-remove {
+    //background-color: #F7867C;
+    color: #F05B48;
+    border: 1px solid #F05B48;
 }
 
 .tools-menu-vnf-list-element-remove:hover {

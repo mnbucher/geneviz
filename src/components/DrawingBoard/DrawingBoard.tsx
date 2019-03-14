@@ -2,10 +2,9 @@ import * as React from 'react';
 import './DrawingBoard.css';
 import { StoreState, DrawingBoardState, SFCPackageState } from "../../types";
 import { connect } from 'react-redux';
-import {getVNFD, updateEdges, updateNodes} from "../../actions";
+import { getVNFD, updateEdges, updateNodes} from "../../actions";
 import { Dispatch } from "redux";
-import { GENEVIZ_FILE_API } from "../../constants";
-import {GraphView, IEdge, INode} from 'react-digraph';
+import { GraphView, IEdge, INode } from 'react-digraph';
 import GraphConfig from "../../constants/GraphConfig";
 import uuidv1 from 'uuid';
 
@@ -33,23 +32,6 @@ class DrawingBoard extends React.Component<{ getVNFD: any, updateEdges: any, upd
             </div>);
     }
 
-    concatUUIDsForURL = () => {
-        const uuids = this.props.sfcPackageState.vnfPackageState.map(vnfPackage => vnfPackage.uuid);
-        if (uuids.length > 0) {
-            let path = "";
-            uuids.forEach((uuid, index) => {
-                if (index == 0) {
-                    path = path.concat("?uuids[]=" + uuid);
-                }
-                else {
-                    path = path.concat("&uuids[]=" + uuid);
-                }
-            });
-            return path;
-        }
-        return "";
-    }
-
     mockData = () => {
         const nodes: INode[] = [
             {
@@ -57,28 +39,28 @@ class DrawingBoard extends React.Component<{ getVNFD: any, updateEdges: any, upd
                 title: 'Node A',
                 x: 258.3976135253906,
                 y: 331.9783248901367,
-                type: 'customNode',
+                type: 'vnfNode',
             },
             {
                 id: 'asdf2',
                 title: 'Node B',
                 x: 593.9393920898438,
                 y: 260.6060791015625,
-                type: 'customNode'
+                type: 'vnfNode'
             },
             {
                 id: 'asdf3',
                 title: 'Node C',
                 x: 237.5757598876953,
                 y: 61.81818389892578,
-                type: 'customNode'
+                type: 'vnfNode'
             },
             {
                 id: 'asdf4',
                 title: 'Node D',
                 x: 600.5757598876953,
                 y: 600.81818389892578,
-                type: 'customNode'
+                type: 'vnfNode'
             }];
 
         const edges: IEdge[] = [
@@ -86,13 +68,13 @@ class DrawingBoard extends React.Component<{ getVNFD: any, updateEdges: any, upd
                 handleText: 'Edge 1',
                 source: 'asdf1',
                 target: 'asdf2',
-                type: 'customEdge'
+                type: 'standardEdge'
             },
             {
                 handleText: 'Edge 2',
                 source: 'asdf2',
                 target: 'asdf4',
-                type: 'customEdge'
+                type: 'standardEdge'
             }
         ];
 
@@ -192,14 +174,12 @@ class DrawingBoard extends React.Component<{ getVNFD: any, updateEdges: any, upd
                                onSwapEdge={this.onSwapEdge}
                                onUpdateNode={this.onUpdateNode}
 
+                               layoutEngineType={'VerticalTree'}
+
                                />
                 </div>
 
                 {this.showAllVNFsOfSFC()}
-
-                <form action={GENEVIZ_FILE_API + "/sfc" + this.concatUUIDsForURL()} method="post">
-                    <input type="submit" value="Create SFC"></input>
-                </form>
 
                 <button onClick={() => this.mockData()}>Mock Data</button>
 

@@ -1,19 +1,83 @@
-.tools-menu {
-    width: 23%;
-    margin-left: 2%;
-    height: 90%;
-    padding: 30px 30px 10px;
+.tools-menu-wrapper {
+    width: 25%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid #d2d2d2;
+    background-color: #34393f;
+}
+
+.tools-menu-inner-wrapper {
+    height: 100%;
+    width: 100%;
+    position: relative;
     box-sizing: border-box;
-    background-color: #f8f8f8;
-    border: 1px solid #d2d2d2;
-    -webkit-border-radius: 10px 10px 10px 10px;
-    border-radius: 10px 10px 10px 10px;
+    display: flex;
+}
+
+.tools-menu {
+    height: 100%;
+    width: 100%;
+    position: relative;
     display: flex;
     flex-direction: column;
 }
 
 .tools-menu-header {
+    font-size: 1rem;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: #d7d7d7;
+    margin-left: 30px;
+    margin-bottom: 1.618em;
+}
+
+.geneviz-header {
     width: 100%;
-    font-size: 1.618rem;
-    margin-bottom: 2.618em;
+    background-color: #222529;
+    margin-bottom: 30px;
+}
+
+.geneviz-headline {
+    width: 100%;
+    padding: 20px 30px;
+    box-sizing: border-box;
+    margin: 0 auto;
+    font-size: 1.618em;
+    text-transform: uppercase;
+    color: #C8CFE0;
+    letter-spacing: 1px;
+}
+
+.tools-menu-vnfs {
+    position: relative;
+    overflow-y: scroll;
+    margin-bottom: auto;
+}
+
+.tools-menu-download-sfc {
+    bottom: 0;
+    box-sizing: border-box;
+    margin: auto 30px 30px;
+}
+
+.tools-menu-wrapper form {
+    width: 100%;
+}
+
+.tools-menu-wrapper form input {
+    width: 100%;
+    -webkit-border-radius: 10px 10px 10px 10px;
+    border-radius: 10px 10px 10px 10px;
+    font-size: 1.309rem;
+    padding: 20px 30px;
+    -webkit-appearance: none;
+    box-sizing: border-box;
+    color: #202429;
+    border: 1px solid #585F67;
+    background-color: #848E9A;
+    -webkit-box-shadow: 0 3px 10px 5px #333;
+    box-shadow: 0 3px 10px 5px #333;
+    cursor: pointer;
 }

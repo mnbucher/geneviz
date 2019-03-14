@@ -40,23 +40,7 @@ export interface RemoveVNFFromSFC {
 export type SFCAction = AddVNFToSFC | RemoveVNFFromSFC ;
 
 
-// UserInterfaceAction
-
-export interface AddErrorFailedToCreateVNFP {
-    type: constants.ADD_ERROR_FAILED_TO_CREATE_VNFP;
-    vnfTemplate: VNFTemplateState;
-}
-
-export interface ExtractPropertiesFromVNFD {
-    type: constants.EXTRACT_PROPERTIES_FROM_VNFD;
-    vnfdProperties: VNFDPropertiesState;
-    name: string;
-}
-
-export interface AddErrorFailedToExtractPropertiesFromVNFD {
-    type: constants.ADD_ERROR_FAILED_TO_EXTRACT_PROPERTIES_FROM_VNFD;
-    name: string;
-}
+// GraphAction
 
 export interface UpdateEdges {
     type: constants.UPDATE_EDGES;
@@ -68,7 +52,41 @@ export interface UpdateNodes {
     nodes: INode[];
 }
 
-export type UserInterfaceAction = AddErrorFailedToCreateVNFP | AddErrorFailedToExtractPropertiesFromVNFD | ExtractPropertiesFromVNFD | UpdateEdges | UpdateNodes;
+export interface SelectNode {
+    type: constants.SELECT_NODE;
+    selectedNode: INode;
+}
+
+export type GraphAction = UpdateEdges | UpdateNodes | SelectNode;
+
+
+// DrawingBoardAction
+
+export interface ExtractPropertiesFromVNFD {
+    type: constants.EXTRACT_PROPERTIES_FROM_VNFD;
+    vnfdProperties: VNFDPropertiesState;
+    name: string;
+}
+
+export type DrawingBoardAction = ExtractPropertiesFromVNFD | GraphAction;
+
+
+// UserInterfaceAction
+
+export interface AddErrorFailedToCreateVNFP {
+    type: constants.ADD_ERROR_FAILED_TO_CREATE_VNFP;
+    vnfTemplate: VNFTemplateState;
+}
+
+export interface AddErrorFailedToExtractPropertiesFromVNFD {
+    type: constants.ADD_ERROR_FAILED_TO_EXTRACT_PROPERTIES_FROM_VNFD;
+    name: string;
+}
+
+
+// UserInterfaceAction
+
+export type UserInterfaceAction = AddErrorFailedToCreateVNFP | AddErrorFailedToExtractPropertiesFromVNFD | ExtractPropertiesFromVNFD | DrawingBoardAction ;
 
 
 // GenevizAction
@@ -106,12 +124,21 @@ export function addErrorFailedToCreateVNFP(vnfTemplate: VNFTemplateState) {
     }
 }
 
-export function createVNFPAndAddVNFTtoSFC(vnfTemplate: VNFTemplateState) {
+export function selectNode(selectedNode: INode) {
+    return {
+        type: constants.SELECT_NODE,
+        selectedNode: selectedNode
+    }
+}
+
+export function createVNFPAndAddVNFTtoSFC(vnfTemplate: VNFTemplateState, nodes: INode[]) {
     return (dispatch: Dispatch) => {
+
+        const uuid: string = uuidv1();
 
         const vnfDTO: VNFDTO = {
             fileBase64: vnfTemplate.fileBase64,
-            uuid: uuidv1()
+            uuid: uuid
         };
 
         fetch(GENEVIZ_FILE_API + "/vnf", {
@@ -128,7 +155,19 @@ export function createVNFPAndAddVNFTtoSFC(vnfTemplate: VNFTemplateState) {
                     name: vnfTemplate.name,
                     uuid: vnfDTO.uuid
                 };
-                return dispatch(addVNFToSFC(vnfPackage))
+
+                dispatch(addVNFToSFC(vnfPackage));
+
+                const node: INode = {
+                    title: vnfTemplate.name,
+                    id: uuid,
+                    type: 'vnfNode'
+                }
+                const newNodes: INode[] = nodes.slice();
+                newNodes.push(node);
+
+                dispatch(updateNodes(newNodes));
+                return dispatch(selectNode(node));
             },
             error => {
                 console.log(error);
@@ -171,13 +210,14 @@ export function getVNFD(uuid: string, name: string) {
                     memSize: rawProperties['mem_size'],
                     diskSize: rawProperties['disk_size']
                 };
-                return dispatch(addPropertiesFromVNFD(properties, name))
+
+                return dispatch(addPropertiesFromVNFD(properties, name));
             },
             error => {
                 console.log(error);
                 return dispatch(addErrorFailedToExtractPropertiesFromVNFD(name));
             }
-        )
+        );
     }
 }
 

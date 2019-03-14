@@ -1,17 +1,17 @@
 import { IGraphInput } from "react-digraph";
 
 export interface SFCPackageState {
-    vnfPackageState: VNFPackageState[];
+    vnfPackages: VNFPackage[];
     vnffgd: object;
     nsd: object;
 }
 
-export interface VNFPackageState {
+export interface VNFPackage {
     name: string;
     uuid: string;
 }
 
-export interface VNFTemplateState {
+export interface VNFTemplate {
     name: string;
     fileBase64: string;
     uuid: string;
@@ -41,7 +41,7 @@ export interface UserInterfaceState {
 
 export interface StoreState {
     sfcPackageState: SFCPackageState;
-    vnfTemplateState: VNFTemplateState[];
+    vnfTemplates: VNFTemplate[];
     userInterfaceState: UserInterfaceState;
 }
 

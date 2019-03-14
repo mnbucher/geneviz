@@ -9,7 +9,7 @@ import {SFCPackageState, StoreState} from "../../types";
 class ToolsMenu extends React.Component<{sfcPackageState: SFCPackageState}> {
 
     concatUUIDsForURL = () => {
-        const uuids = this.props.sfcPackageState.vnfPackageState.map(vnfPackage => vnfPackage.uuid);
+        const uuids = this.props.sfcPackageState.vnfPackages.map(vnfPackage => vnfPackage.uuid);
         if (uuids.length > 0) {
             let path = "";
             uuids.forEach((uuid, index) => {

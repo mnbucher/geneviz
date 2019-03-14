@@ -12,30 +12,27 @@ import {
     SFCPackageState,
     StoreState,
     UserInterfaceState,
-    VNFPackageState,
-    VNFTemplateState
+    VNFTemplate
 } from '../types/index';
 import {
     UPLOAD_VNF_TEMPLATE,
     DELETE_VNF_TEMPLATE,
-    ADD_VNF_TO_SFC,
-    REMOVE_VNF_FROM_SFC,
     ADD_ERROR_FAILED_TO_CREATE_VNFP,
     EXTRACT_PROPERTIES_FROM_VNFD,
     ADD_ERROR_FAILED_TO_EXTRACT_PROPERTIES_FROM_VNFD,
     UPDATE_EDGES,
     UPDATE_NODES,
-    SELECT_NODE
+    SELECT_NODE, UPDATE_VNFS_IN_SFC
 } from '../constants/index';
 
 // Reducers. They should be pure functions with no side-effects.
 // Updating the store is serious, complicated business. Don't contaminate it with other logic
 // Hence, only take the data given in the action object and replace the old state by the new state. That's it.
 
-export function vnfTemplates(state: VNFTemplateState[], action: VNFTemplateAction): VNFTemplateState[] {
+export function vnfTemplates(state: VNFTemplate[], action: VNFTemplateAction): VNFTemplate[] {
     switch (action.type) {
         case UPLOAD_VNF_TEMPLATE: {
-            let newState: VNFTemplateState[] = state.slice();
+            let newState: VNFTemplate[] = state.slice();
             newState.push(action.vnfTemplate);
             return newState;
         }
@@ -49,13 +46,8 @@ export function vnfTemplates(state: VNFTemplateState[], action: VNFTemplateActio
 
 export function sfcPackage(state: SFCPackageState, action: SFCAction): SFCPackageState {
     switch (action.type) {
-        case ADD_VNF_TO_SFC: {
-            let newVNFPackages: VNFPackageState[] = state.vnfPackageState.slice();
-            newVNFPackages.push(action.vnfPackage);
-            return {...state, vnfPackageState: newVNFPackages};
-        }
-        case REMOVE_VNF_FROM_SFC: {
-            return {...state, vnfPackageState: state.vnfPackageState.filter(vnf => vnf.uuid !== action.uuid)};
+        case UPDATE_VNFS_IN_SFC: {
+            return {...state, vnfPackages: action.vnfPackages};
         }
         default:
             return state;
@@ -118,11 +110,11 @@ export function userInterface(state: UserInterfaceState, action: UserInterfaceAc
 
 const initialState: StoreState = {
     sfcPackageState: {
-        vnfPackageState: [],
+        vnfPackages: [],
         vnffgd: {},
         nsd: {},
     },
-    vnfTemplateState: [],
+    vnfTemplates: [],
     userInterfaceState: {
         errorState: "",
         drawingBoardState: {
@@ -147,9 +139,8 @@ export function geneviz(state: StoreState = initialState, action: GenevizAction)
     switch (action.type) {
         case UPLOAD_VNF_TEMPLATE:
         case DELETE_VNF_TEMPLATE:
-            return {...state, vnfTemplateState: vnfTemplates(state.vnfTemplateState, action)};
-        case ADD_VNF_TO_SFC:
-        case REMOVE_VNF_FROM_SFC:
+            return {...state, vnfTemplates: vnfTemplates(state.vnfTemplates, action)};
+        case UPDATE_VNFS_IN_SFC:
             return {...state, sfcPackageState: sfcPackage(state.sfcPackageState, action)};
         case ADD_ERROR_FAILED_TO_CREATE_VNFP:
         case EXTRACT_PROPERTIES_FROM_VNFD:

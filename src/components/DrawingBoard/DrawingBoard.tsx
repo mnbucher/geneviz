@@ -11,7 +11,7 @@ import uuidv1 from 'uuid';
 class DrawingBoard extends React.Component<{ getVNFD: any, updateEdges: any, updateNodes: any, sfcPackageState: SFCPackageState, drawingBoardState: DrawingBoardState }> {
 
     showAllVNFsOfSFC = () => {
-        const vnfPackages = this.props.sfcPackageState.vnfPackageState;
+        const vnfPackages = this.props.sfcPackageState.vnfPackages;
         let vnfDOM: any = [];
         vnfPackages.forEach((vnf) => {
             vnfDOM.push(<div className="drawing-board-vnf-list" key={vnf.uuid}>

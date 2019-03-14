@@ -1,5 +1,5 @@
 import * as constants from '../constants';
-import {VNFPackageState, VNFTemplateState, VNFDTO, VNFDPropertiesState } from "../types";
+import {VNFPackage, VNFTemplate, VNFDTO, VNFDPropertiesState } from "../types";
 import { Dispatch } from "redux";
 import fetch from "cross-fetch";
 import { GENEVIZ_FILE_API } from "../constants";
@@ -14,7 +14,7 @@ import {IEdge, INode} from "react-digraph";
 
 export interface UploadVNFTemplate {
     type: constants.UPLOAD_VNF_TEMPLATE;
-    vnfTemplate: VNFTemplateState;
+    vnfTemplate: VNFTemplate;
 }
 
 export interface DeleteVNFTemplate {
@@ -27,17 +27,12 @@ export type VNFTemplateAction = UploadVNFTemplate | DeleteVNFTemplate;
 
 // SFCAction
 
-export interface AddVNFToSFC {
-    type: constants.ADD_VNF_TO_SFC;
-    vnfPackage: VNFPackageState;
+export interface UdpateVNFsInSFC {
+    type: constants.UPDATE_VNFS_IN_SFC;
+    vnfPackages: VNFPackage[];
 }
 
-export interface RemoveVNFFromSFC {
-    type: constants.REMOVE_VNF_FROM_SFC;
-    uuid: string;
-}
-
-export type SFCAction = AddVNFToSFC | RemoveVNFFromSFC ;
+export type SFCAction = UdpateVNFsInSFC;
 
 
 // GraphAction
@@ -75,7 +70,7 @@ export type DrawingBoardAction = ExtractPropertiesFromVNFD | GraphAction;
 
 export interface AddErrorFailedToCreateVNFP {
     type: constants.ADD_ERROR_FAILED_TO_CREATE_VNFP;
-    vnfTemplate: VNFTemplateState;
+    vnfTemplate: VNFTemplate;
 }
 
 export interface AddErrorFailedToExtractPropertiesFromVNFD {
@@ -96,7 +91,7 @@ export type GenevizAction = VNFTemplateAction | SFCAction | UserInterfaceAction;
 
 // Action Creators (Like stamps for not using the raw object construct of Actions every time you need them
 
-export function uploadVNFTemplate(vnfTemplate: VNFTemplateState) {
+export function uploadVNFTemplate(vnfTemplate: VNFTemplate) {
     return {
         type: constants.UPLOAD_VNF_TEMPLATE,
         vnfTemplate: vnfTemplate
@@ -110,14 +105,14 @@ export function deleteVNFTemplate(uuid: string) {
     }
 }
 
-export function addVNFToSFC(vnfPackage: VNFPackageState) {
+export function updateVNFsInSFC(vnfPackages: VNFPackage[]) {
     return {
-        type: constants.ADD_VNF_TO_SFC,
-        vnfPackage: vnfPackage
+        type: constants.UPDATE_VNFS_IN_SFC,
+        vnfPackages: vnfPackages
     }
 }
 
-export function addErrorFailedToCreateVNFP(vnfTemplate: VNFTemplateState) {
+export function addErrorFailedToCreateVNFP(vnfTemplate: VNFTemplate) {
     return {
         type: constants.ADD_ERROR_FAILED_TO_CREATE_VNFP,
         vnfTemplate: vnfTemplate
@@ -131,7 +126,7 @@ export function selectNode(selectedNode: INode) {
     }
 }
 
-export function createVNFPAndAddVNFTtoSFC(vnfTemplate: VNFTemplateState, nodes: INode[]) {
+export function createVNFPAndAddVNFTtoSFC(vnfTemplate: VNFTemplate, nodes: INode[], vnfPackages: VNFPackage[]) {
     return (dispatch: Dispatch) => {
 
         const uuid: string = uuidv1();
@@ -151,12 +146,15 @@ export function createVNFPAndAddVNFTtoSFC(vnfTemplate: VNFTemplateState, nodes: 
             return response.json();
         }).then(
             data => {
-                const vnfPackage: VNFPackageState = {
+                const newVNFPackage: VNFPackage = {
                     name: vnfTemplate.name,
                     uuid: vnfDTO.uuid
                 };
 
-                dispatch(addVNFToSFC(vnfPackage));
+                const newVNFPackages = vnfPackages.slice();
+                newVNFPackages.push(newVNFPackage);
+
+                dispatch(updateVNFsInSFC(newVNFPackages));
 
                 const node: INode = {
                     title: vnfTemplate.name,

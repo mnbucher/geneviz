@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import Dropzone from 'react-dropzone';
-import { StoreState, VNFTemplateState } from "../../../types";
+import { StoreState, VNFTemplate } from "../../../types";
 const JSZip = require("jszip");
 import uuidv1 from 'uuid';
 import './ToolsMenuDropZone.css';
@@ -9,10 +9,10 @@ import { connect } from "react-redux";
 import { uploadVNFTemplate } from "../../../actions";
 import { Dispatch } from "redux";
 
-class ToolsMenuDropZone extends React.Component<{addVNF: any, vnfTemplateState: VNFTemplateState[]}> {
+class ToolsMenuDropZone extends React.Component<{addVNF: any, vnfTemplates: VNFTemplate[]}> {
 
     isAlreadyAdded = (fileBase64: string) => {
-        const currentVNFs = this.props.vnfTemplateState as VNFTemplateState[];
+        const currentVNFs = this.props.vnfTemplates;
         let sameFileWasFound: boolean = false;
 
         currentVNFs.map((vnf) => {
@@ -37,7 +37,7 @@ class ToolsMenuDropZone extends React.Component<{addVNF: any, vnfTemplateState: 
                 zip.loadAsync(zipAsBinaryString).then((zipFile: any) => {
                     zipFile.generateAsync({type:"base64"}).then((fileBase64: string) => {
 
-                        let vnfTemplate: VNFTemplateState = {
+                        let vnfTemplate: VNFTemplate = {
                             name: fileName,
                             fileBase64: fileBase64,
                             uuid: uuidv1()
@@ -78,13 +78,13 @@ class ToolsMenuDropZone extends React.Component<{addVNF: any, vnfTemplateState: 
 
 export function mapStateToProps(state: StoreState) {
     return {
-        vnfTemplateState: state.vnfTemplateState
+        vnfTemplates: state.vnfTemplates
     }
 }
 
 export function mapDispatchToProps(dispatch: Dispatch) {
     return {
-        addVNF: (vnfTemplate: VNFTemplateState) => {
+        addVNF: (vnfTemplate: VNFTemplate) => {
             dispatch(uploadVNFTemplate(vnfTemplate));
         }
     }

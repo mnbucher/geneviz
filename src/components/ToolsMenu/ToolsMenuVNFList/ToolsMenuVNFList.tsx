@@ -1,12 +1,12 @@
 import React from 'react';
 import {connect} from "react-redux";
 import {Dispatch} from "redux";
-import {StoreState, VNFTemplateState} from "../../../types";
+import {StoreState, VNFPackage, VNFTemplate} from "../../../types";
 import {createVNFPAndAddVNFTtoSFC, deleteVNFTemplate} from "../../../actions";
 import './ToolsMenuVNFList.css';
 import {INode} from "react-digraph";
 
-class ToolsMenuVNFList extends React.Component<{ removeVNF: any, addVNFToSFC: any, vnfTemplateState: VNFTemplateState[], nodes: INode[] }> {
+class ToolsMenuVNFList extends React.Component<{ removeVNF: any, addVNFToSFC: any, vnfTemplateState: VNFTemplate[], nodes: INode[], vnfPackages: VNFPackage[] }> {
 
     allVNFs = () => {
         const vnfTemplates = this.props.vnfTemplateState;
@@ -23,7 +23,7 @@ class ToolsMenuVNFList extends React.Component<{ removeVNF: any, addVNFToSFC: an
                 <p className='vnf-list-element-name'>{vnf.name}</p>
                 <p className='vnf-list-element-buttons'>
                     <span className='vnf-list-element-add-to-sfc'
-                          onClick={() => this.props.addVNFToSFC(vnf, this.props.nodes)}>Add to SFC</span>
+                          onClick={() => this.props.addVNFToSFC(vnf, this.props.nodes, this.props.vnfPackages)}>Add to SFC</span>
                     <span className='vnf-list-element-remove'
                           onClick={() => this.props.removeVNF(vnf.uuid)}>Remove from List</span>
                 </p>
@@ -46,8 +46,9 @@ class ToolsMenuVNFList extends React.Component<{ removeVNF: any, addVNFToSFC: an
 
 export function mapStateToProps(state: StoreState) {
     return {
-        vnfTemplateState: state.vnfTemplateState,
-        nodes: state.userInterfaceState.drawingBoardState.graphViewState.graph.nodes
+        vnfTemplateState: state.vnfTemplates,
+        nodes: state.userInterfaceState.drawingBoardState.graphViewState.graph.nodes,
+        vnfPackages: state.sfcPackageState.vnfPackages
     }
 }
 
@@ -56,8 +57,8 @@ export function mapDispatchToProps(dispatch: Dispatch) {
         removeVNF: (uuid: string) => {
             dispatch(deleteVNFTemplate(uuid));
         },
-        addVNFToSFC: (vnfTemplate: VNFTemplateState, nodes: INode[]) => {
-            dispatch<any>(createVNFPAndAddVNFTtoSFC(vnfTemplate, nodes));
+        addVNFToSFC: (vnfTemplate: VNFTemplate, nodes: INode[], vnfPackages: VNFPackage[]) => {
+            dispatch<any>(createVNFPAndAddVNFTtoSFC(vnfTemplate, nodes, vnfPackages));
         }
     }
 }

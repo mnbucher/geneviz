@@ -61,10 +61,10 @@ def updateVNFD(uuid, vnf_name):
                 # Q1: Maybe we should also try to change the modification date on the file with utime(), but does it also work on Windows?
                 # Q2: Try this also in Windows, maybe we have two VNFD.json files in the same folder --> Create new ZIP would be necessary
 
-                return 'VNF Descriptor was updated successfully'
+                return json.dumps({"success": True}), 200, {'ContentType': 'application/json'}
     except Exception as e:
         print(e)
-        return 'The VNF Descriptor could not be updated'
+        return json.dumps({"success": False}), 500, {'ContentType': 'application/json'}
 
 
 @app.route('/sfc', methods=['POST'])

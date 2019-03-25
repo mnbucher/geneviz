@@ -1,0 +1,100 @@
+.vnfd-properties-popup-wrapper {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0,0,0,0.3);
+
+    opacity: 0;
+    transition: all 0.3s ease-in-out;
+}
+
+.vnfd-properties-popup-wrapper-visible {
+    opacity: 1;
+}
+
+.vnfd-properties-popup {
+    border: 1px solid #c2c2c2;
+    -webkit-box-shadow: 0 3px 10px 5px #999;
+    box-shadow: 0 3px 10px 5px #999;
+    -webkit-border-radius: 10px 10px 10px 10px;
+    border-radius: 10px 10px 10px 10px;
+    background-color: #fff;
+    width: 400px;
+    margin-bottom: 25px;
+
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.2s ease-in-out;
+}
+
+.vnfd-properties-popup-visible {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.vnfd-properties-popup-header {
+    font-size: 1.309rem;
+    padding: 30px 40px 1em;
+    border-bottom: 1px solid #c2c2c2;
+}
+
+.vnfd-properties-popup-content {
+    font-size: 1rem;
+    padding: 40px 40px 20px;
+}
+
+.vnfd-properties-popup-content p {
+    padding-bottom: 0.309em;
+}
+
+.vnfd-properties-popup-content input {
+    font-size: 1rem;
+    padding: 0.618em;
+    margin-bottom: 1em;
+    -webkit-border-radius: 5px 5px 5px 5px;
+    border-radius: 5px 5px 5px 5px;
+    border: 1px solid #c2c2c2;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.vnfd-properties-popup-buttons {
+    padding: 0 40px 20px;
+}
+
+.vnfd-properties-popup-buttons button {
+    -webkit-border-radius: 5px 5px 5px 5px;
+    border-radius: 5px 5px 5px 5px;
+    font-size: 1rem;
+    padding: 10px 15px;
+    -webkit-appearance: none;
+    box-sizing: border-box;
+    color: #202429;
+    border: 1px solid #c2c2c2;
+    background-color: #ffffff;
+    cursor: pointer;
+    margin-right: 20px;
+}
+
+.vnfd-properties-popup-buttons .vnfd-properties-popup-button-cancel:hover {
+    background-color: #c2c2c2;
+    color: #fff;
+}
+
+.vnfd-properties-popup-buttons .vnfd-properties-popup-button-apply {
+    border-color: #00a6ed;
+    color: #00a6ed;
+}
+
+.vnfd-properties-popup-buttons .vnfd-properties-popup-button-apply:hover {
+    background-color: #00a6ed;
+    color: #fff;
+}
+
+.hidden {
+    display: none;
+}

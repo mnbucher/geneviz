@@ -6,7 +6,7 @@ import {createVNFPAndAddVNFTtoSFC, deleteVNFTemplate} from "../../../actions";
 import './ToolsMenuVNFList.css';
 import {INode} from "react-digraph";
 
-class ToolsMenuVNFList extends React.Component<{ removeVNF: any, addVNFToSFC: any, vnfTemplateState: VNFTemplate[], nodes: INode[], vnfPackages: VNFPackage[] }> {
+class ToolsMenuVNFList extends React.Component<{ removeVNF: any, createVNFPAndAddVNFTtoSFC: any, vnfTemplateState: VNFTemplate[], nodes: INode[], vnfPackages: VNFPackage[], xOffset: number }> {
 
     allVNFs = () => {
         const vnfTemplates = this.props.vnfTemplateState;
@@ -23,7 +23,7 @@ class ToolsMenuVNFList extends React.Component<{ removeVNF: any, addVNFToSFC: an
                 <p className='vnf-list-element-name'>{vnf.name}</p>
                 <p className='vnf-list-element-buttons'>
                     <span className='vnf-list-element-add-to-sfc'
-                          onClick={() => this.props.addVNFToSFC(vnf, this.props.nodes, this.props.vnfPackages)}>Add to SFC</span>
+                          onClick={() => this.props.createVNFPAndAddVNFTtoSFC(vnf, this.props.nodes, this.props.vnfPackages, this.props.xOffset)}>Add to SFC</span>
                     <span className='vnf-list-element-remove'
                           onClick={() => this.props.removeVNF(vnf.uuid)}>Remove from List</span>
                 </p>
@@ -48,7 +48,8 @@ export function mapStateToProps(state: StoreState) {
     return {
         vnfTemplateState: state.vnfTemplates,
         nodes: state.userInterfaceState.drawingBoardState.graphViewState.graph.nodes,
-        vnfPackages: state.sfcPackageState.vnfPackages
+        vnfPackages: state.sfcPackageState.vnfPackages,
+        xOffset: state.userInterfaceState.drawingBoardState.graphViewState.xOffset
     }
 }
 
@@ -57,8 +58,8 @@ export function mapDispatchToProps(dispatch: Dispatch) {
         removeVNF: (uuid: string) => {
             dispatch(deleteVNFTemplate(uuid));
         },
-        addVNFToSFC: (vnfTemplate: VNFTemplate, nodes: INode[], vnfPackages: VNFPackage[]) => {
-            dispatch<any>(createVNFPAndAddVNFTtoSFC(vnfTemplate, nodes, vnfPackages));
+        createVNFPAndAddVNFTtoSFC: (vnfTemplate: VNFTemplate, nodes: INode[], vnfPackages: VNFPackage[], xOffset: number) => {
+            dispatch<any>(createVNFPAndAddVNFTtoSFC(vnfTemplate, nodes, vnfPackages, xOffset));
         }
     }
 }

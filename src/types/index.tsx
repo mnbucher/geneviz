@@ -1,4 +1,4 @@
-import { IGraphInput } from "react-digraph";
+import {IEdge, IGraphInput, INode} from "react-digraph";
 
 export interface SFCPackageState {
     vnfPackages: VNFPackage[];
@@ -21,21 +21,25 @@ export interface VNFDPropertiesState {
     numCPUs: string;
     memSize: string;
     diskSize: string;
+    uuid: string;
+    name: string;
 }
 
 export interface GraphViewState {
     graph: IGraphInput;
     nodeKey: string;
-    selected: object;
+    selected: INode | IEdge;
+    xOffset: number;
 }
 
 export interface DrawingBoardState {
+    vnfd: object;
     vnfdPropertiesState: VNFDPropertiesState;
     graphViewState: GraphViewState;
 }
 
 export interface UserInterfaceState {
-    errorState: string;
+    notification: string;
     drawingBoardState: DrawingBoardState;
 }
 

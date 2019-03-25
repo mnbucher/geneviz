@@ -17,7 +17,6 @@ class ToolsMenuDropZone extends React.Component<{addVNF: any, vnfTemplates: VNFT
 
         currentVNFs.map((vnf) => {
             if (vnf.fileBase64 == fileBase64 as string){
-                console.log("already exists!");
                 sameFileWasFound = true;
             }
         });

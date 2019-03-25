@@ -11,19 +11,26 @@ import {
     GraphViewState,
     SFCPackageState,
     StoreState,
-    UserInterfaceState,
+    UserInterfaceState, VNFDPropertiesState,
     VNFTemplate
 } from '../types/index';
 import {
     UPLOAD_VNF_TEMPLATE,
     DELETE_VNF_TEMPLATE,
-    ADD_ERROR_FAILED_TO_CREATE_VNFP,
-    EXTRACT_PROPERTIES_FROM_VNFD,
-    ADD_ERROR_FAILED_TO_EXTRACT_PROPERTIES_FROM_VNFD,
+    FAILED_TO_CREATE_VNFP,
+    SET_VNFD_PROPERTIES,
+    FAILED_TO_EXTRACT_PROPERTIES_FROM_VNFD,
     UPDATE_EDGES,
     UPDATE_NODES,
-    SELECT_NODE, UPDATE_VNFS_IN_SFC
+    SELECT_NODE_OR_EDGE,
+    UPDATE_VNF_PACKAGES,
+    INCREASE_X_OFFSET,
+    RESET_VNFD_PROPERTIES,
+    SET_VNFD,
+    UPDATED_VNFD_IN_VNF_PACKAGE,
+    FAILED_TO_UPDATE_VNFD_IN_VNF_PACKAGE
 } from '../constants/index';
+import {INode} from "react-digraph";
 
 // Reducers. They should be pure functions with no side-effects.
 // Updating the store is serious, complicated business. Don't contaminate it with other logic
@@ -46,7 +53,7 @@ export function vnfTemplates(state: VNFTemplate[], action: VNFTemplateAction): V
 
 export function sfcPackage(state: SFCPackageState, action: SFCAction): SFCPackageState {
     switch (action.type) {
-        case UPDATE_VNFS_IN_SFC: {
+        case UPDATE_VNF_PACKAGES: {
             return {...state, vnfPackages: action.vnfPackages};
         }
         default:
@@ -64,8 +71,11 @@ export function graphView(state: GraphViewState, action: GraphAction): GraphView
             const newGraph = {... state.graph, nodes: action.nodes};
             return {...state, graph: newGraph};
         }
-        case SELECT_NODE: {
-            return {... state, selected: action.selectedNode};
+        case SELECT_NODE_OR_EDGE: {
+            return {... state, selected: action.selected};
+        }
+        case INCREASE_X_OFFSET: {
+            return {... state, xOffset: action.xOffset};
         }
         default:
             return state;
@@ -74,12 +84,26 @@ export function graphView(state: GraphViewState, action: GraphAction): GraphView
 
 export function drawingBoard(state: DrawingBoardState, action: DrawingBoardAction): DrawingBoardState {
     switch (action.type){
-        case EXTRACT_PROPERTIES_FROM_VNFD: {
+        case SET_VNFD_PROPERTIES: {
             return {...state, vnfdPropertiesState: action.vnfdProperties};
+        }
+        case RESET_VNFD_PROPERTIES: {
+            const resettedProperties: VNFDPropertiesState = {
+                numCPUs: "",
+                memSize: "",
+                diskSize: "",
+                uuid: "",
+                name: ""
+            }
+            return {...state, vnfdPropertiesState: resettedProperties};
+        }
+        case SET_VNFD: {
+            return {...state, vnfd: action.vnfd};
         }
         case UPDATE_EDGES:
         case UPDATE_NODES:
-        case SELECT_NODE:
+        case SELECT_NODE_OR_EDGE:
+        case INCREASE_X_OFFSET:
             return {...state, graphViewState: graphView(state.graphViewState, action)};
         default:
             return state;
@@ -88,18 +112,33 @@ export function drawingBoard(state: DrawingBoardState, action: DrawingBoardActio
 
 export function userInterface(state: UserInterfaceState, action: UserInterfaceAction): UserInterfaceState {
     switch (action.type) {
-        case ADD_ERROR_FAILED_TO_CREATE_VNFP: {
-            const errorMessage = "Failed to add the VNF Package " + action.vnfTemplate.name;
-            return {...state, errorState: errorMessage};
+        case FAILED_TO_CREATE_VNFP: {
+            const message = "Failed to add the VNF Package " + action.vnfTemplate.name;
+            console.log(message);
+            return {...state, notification: message};
         }
-        case ADD_ERROR_FAILED_TO_EXTRACT_PROPERTIES_FROM_VNFD: {
-            const errorMessage = "Could not get VNF Descriptor of " + action.name;
-            return {...state, errorState: errorMessage};
+        case FAILED_TO_EXTRACT_PROPERTIES_FROM_VNFD: {
+            const message = "Could not get VNF Descriptor of " + action.name;
+            console.log(message);
+            return {...state, notification: message};
         }
-        case EXTRACT_PROPERTIES_FROM_VNFD:
+        case UPDATED_VNFD_IN_VNF_PACKAGE: {
+            const message = "Updated successfully VNF Descriptor of " + action.name;
+            console.log(message);
+            return {...state, notification: message};
+        }
+        case FAILED_TO_UPDATE_VNFD_IN_VNF_PACKAGE: {
+            const message = "Could not update VNF Descriptor of " + action.name;
+            console.log(message);
+            return {...state, notification: message};
+        }
+        case SET_VNFD_PROPERTIES:
+        case RESET_VNFD_PROPERTIES:
+        case SET_VNFD:
         case UPDATE_EDGES:
         case UPDATE_NODES:
-        case SELECT_NODE:
+        case SELECT_NODE_OR_EDGE:
+        case INCREASE_X_OFFSET:
             return {...state, drawingBoardState: drawingBoard(state.drawingBoardState, action)};
         default:
             return state;
@@ -116,12 +155,15 @@ const initialState: StoreState = {
     },
     vnfTemplates: [],
     userInterfaceState: {
-        errorState: "",
+        notification: "",
         drawingBoardState: {
+            vnfd: {},
             vnfdPropertiesState: {
                 numCPUs: "",
                 memSize: "",
-                diskSize: ""
+                diskSize: "",
+                uuid: "",
+                name: ""
             },
             graphViewState: {
                 graph: {
@@ -129,7 +171,8 @@ const initialState: StoreState = {
                     edges: []
                 },
                 nodeKey: 'id',
-                selected: {}
+                selected: {} as INode,
+                xOffset: 500
             },
         }
     }
@@ -140,13 +183,19 @@ export function geneviz(state: StoreState = initialState, action: GenevizAction)
         case UPLOAD_VNF_TEMPLATE:
         case DELETE_VNF_TEMPLATE:
             return {...state, vnfTemplates: vnfTemplates(state.vnfTemplates, action)};
-        case UPDATE_VNFS_IN_SFC:
+        case UPDATE_VNF_PACKAGES:
             return {...state, sfcPackageState: sfcPackage(state.sfcPackageState, action)};
-        case ADD_ERROR_FAILED_TO_CREATE_VNFP:
-        case EXTRACT_PROPERTIES_FROM_VNFD:
-        case ADD_ERROR_FAILED_TO_EXTRACT_PROPERTIES_FROM_VNFD:
+        case FAILED_TO_CREATE_VNFP:
+        case SET_VNFD_PROPERTIES:
+        case RESET_VNFD_PROPERTIES:
+        case SET_VNFD:
+        case FAILED_TO_EXTRACT_PROPERTIES_FROM_VNFD:
+        case UPDATED_VNFD_IN_VNF_PACKAGE:
+        case FAILED_TO_UPDATE_VNFD_IN_VNF_PACKAGE:
         case UPDATE_EDGES:
         case UPDATE_NODES:
+        case SELECT_NODE_OR_EDGE:
+        case INCREASE_X_OFFSET:
             return {...state, userInterfaceState: userInterface(state.userInterfaceState, action)};
         default:
             return state;

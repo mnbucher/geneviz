@@ -14,7 +14,6 @@ import './index.css';
 const store = createStore<StoreState, GenevizAction, any, any>(geneviz, applyMiddleware(thunk));
 
 store.subscribe(() => {
-    console.log("Subscription in index.tsx is called!");
     console.log((store.getState()))
 });
 

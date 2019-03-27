@@ -4,7 +4,8 @@ import ToolsMenuVNFList from './ToolsMenuVNFList/ToolsMenuVNFList';
 import ToolsMenuDropZone from './ToolsMenuDropZone/ToolsMenuDropZone';
 import {connect} from "react-redux";
 import {GENEVIZ_FILE_API} from "../../constants";
-import {SFCPackageState, StoreState} from "../../types";
+import {SFCPackageDTO, SFCPackageState, StoreState} from "../../types";
+import fileDownload from "js-file-download";
 
 class ToolsMenu extends React.Component<{sfcPackageState: SFCPackageState}> {
 
@@ -25,6 +26,38 @@ class ToolsMenu extends React.Component<{sfcPackageState: SFCPackageState}> {
         return "";
     }
 
+    downloadSFC = () => {
+
+        let groupedVNFPackages = this.props.sfcPackageState.vnfPackages.reduce((acc, obj) => {
+           let key = obj['name'];
+           if(!acc[key]) {
+               acc[key] = [];
+           }
+           acc[key].push(obj['uuid']);
+           return acc;
+        }, {});
+
+        const sfcPackageDTO: SFCPackageDTO = {
+          vnf_packages: groupedVNFPackages,
+          vnffgd: this.props.sfcPackageState.vnffgd,
+          nsd_name: "test-nsd"
+        };
+
+        fetch(GENEVIZ_FILE_API + "/sfc", {
+            method: "POST",
+            body: JSON.stringify(sfcPackageDTO),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }).then(response => {
+            return response.blob();
+        }).then(data => {
+            fileDownload(data, "sfc-package.zip");
+        }, error => {
+            console.log(error);
+        });
+    }
+
     render() {
         return (
             <div className="tools-menu-wrapper">
@@ -42,9 +75,7 @@ class ToolsMenu extends React.Component<{sfcPackageState: SFCPackageState}> {
                         </div>
 
                         <div className='tools-menu-download-sfc'>
-                            <form action={GENEVIZ_FILE_API + "/sfc" + this.concatUUIDsForURL()} method="post">
-                                <input type="submit" value="Download SFC Package"></input>
-                            </form>
+                            <button onClick={this.downloadSFC}>Generate SFC Package</button>
                         </div>
                     </div>
                 </div>

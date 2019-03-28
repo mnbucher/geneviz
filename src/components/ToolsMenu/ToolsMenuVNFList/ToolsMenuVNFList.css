@@ -56,9 +56,8 @@
 }
 
 .vnf-list-element-remove {
-    //background-color: #F7867C;
-    color: #F05B48;
-    border: 1px solid #F05B48;
+    color: #333;
+    border: 2px solid #3D4247;
 }
 
 .tools-menu-vnf-list-element-remove:hover {

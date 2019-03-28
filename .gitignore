@@ -3,6 +3,9 @@
 # IntelliJ IDEA
 /.idea
 
+# VS Code
+.vscode/
+
 # dependencies
 /node_modules
 
@@ -24,5 +27,5 @@ yarn-debug.log*
 yarn-error.log*
 
 # python stuff
-/geneviz-file-api/geneviz-venv
+/geneviz-file-api/env
 /geneviz-file-api/__pycache__

@@ -50,6 +50,13 @@ export interface StoreState {
 }
 
 export interface VNFDTO {
-    fileBase64: string;
+    file_base_64: string;
     uuid: string;
+    vnf_name: string;
+}
+
+export interface SFCPackageDTO {
+    vnf_packages: object;
+    vnffgd: object;
+    nsd_name: string;
 }

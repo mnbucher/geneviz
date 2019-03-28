@@ -162,9 +162,12 @@ export function createVNFPAndAddVNFTtoSFC(vnfTemplate: VNFTemplate, nodes: INode
         const uuid: string = uuidv1();
 
         const vnfDTO: VNFDTO = {
-            fileBase64: vnfTemplate.fileBase64,
-            uuid: uuid
+            file_base_64: vnfTemplate.fileBase64,
+            uuid: uuid,
+            vnf_name: vnfTemplate.name
         };
+
+        console.log(vnfDTO);
 
         fetch(GENEVIZ_FILE_API + "/vnf", {
             method: "POST",

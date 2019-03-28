@@ -10,6 +10,7 @@
     "@types/vis": "^4.21.11",
     "classnames": "^2.2.6",
     "cross-fetch": "^3.0.1",
+    "js-file-download": "^0.4.5",
     "jszip": "^3.2.0",
     "react": "^16.8.3",
     "react-digraph": "^6.2.2",

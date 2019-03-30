@@ -3,11 +3,11 @@ import './ToolsMenu.css';
 import ToolsMenuVNFList from './ToolsMenuVNFList/ToolsMenuVNFList';
 import ToolsMenuDropZone from './ToolsMenuDropZone/ToolsMenuDropZone';
 import {connect} from "react-redux";
-import {GENEVIZ_FILE_API} from "../../constants";
-import {SFCPackageDTO, SFCPackageState, StoreState} from "../../types";
-import fileDownload from "js-file-download";
+import {SFCPackageState, StoreState} from "../../types";
+import { Dispatch } from 'redux';
+import { handleSFCPopup } from 'src/actions';
 
-class ToolsMenu extends React.Component<{sfcPackageState: SFCPackageState}> {
+class ToolsMenu extends React.Component<{sfcPackageState: SFCPackageState, handleSFCPopup: any}> {
 
     concatUUIDsForURL = () => {
         const uuids = this.props.sfcPackageState.vnfPackages.map(vnfPackage => vnfPackage.uuid);
@@ -26,36 +26,8 @@ class ToolsMenu extends React.Component<{sfcPackageState: SFCPackageState}> {
         return "";
     }
 
-    downloadSFC = () => {
-
-        let groupedVNFPackages = this.props.sfcPackageState.vnfPackages.reduce((acc, obj) => {
-           let key = obj['name'];
-           if(!acc[key]) {
-               acc[key] = [];
-           }
-           acc[key].push(obj['uuid']);
-           return acc;
-        }, {});
-
-        const sfcPackageDTO: SFCPackageDTO = {
-          vnf_packages: groupedVNFPackages,
-          vnffgd: this.props.sfcPackageState.vnffgd,
-          nsd_name: "test-nsd"
-        };
-
-        fetch(GENEVIZ_FILE_API + "/sfc", {
-            method: "POST",
-            body: JSON.stringify(sfcPackageDTO),
-            headers: {
-                "Content-Type": "application/json"
-            }
-        }).then(response => {
-            return response.blob();
-        }).then(data => {
-            fileDownload(data, "sfc-package.zip");
-        }, error => {
-            console.log(error);
-        });
+    generateSFCPackage = () => {
+        this.props.handleSFCPopup(true);
     }
 
     render() {
@@ -75,7 +47,7 @@ class ToolsMenu extends React.Component<{sfcPackageState: SFCPackageState}> {
                         </div>
 
                         <div className='tools-menu-download-sfc'>
-                            <button onClick={this.downloadSFC}>Generate SFC Package</button>
+                            <button onClick={this.generateSFCPackage}>Generate SFC Package</button>
                         </div>
                     </div>
                 </div>
@@ -90,4 +62,12 @@ export function mapStateToProps(state: StoreState) {
     }
 }
 
-export default connect(mapStateToProps)(ToolsMenu);
+export function mapDispatchToProps(dispatch: Dispatch) {
+    return {
+        handleSFCPopup: (showSFCPopup: boolean) => {
+            dispatch(handleSFCPopup(showSFCPopup));
+        }
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ToolsMenu);

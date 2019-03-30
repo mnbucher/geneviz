@@ -4,9 +4,10 @@ import React from 'react';
 import './Geneviz.css';
 import {StoreState} from "../../types";
 import {connect} from "react-redux";
-import VNFDPropertiesPopup from "../VNFDPropertiesPopup/VNFDPropertiesPopup";
+import VNFDPopup from "../Popup/VNFDPopup/VNFDPopup";
+import SFCPopup from '../Popup/SFCPopup/SFCPopup';
 
-class Geneviz extends React.Component<{numCPUs: string}> {
+class Geneviz extends React.Component<{showSFCPopup: boolean, showVNFDPopup: boolean}> {
 
     componentDidMount() {
         document.title = "GENEVIZ";
@@ -17,7 +18,8 @@ class Geneviz extends React.Component<{numCPUs: string}> {
             <div className="geneviz">
                 <ToolsMenu/>
                 <DrawingBoard/>
-                {this.props.numCPUs !== "" ? <VNFDPropertiesPopup /> : null}
+                {this.props.showSFCPopup ? <SFCPopup /> : null}
+                {this.props.showVNFDPopup ? <VNFDPopup /> : null}
             </div>
         )
     }
@@ -25,7 +27,8 @@ class Geneviz extends React.Component<{numCPUs: string}> {
 
 export function mapStateToProps(state: StoreState) {
     return {
-        numCPUs: state.userInterfaceState.drawingBoardState.vnfdPropertiesState.numCPUs
+        showSFCPopup: state.userInterfaceState.showSFCPopup,
+        showVNFDPopup: state.userInterfaceState.showVNFDPopup
     }
 }
 

@@ -63,7 +63,7 @@ class ToolsMenuDropZone extends React.Component<{addVNF: any, vnfTemplates: VNFT
                                 {
                                     isDragActive ?
                                         <p>Drop files here...</p> :
-                                        <p>Upload a VNF Package (only .ZIP files allowed) by dropping the file directly here or by clicking here to select a file.</p>
+                                        <p>Upload a VNF Package by dropping the file directly here or by clicking here to select a file (only .zip files allowed).</p>
                                 }
                             </div>
                         )

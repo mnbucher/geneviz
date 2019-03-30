@@ -52,7 +52,7 @@ html, body {
   padding: 0;
   height: 100%;
   width: 100%;
-  font-family: sans-serif;
+  font-family: 'Roboto', Arial, sans-serif;
 }
 
 #root {

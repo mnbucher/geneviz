@@ -7,3 +7,9 @@
     color: #d7d7d7;
     line-height: 1.5;
 }
+
+.toolsMenu-add-vnfs p {
+    width: 50%;
+    margin: 0 auto;
+    text-align: center;
+}

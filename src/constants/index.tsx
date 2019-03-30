@@ -39,6 +39,15 @@ export type SELECT_NODE_OR_EDGE = typeof SELECT_NODE_OR_EDGE;
 export const INCREASE_X_OFFSET = 'INCREASE_X_OFFSET';
 export type INCREASE_X_OFFSET = typeof INCREASE_X_OFFSET;
 
+export const SET_NSD_NAME = 'SET_NSD_NAME';
+export type SET_NSD_NAME = typeof SET_NSD_NAME;
+
+export const HANDLE_VNFD_POPUP = 'HANDLE_VNFD_POPUP';
+export type HANDLE_VNFD_POPUP = typeof HANDLE_VNFD_POPUP;
+
+export const HANDLE_SFC_POPUP = 'HANDLE_SFC_POPUP';
+export type HANDLE_SFC_POPUP = typeof HANDLE_SFC_POPUP;
+
 // Error Handler Actions
 
 export const FAILED_TO_CREATE_VNFP = 'FAILED_TO_CREATE_VNFP';

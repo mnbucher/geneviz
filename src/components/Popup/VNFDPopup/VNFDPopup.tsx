@@ -1,34 +1,33 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './VNFDPropertiesPopup.css';
-import {StoreState, VNFDPropertiesState, VNFPackage} from "../../types";
+import './VNFDPopup.css';
+import '../Popup.css';
+import {StoreState, VNFDPropertiesState, VNFPackage} from "../../../types";
 import {connect} from "react-redux";
-import {resetVNFDProperties, setVNFDProperties, updateVNFDInVNFPackage} from "../../actions";
+import {resetVNFDProperties, setVNFDProperties, updateVNFDInVNFPackage} from "../../../actions";
 import {Dispatch} from "redux";
 
-class VNFDPropertiesPopup extends React.Component<{vnfdPropertiesState: VNFDPropertiesState, vnfd: object, vnfPackages: VNFPackage[], setVNFDProperties: any, resetVNFDProperties: any, updateVNFDinVNFPackage: any}> {
-    wrapperRef: any;
-    popupRef: any;
+class VNFDPopup extends React.Component<{vnfdPropertiesState: VNFDPropertiesState, vnfd: object, vnfPackages: VNFPackage[], setVNFDProperties: any, resetVNFDProperties: any, updateVNFDinVNFPackage: any}> {
+    vnfdWrapperRef: any;
+    vnfdPopupRef: any;
 
     constructor(props: any) {
         super(props);
-        this.wrapperRef = React.createRef();
-        this.popupRef = React.createRef();
+        this.vnfdWrapperRef = React.createRef();
+        this.vnfdPopupRef = React.createRef();
     }
 
     componentDidMount() {
-        document.title = "GENEVIZ";
-
         setTimeout(() => {
             this.toggleActiveClasses();
         }, 250);
     }
 
     toggleActiveClasses = () => {
-        let wrapperNode = ReactDOM.findDOMNode(this.wrapperRef.current) as HTMLInputElement;
+        let wrapperNode = ReactDOM.findDOMNode(this.vnfdWrapperRef.current) as HTMLInputElement;
         wrapperNode.classList.toggle("vnfd-properties-popup-wrapper-visible");
 
-        let popupNode = ReactDOM.findDOMNode(this.popupRef.current) as HTMLInputElement;
+        let popupNode = ReactDOM.findDOMNode(this.vnfdPopupRef.current) as HTMLInputElement;
         popupNode.classList.toggle("vnfd-properties-popup-visible");
     }
 
@@ -51,6 +50,9 @@ class VNFDPropertiesPopup extends React.Component<{vnfdPropertiesState: VNFDProp
     }
 
     closePopup = () => {
+
+        // TODO: Call handleVNFD action here...
+
         this.toggleActiveClasses();
         setTimeout(() => {
             this.props.resetVNFDProperties();
@@ -64,14 +66,14 @@ class VNFDPropertiesPopup extends React.Component<{vnfdPropertiesState: VNFDProp
 
     render() {
         return (
-            <div className="vnfd-properties-popup-wrapper" ref={this.wrapperRef}>
-                <div className="vnfd-properties-popup" ref={this.popupRef}>
-                    <div className="vnfd-properties-popup-header">
+            <div className="popup-wrapper vnfd-properties-popup-wrapper" ref={this.vnfdWrapperRef}>
+                <div className="popup vnfd-properties-popup" ref={this.vnfdPopupRef}>
+                    <div className="popup-header">
                         <p>Manage VNF Properties</p>
                         <p>{this.props.vnfdPropertiesState.name}</p>
                     </div>
 
-                    <div className="vnfd-properties-popup-content">
+                    <div className="popup-content">
                         <p>Number of CPUs</p>
                         <input type="text" placeholder="Number of CPUs" value={this.props.vnfdPropertiesState.numCPUs} onChange={this.handleCPUChange} />
                         <p>Memory Size</p>
@@ -80,9 +82,9 @@ class VNFDPropertiesPopup extends React.Component<{vnfdPropertiesState: VNFDProp
                         <input type="text" placeholder="Disk Size" value={this.props.vnfdPropertiesState.diskSize} onChange={this.handleDiskSizeChange} />
                     </div>
 
-                    <div className="vnfd-properties-popup-buttons">
-                        <button className="vnfd-properties-popup-button-apply" onClick={this.updateVNFDinVNFPackage}>Apply Changes</button>
-                        <button className="vnfd-proeprties-popup-button-cancel" onClick={this.closePopup}>Cancel</button>
+                    <div className="popup-buttons">
+                        <button className="popup-button-apply" onClick={this.updateVNFDinVNFPackage}>Apply Changes</button>
+                        <button className="popup-button-cancel" onClick={this.closePopup}>Cancel</button>
                     </div>
                 </div>
             </div>
@@ -112,4 +114,4 @@ export function mapDispatchToProps(dispatch: Dispatch) {
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(VNFDPropertiesPopup);
+export default connect(mapStateToProps, mapDispatchToProps)(VNFDPopup);

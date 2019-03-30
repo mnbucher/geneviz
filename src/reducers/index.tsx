@@ -4,7 +4,7 @@ import {
     SFCAction,
     UserInterfaceAction,
     GraphAction,
-    DrawingBoardAction
+    DrawingBoardAction,
 } from '../actions';
 import {
     DrawingBoardState,
@@ -28,7 +28,10 @@ import {
     RESET_VNFD_PROPERTIES,
     SET_VNFD,
     UPDATED_VNFD_IN_VNF_PACKAGE,
-    FAILED_TO_UPDATE_VNFD_IN_VNF_PACKAGE
+    FAILED_TO_UPDATE_VNFD_IN_VNF_PACKAGE,
+    HANDLE_SFC_POPUP,
+    HANDLE_VNFD_POPUP,
+    SET_NSD_NAME
 } from '../constants/index';
 import {INode} from "react-digraph";
 
@@ -55,6 +58,9 @@ export function sfcPackage(state: SFCPackageState, action: SFCAction): SFCPackag
     switch (action.type) {
         case UPDATE_VNF_PACKAGES: {
             return {...state, vnfPackages: action.vnfPackages};
+        }
+        case SET_NSD_NAME: {
+            return {...state, nsdName: action.nsdName};
         }
         default:
             return state;
@@ -132,6 +138,10 @@ export function userInterface(state: UserInterfaceState, action: UserInterfaceAc
             console.log(message);
             return {...state, notification: message};
         }
+        case HANDLE_SFC_POPUP:
+            return {...state, showSFCPopup: action.showSFCPopup}
+        case HANDLE_VNFD_POPUP:
+            return {...state, showVNFDPopup: action.showVNFDPopup}
         case SET_VNFD_PROPERTIES:
         case RESET_VNFD_PROPERTIES:
         case SET_VNFD:
@@ -151,7 +161,7 @@ const initialState: StoreState = {
     sfcPackageState: {
         vnfPackages: [],
         vnffgd: {},
-        nsd: {},
+        nsdName: "",
     },
     vnfTemplates: [],
     userInterfaceState: {
@@ -174,7 +184,9 @@ const initialState: StoreState = {
                 selected: {} as INode,
                 xOffset: 500
             },
-        }
+        },
+        showSFCPopup: false,
+        showVNFDPopup: false
     }
 }
 
@@ -184,6 +196,7 @@ export function geneviz(state: StoreState = initialState, action: GenevizAction)
         case DELETE_VNF_TEMPLATE:
             return {...state, vnfTemplates: vnfTemplates(state.vnfTemplates, action)};
         case UPDATE_VNF_PACKAGES:
+        case SET_NSD_NAME:
             return {...state, sfcPackageState: sfcPackage(state.sfcPackageState, action)};
         case FAILED_TO_CREATE_VNFP:
         case SET_VNFD_PROPERTIES:
@@ -196,6 +209,8 @@ export function geneviz(state: StoreState = initialState, action: GenevizAction)
         case UPDATE_NODES:
         case SELECT_NODE_OR_EDGE:
         case INCREASE_X_OFFSET:
+        case HANDLE_SFC_POPUP:
+        case HANDLE_VNFD_POPUP:
             return {...state, userInterfaceState: userInterface(state.userInterfaceState, action)};
         default:
             return state;

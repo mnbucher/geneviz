@@ -1,0 +1,17 @@
+.vnfd-properties-popup-wrapper {
+    opacity: 0;
+}
+
+.vnfd-properties-popup-wrapper-visible {
+    opacity: 1;
+}
+
+.vnfd-properties-popup {
+    opacity: 0;
+    transform: scale(0.8);
+}
+
+.vnfd-properties-popup-visible {
+    opacity: 1;
+    transform: scale(1);
+}

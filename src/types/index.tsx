@@ -3,7 +3,7 @@ import {IEdge, IGraphInput, INode} from "react-digraph";
 export interface SFCPackageState {
     vnfPackages: VNFPackage[];
     vnffgd: object;
-    nsd: object;
+    nsdName: string;
 }
 
 export interface VNFPackage {
@@ -41,6 +41,8 @@ export interface DrawingBoardState {
 export interface UserInterfaceState {
     notification: string;
     drawingBoardState: DrawingBoardState;
+    showSFCPopup: boolean;
+    showVNFDPopup: boolean;
 }
 
 export interface StoreState {

@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "GENEVIZ",
+  "name": "GENEVIZ — Generatation and Visualization of SFC Packages",
   "icons": [
     {
       "src": "favicon.ico",

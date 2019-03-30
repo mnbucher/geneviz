@@ -32,7 +32,12 @@ export interface UdpateVNFsInSFC {
     vnfPackages: VNFPackage[];
 }
 
-export type SFCAction = UdpateVNFsInSFC;
+export interface SetNSDName {
+    type: constants.SET_NSD_NAME;
+    nsdName: string;
+}
+
+export type SFCAction = UdpateVNFsInSFC | SetNSDName;
 
 
 // GraphAction
@@ -101,10 +106,17 @@ export interface FailedToUpdateVNFDInVNFPackage {
     name: string;
 }
 
+export interface HandleSFCPopup {
+    type: constants.HANDLE_SFC_POPUP;
+    showSFCPopup: boolean;
+}
 
-// UserInterfaceAction
+export interface HandleVNFDPopup {
+    type: constants.HANDLE_VNFD_POPUP;
+    showVNFDPopup: boolean;
+}
 
-export type UserInterfaceAction = FailedToCreateVNFP | FailedToExtractPropertiesFromVNFD | UpdatedVNFDInVNFPackage | FailedToUpdateVNFDInVNFPackage | DrawingBoardAction ;
+export type UserInterfaceAction = FailedToCreateVNFP | FailedToExtractPropertiesFromVNFD | UpdatedVNFDInVNFPackage | FailedToUpdateVNFDInVNFPackage | DrawingBoardAction | HandleSFCPopup | HandleVNFDPopup ;
 
 
 // GenevizAction
@@ -260,7 +272,8 @@ export function getVNFDProperties(uuid: string, name: string) {
                 };
 
                 dispatch(setVNFD(data));
-                return dispatch(setVNFDProperties(properties));
+                dispatch(setVNFDProperties(properties));
+                return dispatch(handleVNFDPopup(true));
             },
             error => {
                 console.log(error);
@@ -336,5 +349,26 @@ export function removeNodeFromGraph(newNodes: INode[], uuid: string, edges: IEdg
 
         // TODO: Add here an async function with the Flask API to delete the .ZIP file completely also
         return dispatch(updateVNFPackages(vnfPackages.filter(vnfPackage => vnfPackage.uuid !== uuid)));
+    }
+}
+
+export function handleSFCPopup(showSFCPopup: boolean) {
+    return {
+        type: constants.HANDLE_SFC_POPUP,
+        showSFCPopup: showSFCPopup
+    }
+}
+
+export function handleVNFDPopup(showVNFDPopup: boolean) {
+    return {
+        type: constants.HANDLE_VNFD_POPUP,
+        showVNFDPopup: showVNFDPopup
+    }
+}
+
+export function setNSDName(nsdName: string) {
+    return {
+        type: constants.SET_NSD_NAME,
+        nsdName: nsdName
     }
 }

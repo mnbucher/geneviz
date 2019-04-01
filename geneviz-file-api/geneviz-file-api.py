@@ -22,7 +22,7 @@ CORS(app, resources={r"/*": {"origins": ["http://localhost:3000"]}})
 # Temporary storage for all VNF Packages.
 # The location of the temp folder heavily depends on the operating system.
 STORAGE = tempfile.mkdtemp(prefix="geneviz_")
-print("Storage Location: " + STORAGE)
+print("\n Storage Location:\n " + STORAGE + "\n")
 
 # Global variables
 VENDOR = "UZH"
@@ -61,7 +61,7 @@ def getVNFD(uuid, vnf_name):
     """ Get the VNF Descriptor of a certain VNF Package """
 
     try:
-        with zipfile.ZipFile(get_zip_file_path(uuid), 'r') as archive:
+        with zipfile.ZipFile(get_zip_file_path(vnf_name), 'r') as archive:
             with archive.open(get_vnfd_path(uuid, vnf_name)) as vnfd:
                 vnfd_json = json.loads(vnfd.read().decode("utf-8"))
                 return json.dumps(vnfd_json)
@@ -77,7 +77,7 @@ def updateVNFD(uuid, vnf_name):
     new_vnfd_json = json.dumps(request.get_json(), indent=4)
 
     try:
-        with zipfile.ZipFile(get_zip_file_path(uuid), 'a') as archive:
+        with zipfile.ZipFile(get_zip_file_path(vnf_name), 'a') as archive:
             with archive.open(get_vnfd_path(uuid, vnf_name), 'w') as vnfd:
                 vnfd.write(new_vnfd_json.encode())
 

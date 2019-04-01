@@ -31,7 +31,8 @@ import {
     FAILED_TO_UPDATE_VNFD_IN_VNF_PACKAGE,
     HANDLE_SFC_POPUP,
     HANDLE_VNFD_POPUP,
-    SET_NSD_NAME
+    SET_NSD_NAME,
+    UPDATE_GRAPH
 } from '../constants/index';
 import {INode} from "react-digraph";
 
@@ -77,6 +78,10 @@ export function graphView(state: GraphViewState, action: GraphAction): GraphView
             const newGraph = {... state.graph, nodes: action.nodes};
             return {...state, graph: newGraph};
         }
+        case UPDATE_GRAPH: {
+            const newGraph = {... state.graph, edges: action.edges, nodes: action.nodes, selected: {} as INode};
+            return {...state, graph: newGraph};
+        }
         case SELECT_NODE_OR_EDGE: {
             return {... state, selected: action.selected};
         }
@@ -108,6 +113,7 @@ export function drawingBoard(state: DrawingBoardState, action: DrawingBoardActio
         }
         case UPDATE_EDGES:
         case UPDATE_NODES:
+        case UPDATE_GRAPH:
         case SELECT_NODE_OR_EDGE:
         case INCREASE_X_OFFSET:
             return {...state, graphViewState: graphView(state.graphViewState, action)};
@@ -147,6 +153,7 @@ export function userInterface(state: UserInterfaceState, action: UserInterfaceAc
         case SET_VNFD:
         case UPDATE_EDGES:
         case UPDATE_NODES:
+        case UPDATE_GRAPH:
         case SELECT_NODE_OR_EDGE:
         case INCREASE_X_OFFSET:
             return {...state, drawingBoardState: drawingBoard(state.drawingBoardState, action)};
@@ -207,6 +214,7 @@ export function geneviz(state: StoreState = initialState, action: GenevizAction)
         case FAILED_TO_UPDATE_VNFD_IN_VNF_PACKAGE:
         case UPDATE_EDGES:
         case UPDATE_NODES:
+        case UPDATE_GRAPH:
         case SELECT_NODE_OR_EDGE:
         case INCREASE_X_OFFSET:
         case HANDLE_SFC_POPUP:

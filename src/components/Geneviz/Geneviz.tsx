@@ -6,6 +6,8 @@ import {StoreState} from "../../types";
 import {connect} from "react-redux";
 import VNFDPopup from "../Popup/VNFDPopup/VNFDPopup";
 import SFCPopup from '../Popup/SFCPopup/SFCPopup';
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 class Geneviz extends React.Component<{showSFCPopup: boolean, showVNFDPopup: boolean}> {
 
@@ -16,8 +18,9 @@ class Geneviz extends React.Component<{showSFCPopup: boolean, showVNFDPopup: boo
     render() {
         return (
             <div className="geneviz">
-                <ToolsMenu/>
-                <DrawingBoard/>
+                <ToolsMenu />
+                <DrawingBoard />
+                <ToastContainer />
                 {this.props.showSFCPopup ? <SFCPopup /> : null}
                 {this.props.showVNFDPopup ? <VNFDPopup /> : null}
             </div>

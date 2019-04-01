@@ -8,6 +8,7 @@ import { StoreState, SFCPackageState, SFCPackageDTO } from 'src/types';
 import fileDownload from 'js-file-download';
 import { GENEVIZ_FILE_API } from 'src/constants';
 import { handleSFCPopup, setNSDName } from 'src/actions';
+import { toast } from 'react-toastify';
 
 class SFCPopup extends React.Component<{handleSFCPopup: any, setNSDName: any, sfcPackageState: SFCPackageState}> {
     sfcWrapperRef: any;
@@ -34,34 +35,40 @@ class SFCPopup extends React.Component<{handleSFCPopup: any, setNSDName: any, sf
     }
 
     downloadSFC = () => {
-        let groupedVNFPackages = this.props.sfcPackageState.vnfPackages.reduce((acc, obj) => {
-           let key = obj['name'];
-           if(!acc[key]) {
-               acc[key] = [];
-           }
-           acc[key].push(obj['uuid']);
-           return acc;
-        }, {});
-
-        const sfcPackageDTO: SFCPackageDTO = {
-          vnf_packages: groupedVNFPackages,
-          vnffgd: this.props.sfcPackageState.vnffgd,
-          nsd_name: this.props.sfcPackageState.nsdName
-        };
-
-        fetch(GENEVIZ_FILE_API + "/sfc", {
-            method: "POST",
-            body: JSON.stringify(sfcPackageDTO),
-            headers: {
-                "Content-Type": "application/json"
-            }
-        }).then(response => {
-            return response.blob();
-        }).then(data => {
-            fileDownload(data, "sfc-package.zip");
-        }, error => {
-            console.log(error);
-        });
+        if(this.props.sfcPackageState.nsdName === ""){
+            toast.error("Please provide a name for the Network Service");
+        }
+        else {
+            let groupedVNFPackages = this.props.sfcPackageState.vnfPackages.reduce((acc, obj) => {
+                let key = obj['name'];
+                if(!acc[key]) {
+                    acc[key] = [];
+                }
+                acc[key].push(obj['uuid']);
+                return acc;
+             }, {});
+     
+             const sfcPackageDTO: SFCPackageDTO = {
+               vnf_packages: groupedVNFPackages,
+               vnffgd: this.props.sfcPackageState.vnffgd,
+               nsd_name: this.props.sfcPackageState.nsdName
+             };
+     
+             fetch(GENEVIZ_FILE_API + "/sfc", {
+                 method: "POST",
+                 body: JSON.stringify(sfcPackageDTO),
+                 headers: {
+                     "Content-Type": "application/json"
+                 }
+             }).then(response => {
+                 return response.blob();
+             }).then(data => {
+                 fileDownload(data, "sfc-package.zip");
+             }, error => {
+                 console.log(error);
+                 toast.error("Could not download the SFC Package");
+             });
+        }
     }
 
     handleNSDNameChange = (event: any) => {
@@ -77,7 +84,7 @@ class SFCPopup extends React.Component<{handleSFCPopup: any, setNSDName: any, sf
             <div className="popup-wrapper sfc-popup-wrapper" ref={this.sfcWrapperRef}>
                 <div className="popup sfc-popup" ref={this.sfcPopupRef}>
                     <div className="popup-header">
-                        <p>Generate SFC Package</p>
+                        <p className="popup-header-title">Generate SFC Package</p>
                     </div>
 
                     <div className="popup-content">

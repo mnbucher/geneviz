@@ -1,10 +1,11 @@
 import * as constants from '../constants';
-import {VNFPackage, VNFTemplate, VNFDTO, VNFDPropertiesState } from "../types";
+import { VNFPackage, VNFTemplate, VNFDTO, VNFDPropertiesState } from "../types";
 import { Dispatch } from "redux";
 import fetch from "cross-fetch";
 import { GENEVIZ_FILE_API } from "../constants";
 import uuidv1 from 'uuid';
-import {IEdge, INode} from "react-digraph";
+import { IEdge, INode } from "react-digraph";
+import { toast } from 'react-toastify';
 
 // Actions only describe what happened, but don't describe how the application's state changes.
 
@@ -52,6 +53,12 @@ export interface UpdateNodes {
     nodes: INode[];
 }
 
+export interface UpdateGraph {
+    type: constants.UPDATE_GRAPH;
+    edges: IEdge[];
+    nodes: INode[];
+}
+
 export interface SelectNodeOrEdge {
     type: constants.SELECT_NODE_OR_EDGE;
     selected: INode | IEdge;
@@ -62,7 +69,7 @@ export interface IncreaseXOffset {
     xOffset: number;
 }
 
-export type GraphAction = UpdateEdges | UpdateNodes | SelectNodeOrEdge | IncreaseXOffset;
+export type GraphAction = UpdateEdges | UpdateNodes | UpdateGraph | SelectNodeOrEdge | IncreaseXOffset;
 
 
 // DrawingBoardAction
@@ -172,14 +179,11 @@ export function createVNFPAndAddVNFTtoSFC(vnfTemplate: VNFTemplate, nodes: INode
     return (dispatch: Dispatch) => {
 
         const uuid: string = uuidv1();
-
         const vnfDTO: VNFDTO = {
             file_base_64: vnfTemplate.fileBase64,
             uuid: uuid,
             vnf_name: vnfTemplate.name
         };
-
-        console.log(vnfDTO);
 
         fetch(GENEVIZ_FILE_API + "/vnf", {
             method: "POST",
@@ -217,6 +221,7 @@ export function createVNFPAndAddVNFTtoSFC(vnfTemplate: VNFTemplate, nodes: INode
             },
             error => {
                 console.log(error);
+                toast.error("Coult not reach GENEVIZ File API");
                 return dispatch(failedToCreateVNFP(vnfTemplate));
             }
         )
@@ -277,6 +282,7 @@ export function getVNFDProperties(uuid: string, name: string) {
             },
             error => {
                 console.log(error);
+                toast.error("Coult not get data from VNF Descriptor");
                 return dispatch(failedToExtractPropertiesFromVNFD(name));
             }
         );
@@ -293,6 +299,14 @@ export function updateEdges(edges: IEdge[]) {
 export function updateNodes(nodes: INode[]) {
     return {
         type: constants.UPDATE_NODES,
+        nodes: nodes
+    }
+}
+
+export function updateGraph(edges: IEdge[], nodes: INode[]) {
+    return {
+        type: constants.UPDATE_GRAPH,
+        edges: edges,
         nodes: nodes
     }
 }
@@ -333,21 +347,20 @@ export function updateVNFDInVNFPackage(vnfdProperties: VNFDPropertiesState, vnfd
             },
             error => {
                 console.log(error);
+                toast.error("Coult not update the VNF Descriptor");
                 return dispatch(failedToUpdateVNFDInVNFPackage(vnfdProperties.name));
             }
         );
     }
 }
 
-export function removeNodeFromGraph(newNodes: INode[], uuid: string, edges: IEdge[], vnfPackages: VNFPackage[]) {
+export function removeNodeFromGraph(newNodes: INode[], uuid: string, oldEdges: IEdge[], vnfPackages: VNFPackage[]) {
     return (dispatch: Dispatch) => {
-        dispatch(selectNodeOrEdge({} as INode));
-        dispatch(updateEdges(edges.filter(edge => {
+        const newEdges = oldEdges.filter(edge => {
             return edge.source !== uuid && edge.target !== uuid;
-        })));
-        dispatch(updateNodes(newNodes));
+        });
+        dispatch(updateGraph(newEdges, newNodes));
 
-        // TODO: Add here an async function with the Flask API to delete the .ZIP file completely also
         return dispatch(updateVNFPackages(vnfPackages.filter(vnfPackage => vnfPackage.uuid !== uuid)));
     }
 }

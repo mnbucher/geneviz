@@ -1,17 +1,22 @@
-.vnfd-properties-popup-wrapper {
+.vnfd-popup-wrapper {
     opacity: 0;
 }
 
-.vnfd-properties-popup-wrapper-visible {
+.vnfd-popup-wrapper-visible {
     opacity: 1;
 }
 
-.vnfd-properties-popup {
+.vnfd-popup {
     opacity: 0;
     transform: scale(0.8);
 }
 
-.vnfd-properties-popup-visible {
+.vnfd-popup-visible {
     opacity: 1;
     transform: scale(1);
+}
+
+.vnfd-popup-header-vnf-name {
+    font-size: 1rem;
+    color: #666;
 }

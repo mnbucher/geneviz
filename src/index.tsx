@@ -13,10 +13,6 @@ import './index.css';
 // Redux Store
 const store = createStore<StoreState, GenevizAction, any, any>(geneviz, applyMiddleware(thunk));
 
-store.subscribe(() => {
-    console.log((store.getState()))
-});
-
 ReactDOM.render(
     <Provider store={store}>
         <Geneviz />

@@ -4,10 +4,10 @@ import './VNFDPopup.css';
 import '../Popup.css';
 import {StoreState, VNFDPropertiesState, VNFPackage} from "../../../types";
 import {connect} from "react-redux";
-import {resetVNFDProperties, setVNFDProperties, updateVNFDInVNFPackage} from "../../../actions";
+import {resetVNFDProperties, setVNFDProperties, updateVNFDInVNFPackage, handleVNFDPopup} from "../../../actions";
 import {Dispatch} from "redux";
 
-class VNFDPopup extends React.Component<{vnfdPropertiesState: VNFDPropertiesState, vnfd: object, vnfPackages: VNFPackage[], setVNFDProperties: any, resetVNFDProperties: any, updateVNFDinVNFPackage: any}> {
+class VNFDPopup extends React.Component<{vnfdPropertiesState: VNFDPropertiesState, vnfd: object, vnfPackages: VNFPackage[], setVNFDProperties: any, resetVNFDProperties: any, updateVNFDinVNFPackage: any, handleVNFDPopup: any}> {
     vnfdWrapperRef: any;
     vnfdPopupRef: any;
 
@@ -25,10 +25,10 @@ class VNFDPopup extends React.Component<{vnfdPropertiesState: VNFDPropertiesStat
 
     toggleActiveClasses = () => {
         let wrapperNode = ReactDOM.findDOMNode(this.vnfdWrapperRef.current) as HTMLInputElement;
-        wrapperNode.classList.toggle("vnfd-properties-popup-wrapper-visible");
+        wrapperNode.classList.toggle("vnfd-popup-wrapper-visible");
 
         let popupNode = ReactDOM.findDOMNode(this.vnfdPopupRef.current) as HTMLInputElement;
-        popupNode.classList.toggle("vnfd-properties-popup-visible");
+        popupNode.classList.toggle("vnfd-popup-visible");
     }
 
     handleCPUChange = (event: any) => {
@@ -50,13 +50,7 @@ class VNFDPopup extends React.Component<{vnfdPropertiesState: VNFDPropertiesStat
     }
 
     closePopup = () => {
-
-        // TODO: Call handleVNFD action here...
-
-        this.toggleActiveClasses();
-        setTimeout(() => {
-            this.props.resetVNFDProperties();
-        }, 250);
+        this.props.handleVNFDPopup(false);
     }
 
     updateVNFDinVNFPackage = () => {
@@ -66,11 +60,11 @@ class VNFDPopup extends React.Component<{vnfdPropertiesState: VNFDPropertiesStat
 
     render() {
         return (
-            <div className="popup-wrapper vnfd-properties-popup-wrapper" ref={this.vnfdWrapperRef}>
-                <div className="popup vnfd-properties-popup" ref={this.vnfdPopupRef}>
+            <div className="popup-wrapper vnfd-popup-wrapper" ref={this.vnfdWrapperRef}>
+                <div className="popup vnfd-popup" ref={this.vnfdPopupRef}>
                     <div className="popup-header">
-                        <p>Manage VNF Properties</p>
-                        <p>{this.props.vnfdPropertiesState.name}</p>
+                        <p className="popup-header-title">Manage VNFD Properties</p>
+                        <p className="vnfd-popup-header-vnf-name">{this.props.vnfdPropertiesState.name}</p>
                     </div>
 
                     <div className="popup-content">
@@ -110,6 +104,9 @@ export function mapDispatchToProps(dispatch: Dispatch) {
         },
         updateVNFDinVNFPackage: (vnfdProperties: VNFDPropertiesState, vnfd: object) => {
             dispatch<any>(updateVNFDInVNFPackage(vnfdProperties, vnfd));
+        },
+        handleVNFDPopup: (showVNFDPopup: boolean) => {
+            dispatch(handleVNFDPopup(showVNFDPopup));
         }
     }
 }

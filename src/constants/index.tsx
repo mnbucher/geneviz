@@ -33,6 +33,9 @@ export type UPDATE_EDGES = typeof UPDATE_EDGES;
 export const UPDATE_NODES = 'UPDATE_NODES';
 export type UPDATE_NODES = typeof UPDATE_NODES;
 
+export const UPDATE_GRAPH = 'UPDATE_GRAPH';
+export type UPDATE_GRAPH = typeof UPDATE_GRAPH;
+
 export const SELECT_NODE_OR_EDGE = 'SELECT_NODE_OR_EDGE';
 export type SELECT_NODE_OR_EDGE = typeof SELECT_NODE_OR_EDGE;
 

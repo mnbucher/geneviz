@@ -12,22 +12,21 @@
 }
 
 .vnf-list-element {
-    /*border: 1px solid #222;
-    background-color: #585f67;*/
-    background-color: #F0F1F5;
+    background-color: #FFFFFF;
     border: 1px solid #D1D8ED;
     -webkit-box-shadow: 0 3px 10px 3px #efefef;
     box-shadow: 0 3px 10px 3px #efefef;
     -webkit-border-radius: 10px 10px 10px 10px;
     border-radius: 10px 10px 10px 10px;
-    padding: 25px 15px;
+    padding: 30px 20px;
     margin: 0 30px 30px;
     position: relative;
 }
 
 .vnf-list-element-name {
     font-size: 1.309rem;
-    margin-bottom: 1em;
+    font-weight: 500;
+    margin-bottom: 1.309em;
     color: #323642;
 }
 
@@ -49,10 +48,12 @@
 }
 
 .vnf-list-element-remove {
-    color: #d2625e;
-    border: 1px solid #d2625e;
+    color: #999;
+    border: 1px solid #999;
 }
 
 .vnf-list-element-remove:hover {
+    color: #d2625e;
+    border: 1px solid #d2625e;
     background-color: #F2E7E6;
 }

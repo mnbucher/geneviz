@@ -60,8 +60,6 @@ class DrawingBoard extends React.Component<{ selectNodeOrEdge: any, getVNFDPrope
         const sourceId = sourceNode[this.props.drawingBoardState.graphViewState.nodeKey];
         const targetId = targetNode[this.props.drawingBoardState.graphViewState.nodeKey]
 
-        console.log(this.getEdgeType(sourceId, targetId));
-
         const newEdge: IEdge = {
             source: sourceId,
             target: targetId,
@@ -91,18 +89,8 @@ class DrawingBoard extends React.Component<{ selectNodeOrEdge: any, getVNFDPrope
     }
 
     onSelectNode = (selectedNode: INode | null) => {
-        if(selectedNode != null){
-            if(this.props.drawingBoardState.graphViewState.selected != null && this.props.drawingBoardState.graphViewState.selected.id == selectedNode.id){
-                const vnfPackage = this.props.sfcPackageState.vnfPackages.find(vnfPackage => {
-                    return vnfPackage.uuid == selectedNode.id
-                });
-                if(typeof vnfPackage !== 'undefined'){
-                    this.props.getVNFDProperties(selectedNode, vnfPackage.vnfd);
-                }
-            }
-            else {
-                this.props.selectNodeOrEdge(selectedNode);
-            }
+        if(selectedNode != null && this.props.drawingBoardState.graphViewState.selected.id !== selectedNode.id){
+            this.props.selectNodeOrEdge(selectedNode);
         }
     }
 
@@ -111,7 +99,7 @@ class DrawingBoard extends React.Component<{ selectNodeOrEdge: any, getVNFDPrope
     }
 
     onUpdateNode = (node: INode) => {
-        // Callback when a node is moved, but don't do anything in this case
+        // Callback when a node is updated, but don't do anything in this case
     }
 
     isNode = (object: any) => {
@@ -120,6 +108,18 @@ class DrawingBoard extends React.Component<{ selectNodeOrEdge: any, getVNFDPrope
 
     isEdge = (object: any) => {
         return typeof object.source === 'undefined' ? false : true;
+    }
+
+    handleShowVNFDPropertiesButton = () => {
+        const selectedNode = this.props.drawingBoardState.graphViewState.selected;
+        if(selectedNode != null){
+            const vnfPackage = this.props.sfcPackageState.vnfPackages.find(vnfPackage => {
+                return vnfPackage.uuid == selectedNode.id
+            });
+            if(typeof vnfPackage !== 'undefined'){
+                this.props.getVNFDProperties(selectedNode, vnfPackage.vnfd);
+            }
+        }
     }
 
     handleRemoveElementButton = () => {
@@ -167,6 +167,7 @@ class DrawingBoard extends React.Component<{ selectNodeOrEdge: any, getVNFDPrope
                 </div>
 
                 <div className='vnffgd-control'>
+                    {this.isNode(this.props.drawingBoardState.graphViewState.selected) ? <button className='vnffgd-button show-vnfd-properties-button' onClick={this.handleShowVNFDPropertiesButton}>Show VNFD Properties</button> : null}
                     {(this.isNode(this.props.drawingBoardState.graphViewState.selected) || this.isEdge(this.props.drawingBoardState.graphViewState.selected)) ? <button className='vnffgd-button vnffgd-remove-element-button' onClick={this.handleRemoveElementButton}>{this.isEdge(this.props.drawingBoardState.graphViewState.selected) ? "Remove Edge" : "Remove Node"}</button> : null}
                     <button className='vnffgd-button vnffgd-reset-button' onClick={this.handleResetGraph}>Reset Forwarding Graph</button>
                 </div>

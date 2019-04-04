@@ -92,6 +92,40 @@
     font-size: 14px !important;
 }
 
+.view-wrapper .node .shape > use.node {
+    stroke-width: 2px !important;
+    stroke: #9DA9CF !important;
+}
+
+.view-wrapper .node .shape > use.node.selected {
+    fill: #F0F1F5 !important;
+    stroke: #4562ef !important;
+    stroke-width: 2px !important;
+}
+
+.view-wrapper .node .node-text.selected {
+    fill: black !important;
+}
+
+.view-wrapper .edge {
+    stroke: #9DA9CF !important;
+    color: #FFFFFF !important;
+}
+
+.view-wrapper .edge.selected {
+    stroke: #4562ef !important;
+    color: #4562ef !important;
+}
+
+.view-wrapper .edge.selected #recommendedEdge circle {
+    fill: #4562ef !important;
+}
+
+.view-wrapper .arrow {
+    stroke: #9DA9CF !important;
+    fill: #9DA9CF !important;
+}
+
 .vnffgd-control {
     position: absolute;
     bottom: 30px;
@@ -114,4 +148,9 @@
     color: #4562ef;
     cursor: pointer;
     margin-left: 25px;
+    font-family: 'Roboto Mono', 'Courier New', monospace;
+}
+
+.vnffgd-button:hover {
+    background-color: #CED4F2;
 }

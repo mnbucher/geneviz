@@ -1,4 +1,4 @@
-# coding: utf-8 
+# coding: utf-8
 
 from flask import Flask, request, send_file
 from flask_cors import CORS
@@ -23,9 +23,6 @@ CORS(app, resources={r"/*": {"origins": ["http://localhost:3000"]}})
 # The location of the temp folder heavily depends on the operating system.
 STORAGE = tempfile.mkdtemp(prefix="geneviz_")
 print("\n Storage Location:\n " + STORAGE + "\n")
-
-# Global variables
-VENDOR = "UZH"
 
 
 @app.route('/vnf', methods=['POST'])
@@ -96,6 +93,7 @@ def createSFC():
 
     content = request.get_json()
     vnf_packages = content['vnf_packages']
+    nsd_properties = content['nsd_properties']
     sfc_package_name = "sfc-" + str(uuid1())
 
     try:
@@ -125,9 +123,9 @@ def createSFC():
 
             # Generate NSD based on the VNF Packages
             nsd = {
-                "name": content['nsd_name'],
-                "vendor": VENDOR,
-                "version": "1.0",
+                "name": nsd_properties['name'],
+                "vendor": nsd_properties['vendor'],
+                "version": nsd_properties['version'],
                 "vnfd": vnfds,
                 "vld": [{"name": "private"}],
                 "vnf_dependency": [{
@@ -150,7 +148,8 @@ def createSFC():
 
             }
 
-            sfcPackage.writestr('vnffgd.json', json.dumps(nsd, indent=4).encode())
+            sfcPackage.writestr(
+                'vnffgd.json', json.dumps(nsd, indent=4).encode())
 
         return send_file(get_zip_file_path(sfc_package_name),
                          mimetype='application/zip',

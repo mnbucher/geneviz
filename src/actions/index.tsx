@@ -1,5 +1,5 @@
 import * as constants from '../constants';
-import { VNFPackage, VNFTemplate, VNFDTO, VNFDPropertiesState } from "../types";
+import { VNFPackage, VNFTemplate, VNFDTO, VNFDPropertiesState, NSDPropertiesState } from "../types";
 import { Dispatch } from "redux";
 import fetch from "cross-fetch";
 import { GENEVIZ_FILE_API } from "../constants";
@@ -33,12 +33,18 @@ export interface UdpateVNFsInSFC {
     vnfPackages: VNFPackage[];
 }
 
-export interface SetNSDName {
-    type: constants.SET_NSD_NAME;
-    nsdName: string;
+export interface SetNSDProperties {
+    type: constants.SET_NSD_PROPERTIES;
+    nsdProperties: NSDPropertiesState;
 }
 
-export type SFCAction = UdpateVNFsInSFC | SetNSDName;
+export interface SetVNFD {
+    type: constants.SET_VNFD;
+    uuid: string;
+    vnfd: object;
+}
+
+export type SFCAction = UdpateVNFsInSFC | SetNSDProperties | SetVNFD;
 
 
 // GraphAction
@@ -83,12 +89,7 @@ export interface ResetVNFDProperties {
     type: constants.RESET_VNFD_PROPERTIES;
 }
 
-export interface SetVNFD {
-    type: constants.SET_VNFD;
-    vnfd: object;
-}
-
-export type DrawingBoardAction = SetVNFDProperties | ResetVNFDProperties | SetVNFD | GraphAction;
+export type DrawingBoardAction = SetVNFDProperties | ResetVNFDProperties | GraphAction;
 
 
 // UserInterfaceAction
@@ -100,11 +101,6 @@ export interface FailedToCreateVNFP {
 
 export interface FailedToExtractPropertiesFromVNFD {
     type: constants.FAILED_TO_EXTRACT_PROPERTIES_FROM_VNFD;
-    name: string;
-}
-
-export interface UpdatedVNFDInVNFPackage {
-    type: constants.UPDATED_VNFD_IN_VNF_PACKAGE;
     name: string;
 }
 
@@ -123,7 +119,7 @@ export interface HandleVNFDPopup {
     showVNFDPopup: boolean;
 }
 
-export type UserInterfaceAction = FailedToCreateVNFP | FailedToExtractPropertiesFromVNFD | UpdatedVNFDInVNFPackage | FailedToUpdateVNFDInVNFPackage | DrawingBoardAction | HandleSFCPopup | HandleVNFDPopup ;
+export type UserInterfaceAction = FailedToCreateVNFP | FailedToExtractPropertiesFromVNFD | FailedToUpdateVNFDInVNFPackage | DrawingBoardAction | HandleSFCPopup | HandleVNFDPopup;
 
 
 // GenevizAction
@@ -175,7 +171,30 @@ export function increaseXOffset(xOffset: number) {
     }
 }
 
-export function createVNFPAndAddVNFTtoSFC(vnfTemplate: VNFTemplate, nodes: INode[], vnfPackages: VNFPackage[], xOffset: number) {
+export function getVNFD(uuid: string, name: string) {
+    return (dispatch: Dispatch) => {
+
+        fetch(GENEVIZ_FILE_API + "/vnf/" + uuid + "/" + name, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }).then(response => {
+            return response.json();
+        }).then(
+            data => {
+                return dispatch(setVNFD(uuid, data));
+            },
+            error => {
+                console.log(error);
+                toast.error("Coult not get VNF Descriptor");
+                return dispatch(failedToExtractPropertiesFromVNFD(name));
+            }
+        );
+    }
+}
+
+export function createVNFPAndAddNodeToSFC(vnfTemplate: VNFTemplate, nodes: INode[], vnfPackages: VNFPackage[], xOffset: number) {
     return (dispatch: Dispatch) => {
 
         const uuid: string = uuidv1();
@@ -195,15 +214,18 @@ export function createVNFPAndAddVNFTtoSFC(vnfTemplate: VNFTemplate, nodes: INode
             return response.json();
         }).then(
             data => {
+                toast.success("Successfully created VNF Package");
+
                 const newVNFPackage: VNFPackage = {
                     name: vnfTemplate.name,
-                    uuid: vnfDTO.uuid
+                    uuid: vnfDTO.uuid,
+                    vnfd: {}
                 };
-
                 const newVNFPackages = vnfPackages.slice();
                 newVNFPackages.push(newVNFPackage);
-
                 dispatch(updateVNFPackages(newVNFPackages));
+
+                dispatch<any>(getVNFD(vnfDTO.uuid, vnfTemplate.name));
 
                 const node: INode = {
                     title: vnfTemplate.name,
@@ -214,9 +236,10 @@ export function createVNFPAndAddVNFTtoSFC(vnfTemplate: VNFTemplate, nodes: INode
                 }
                 const newNodes: INode[] = nodes.slice();
                 newNodes.push(node);
+                dispatch(updateNodes(newNodes));
 
                 dispatch(increaseXOffset(xOffset + 250));
-                dispatch(updateNodes(newNodes));
+
                 return dispatch(selectNodeOrEdge(node));
             },
             error => {
@@ -248,44 +271,29 @@ export function resetVNFDProperties() {
     }
 }
 
-export function setVNFD(vnfd: object) {
+export function setVNFD(uuid: string, vnfd: object) {
     return {
         type: constants.SET_VNFD,
+        uuid: uuid,
         vnfd: vnfd
     }
 }
 
-export function getVNFDProperties(uuid: string, name: string) {
+export function getVNFDProperties(uuid: string, name: string, vnfd: object) {
     return (dispatch: Dispatch) => {
+        const rawProperties = vnfd['vnfd']['attributes']['vnfd']['topology_template']['node_templates']['VDU1']['capabilities']['nfv_compute']['properties'];
+        
+        let properties: VNFDPropertiesState = {
+            uuid: uuid,
+            name: name,
+            numCPUs: rawProperties['num_cpus'],
+            memSize: rawProperties['mem_size'],
+            diskSize: rawProperties['disk_size'],
+        };
 
-        fetch(GENEVIZ_FILE_API + "/vnf/" + uuid + "/" + name, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json"
-            }
-        }).then(response => {
-            return response.json();
-        }).then(
-            data => {
-                const rawProperties = data['vnfd']['attributes']['vnfd']['topology_template']['node_templates']['VDU1']['capabilities']['nfv_compute']['properties'];
-                let properties: VNFDPropertiesState = {
-                    numCPUs: rawProperties['num_cpus'],
-                    memSize: rawProperties['mem_size'],
-                    diskSize: rawProperties['disk_size'],
-                    uuid: uuid,
-                    name: name
-                };
+        dispatch(setVNFDProperties(properties));
+        return dispatch(handleVNFDPopup(true));
 
-                dispatch(setVNFD(data));
-                dispatch(setVNFDProperties(properties));
-                return dispatch(handleVNFDPopup(true));
-            },
-            error => {
-                console.log(error);
-                toast.error("Coult not get data from VNF Descriptor");
-                return dispatch(failedToExtractPropertiesFromVNFD(name));
-            }
-        );
     }
 }
 
@@ -325,17 +333,15 @@ export function failedToUpdateVNFDInVNFPackage(name: string) {
     }
 }
 
-export function updateVNFDInVNFPackage(vnfdProperties: VNFDPropertiesState, vnfd: object) {
+export function updateVNFD(vnfdProperties: VNFDPropertiesState, vnfd: object) {
     return (dispatch: Dispatch) => {
-
-        let newVNFD = JSON.parse(JSON.stringify(vnfd));
-        newVNFD['vnfd']['attributes']['vnfd']['topology_template']['node_templates']['VDU1']['capabilities']['nfv_compute']['properties']['num_cpus'] = vnfdProperties.numCPUs;
-        newVNFD['vnfd']['attributes']['vnfd']['topology_template']['node_templates']['VDU1']['capabilities']['nfv_compute']['properties']['mem_size'] = vnfdProperties.memSize;
-        newVNFD['vnfd']['attributes']['vnfd']['topology_template']['node_templates']['VDU1']['capabilities']['nfv_compute']['properties']['disk_size'] = vnfdProperties.diskSize;
+        vnfd['vnfd']['attributes']['vnfd']['topology_template']['node_templates']['VDU1']['capabilities']['nfv_compute']['properties']['num_cpus'] = vnfdProperties.numCPUs;
+        vnfd['vnfd']['attributes']['vnfd']['topology_template']['node_templates']['VDU1']['capabilities']['nfv_compute']['properties']['mem_size'] = vnfdProperties.memSize;
+        vnfd['vnfd']['attributes']['vnfd']['topology_template']['node_templates']['VDU1']['capabilities']['nfv_compute']['properties']['disk_size'] = vnfdProperties.diskSize;
 
         fetch(GENEVIZ_FILE_API + "/vnf/" + vnfdProperties.uuid + "/" + vnfdProperties.name, {
             method: "PUT",
-            body: JSON.stringify(newVNFD),
+            body: JSON.stringify(vnfd),
             headers: {
                 "Content-Type": "application/json"
             }
@@ -343,7 +349,8 @@ export function updateVNFDInVNFPackage(vnfdProperties: VNFDPropertiesState, vnfd
             return response.json();
         }).then(
             data => {
-                return dispatch(updatedVNFDInVNFPackage(vnfdProperties.name));
+                toast.success("Updated VNFD successfully");
+                return dispatch(setVNFD(vnfdProperties.uuid, vnfd));
             },
             error => {
                 console.log(error);
@@ -379,9 +386,9 @@ export function handleVNFDPopup(showVNFDPopup: boolean) {
     }
 }
 
-export function setNSDName(nsdName: string) {
+export function setNSDProperties(nsdProperties: NSDPropertiesState) {
     return {
-        type: constants.SET_NSD_NAME,
-        nsdName: nsdName
+        type: constants.SET_NSD_PROPERTIES,
+        nsdProperties: nsdProperties
     }
 }

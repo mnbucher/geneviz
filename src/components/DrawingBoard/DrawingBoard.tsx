@@ -9,19 +9,68 @@ import GraphConfig from "../../constants/GraphConfig";
 
 class DrawingBoard extends React.Component<{ selectNodeOrEdge: any, getVNFDProperties: any, updateEdges: any, removeNodeFromGraph: any, updateGraph: any, updateVNFPackages: any, sfcPackageState: SFCPackageState, drawingBoardState: DrawingBoardState }> {
 
+    getVNFPackage = (uuid: string) => {
+        return this.props.sfcPackageState.vnfPackages.find(vnfPackage => {
+            return vnfPackage.uuid == uuid;
+        });
+    }
+
+    isFoundInOtherList = (list1: string[], list2: string[]) => {
+        let isRecommended: boolean = false;
+        list1.forEach(element => {
+            if(list2.includes(element)){
+                isRecommended = true;
+            }
+        });
+        return isRecommended;
+    }
+
+    getEdgeType = (source: string, target: string) => {
+        const sourceVNFPackage = this.getVNFPackage(source);
+        const targetVNFPackage = this.getVNFPackage(target);
+        if(typeof sourceVNFPackage !== 'undefined' && typeof targetVNFPackage !== 'undefined'){
+            const sourceTargetRecommendation: string[] = sourceVNFPackage.vnfd['vnfd']['target_recommendation'];
+            const sourceTargetCaution: string[] = sourceVNFPackage.vnfd['vnfd']['target_caution'];
+            const targetServiceTypes: object[] = (targetVNFPackage.vnfd['vnfd']['service_types']);
+
+            if(typeof sourceTargetRecommendation !== 'undefined' && typeof sourceTargetCaution !== 'undefined' && typeof targetServiceTypes !== 'undefined') {
+                const targetServiceTypesAsList = targetServiceTypes.map(serviceType => {
+                    return serviceType['service_type'];
+                });
+                if(this.isFoundInOtherList(sourceTargetRecommendation, targetServiceTypesAsList)) {
+                    return 'recommendedEdge';
+                }
+                else if (this.isFoundInOtherList(sourceTargetCaution, targetServiceTypesAsList)) {
+                    return 'notRecommendedEdge';
+                }
+                else {
+                    return 'standardEdge';
+                }
+            }
+            else {
+                return 'standardEdge';
+            }
+        }
+        else {
+            return 'standardEdge';
+        }
+    }
+
     onCreateEdge = (sourceNode: INode, targetNode: INode) => {
-        const newEdge = {
-            source: sourceNode[this.props.drawingBoardState.graphViewState.nodeKey],
-            target: targetNode[this.props.drawingBoardState.graphViewState.nodeKey],
-            type: 'emptyEdge'
+        const sourceId = sourceNode[this.props.drawingBoardState.graphViewState.nodeKey];
+        const targetId = targetNode[this.props.drawingBoardState.graphViewState.nodeKey]
+
+        console.log(this.getEdgeType(sourceId, targetId));
+
+        const newEdge: IEdge = {
+            source: sourceId,
+            target: targetId,
+            type: this.getEdgeType(sourceId, targetId)
         };
 
-        const edges = this.props.drawingBoardState.graphViewState.graph.edges;
-
-        // Only add the edge when the source node is not the same as the target
         if (newEdge.source !== newEdge.target) {
-            const newEdges = [... edges, newEdge];
-            this.props.updateEdges(newEdges);
+            const edges: IEdge[] = this.props.drawingBoardState.graphViewState.graph.edges;
+            this.props.updateEdges([... edges, newEdge]);
         }
     }
 
@@ -44,7 +93,12 @@ class DrawingBoard extends React.Component<{ selectNodeOrEdge: any, getVNFDPrope
     onSelectNode = (selectedNode: INode | null) => {
         if(selectedNode != null){
             if(this.props.drawingBoardState.graphViewState.selected != null && this.props.drawingBoardState.graphViewState.selected.id == selectedNode.id){
-                this.props.getVNFDProperties(selectedNode);
+                const vnfPackage = this.props.sfcPackageState.vnfPackages.find(vnfPackage => {
+                    return vnfPackage.uuid == selectedNode.id
+                });
+                if(typeof vnfPackage !== 'undefined'){
+                    this.props.getVNFDProperties(selectedNode, vnfPackage.vnfd);
+                }
             }
             else {
                 this.props.selectNodeOrEdge(selectedNode);
@@ -74,8 +128,6 @@ class DrawingBoard extends React.Component<{ selectNodeOrEdge: any, getVNFDPrope
             const newEdges = this.props.drawingBoardState.graphViewState.graph.edges.filter(edge => {
                 return !(edge.source == selectedElement.source && edge.target == selectedElement.target);
             });
-            console.log(this.props.drawingBoardState.graphViewState.graph.edges);
-            console.log(newEdges);
             this.props.updateEdges(newEdges);
         }
         else if(this.isNode(this.props.drawingBoardState.graphViewState.selected)){
@@ -135,8 +187,8 @@ export function mapDispatchToProps(dispatch: Dispatch) {
         selectNodeOrEdge: (selected: INode | IEdge) => {
             dispatch(selectNodeOrEdge(selected));
         },
-        getVNFDProperties: (node: INode) => {
-            dispatch<any>(getVNFDProperties(node.id, node.title));
+        getVNFDProperties: (node: INode, vnfd: object) => {
+            dispatch<any>(getVNFDProperties(node.id, node.title, vnfd));
         },
         updateEdges: (edges: IEdge[]) => {
             dispatch(updateEdges(edges));

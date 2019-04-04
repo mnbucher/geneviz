@@ -27,11 +27,10 @@ import {
     INCREASE_X_OFFSET,
     RESET_VNFD_PROPERTIES,
     SET_VNFD,
-    UPDATED_VNFD_IN_VNF_PACKAGE,
     FAILED_TO_UPDATE_VNFD_IN_VNF_PACKAGE,
     HANDLE_SFC_POPUP,
     HANDLE_VNFD_POPUP,
-    SET_NSD_NAME,
+    SET_NSD_PROPERTIES,
     UPDATE_GRAPH
 } from '../constants/index';
 import {INode} from "react-digraph";
@@ -60,8 +59,19 @@ export function sfcPackage(state: SFCPackageState, action: SFCAction): SFCPackag
         case UPDATE_VNF_PACKAGES: {
             return {...state, vnfPackages: action.vnfPackages};
         }
-        case SET_NSD_NAME: {
-            return {...state, nsdName: action.nsdName};
+        case SET_NSD_PROPERTIES: {
+            return {...state, nsd: action.nsdProperties};
+        }
+        case SET_VNFD: {
+            const newVNFPackages = state.vnfPackages.map(vnfPackage => {
+                if(vnfPackage.uuid == action.uuid){
+                    let newVNFPackage = vnfPackage;
+                    newVNFPackage.vnfd = action.vnfd;
+                    return newVNFPackage;
+                }
+                return vnfPackage;
+            });
+            return {...state, vnfPackages: newVNFPackages};
         }
         default:
             return state;
@@ -108,12 +118,9 @@ export function drawingBoard(state: DrawingBoardState, action: DrawingBoardActio
             }
             return {...state, vnfdPropertiesState: resettedProperties};
         }
-        case SET_VNFD: {
-            return {...state, vnfd: action.vnfd};
-        }
         case UPDATE_EDGES:
         case UPDATE_NODES:
-        case UPDATE_GRAPH:
+        case UPDATE_GRAPH: 
         case SELECT_NODE_OR_EDGE:
         case INCREASE_X_OFFSET:
             return {...state, graphViewState: graphView(state.graphViewState, action)};
@@ -134,11 +141,6 @@ export function userInterface(state: UserInterfaceState, action: UserInterfaceAc
             console.log(message);
             return {...state, notification: message};
         }
-        case UPDATED_VNFD_IN_VNF_PACKAGE: {
-            const message = "Updated successfully VNF Descriptor of " + action.name;
-            console.log(message);
-            return {...state, notification: message};
-        }
         case FAILED_TO_UPDATE_VNFD_IN_VNF_PACKAGE: {
             const message = "Could not update VNF Descriptor of " + action.name;
             console.log(message);
@@ -150,7 +152,6 @@ export function userInterface(state: UserInterfaceState, action: UserInterfaceAc
             return {...state, showVNFDPopup: action.showVNFDPopup}
         case SET_VNFD_PROPERTIES:
         case RESET_VNFD_PROPERTIES:
-        case SET_VNFD:
         case UPDATE_EDGES:
         case UPDATE_NODES:
         case UPDATE_GRAPH:
@@ -168,13 +169,16 @@ const initialState: StoreState = {
     sfcPackageState: {
         vnfPackages: [],
         vnffgd: {},
-        nsdName: "",
+        nsd: {
+            name: "",
+            vendor: "",
+            version: 1.0
+        }
     },
     vnfTemplates: [],
     userInterfaceState: {
         notification: "",
         drawingBoardState: {
-            vnfd: {},
             vnfdPropertiesState: {
                 numCPUs: "",
                 memSize: "",
@@ -203,14 +207,13 @@ export function geneviz(state: StoreState = initialState, action: GenevizAction)
         case DELETE_VNF_TEMPLATE:
             return {...state, vnfTemplates: vnfTemplates(state.vnfTemplates, action)};
         case UPDATE_VNF_PACKAGES:
-        case SET_NSD_NAME:
+        case SET_NSD_PROPERTIES:
+        case SET_VNFD:
             return {...state, sfcPackageState: sfcPackage(state.sfcPackageState, action)};
         case FAILED_TO_CREATE_VNFP:
         case SET_VNFD_PROPERTIES:
         case RESET_VNFD_PROPERTIES:
-        case SET_VNFD:
         case FAILED_TO_EXTRACT_PROPERTIES_FROM_VNFD:
-        case UPDATED_VNFD_IN_VNF_PACKAGE:
         case FAILED_TO_UPDATE_VNFD_IN_VNF_PACKAGE:
         case UPDATE_EDGES:
         case UPDATE_NODES:

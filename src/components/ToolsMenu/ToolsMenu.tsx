@@ -2,12 +2,12 @@ import React from 'react';
 import './ToolsMenu.css';
 import ToolsMenuVNFList from './ToolsMenuVNFList/ToolsMenuVNFList';
 import ToolsMenuDropZone from './ToolsMenuDropZone/ToolsMenuDropZone';
-import {connect} from "react-redux";
-import {SFCPackageState, StoreState} from "../../types";
+import { connect } from "react-redux";
+import { SFCPackageState, StoreState } from "../../types";
 import { Dispatch } from 'redux';
 import { handleSFCPopup } from 'src/actions';
 
-class ToolsMenu extends React.Component<{sfcPackageState: SFCPackageState, handleSFCPopup: any}> {
+class ToolsMenu extends React.Component<{ sfcPackageState: SFCPackageState, handleSFCPopup: any }> {
 
     concatUUIDsForURL = () => {
         const uuids = this.props.sfcPackageState.vnfPackages.map(vnfPackage => vnfPackage.uuid);
@@ -36,19 +36,22 @@ class ToolsMenu extends React.Component<{sfcPackageState: SFCPackageState, handl
 
                 <div className="geneviz-header">
                     <p className="geneviz-headline">Geneviz</p>
+                    <p className="geneviz-subheadline">Generation and Visualization of SFC Packages</p>
                 </div>
 
                 <div className="tools-menu-inner-wrapper">
                     <div className="tools-menu">
-                        <div className="tools-menu-header"><p>Imported VNF Packages</p></div>
+                        <p className="tools-menu-headline">Imported VNF Packages</p>
                         <div className="tools-menu-vnfs">
                             <ToolsMenuVNFList />
                             <ToolsMenuDropZone />
                         </div>
 
-                        <div className='tools-menu-download-sfc'>
-                            <button onClick={this.generateSFCPackage}>Generate SFC Package</button>
-                        </div>
+                        {this.props.sfcPackageState.vnfPackages.length > 0 ?
+                            <div className='tools-menu-download-sfc'>
+                                <button onClick={this.generateSFCPackage}>Generate SFC Package</button>
+                            </div>
+                            : null}
                     </div>
                 </div>
             </div>

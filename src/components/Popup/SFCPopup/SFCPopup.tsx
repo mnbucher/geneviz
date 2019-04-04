@@ -4,13 +4,13 @@ import './SFCPopup.css';
 import '../Popup.css';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
-import { StoreState, SFCPackageState, SFCPackageDTO } from 'src/types';
+import { StoreState, SFCPackageState, SFCPackageDTO, NSDPropertiesState } from 'src/types';
 import fileDownload from 'js-file-download';
 import { GENEVIZ_FILE_API } from 'src/constants';
-import { handleSFCPopup, setNSDName } from 'src/actions';
+import { handleSFCPopup, setNSDProperties } from 'src/actions';
 import { toast } from 'react-toastify';
 
-class SFCPopup extends React.Component<{handleSFCPopup: any, setNSDName: any, sfcPackageState: SFCPackageState}> {
+class SFCPopup extends React.Component<{handleSFCPopup: any, setNSDProperties: any, sfcPackageState: SFCPackageState}> {
     sfcWrapperRef: any;
     sfcPopupRef: any;
 
@@ -35,7 +35,7 @@ class SFCPopup extends React.Component<{handleSFCPopup: any, setNSDName: any, sf
     }
 
     downloadSFC = () => {
-        if(this.props.sfcPackageState.nsdName === ""){
+        if(this.props.sfcPackageState.nsd.name === ""){
             toast.error("Please provide a name for the Network Service");
         }
         else {
@@ -51,7 +51,7 @@ class SFCPopup extends React.Component<{handleSFCPopup: any, setNSDName: any, sf
              const sfcPackageDTO: SFCPackageDTO = {
                vnf_packages: groupedVNFPackages,
                vnffgd: this.props.sfcPackageState.vnffgd,
-               nsd_name: this.props.sfcPackageState.nsdName
+               nsd_properties: this.props.sfcPackageState.nsd
              };
      
              fetch(GENEVIZ_FILE_API + "/sfc", {
@@ -72,7 +72,15 @@ class SFCPopup extends React.Component<{handleSFCPopup: any, setNSDName: any, sf
     }
 
     handleNSDNameChange = (event: any) => {
-        this.props.setNSDName(event.target.value);
+        this.props.setNSDProperties({... this.props.sfcPackageState.nsd, name: event.target.value});
+    }
+
+    handleVendorChange = (event: any) => {
+        this.props.setNSDProperties({... this.props.sfcPackageState.nsd, vendor: event.target.value});
+    }
+
+    handleVersionChange = (event: any) => {
+        this.props.setNSDProperties({... this.props.sfcPackageState.nsd, version: event.target.value});
     }
 
     closePopup = () => {
@@ -89,7 +97,11 @@ class SFCPopup extends React.Component<{handleSFCPopup: any, setNSDName: any, sf
 
                     <div className="popup-content">
                         <p>Name of SFC Package</p>
-                        <input type="text" placeholder="Custom Network Service" value={this.props.sfcPackageState.nsdName} onChange={this.handleNSDNameChange} />
+                        <input type="text" placeholder="Custom Network Service" value={this.props.sfcPackageState.nsd.name} onChange={this.handleNSDNameChange} />
+                        <p>Vendor</p>
+                        <input type="text" placeholder="Custom Network Service" value={this.props.sfcPackageState.nsd.vendor} onChange={this.handleVendorChange} />
+                        <p>Version</p>
+                        <input type="text" placeholder="1.0" value={this.props.sfcPackageState.nsd.version} onChange={this.handleVersionChange} />
                     </div>
 
                     <div className="popup-buttons">
@@ -110,8 +122,8 @@ export function mapStateToProps(state: StoreState) {
 
 export function mapDispatchToProps(dispatch: Dispatch) {
     return {
-        setNSDName: (nsdName: string) => {
-            dispatch(setNSDName(nsdName));
+        setNSDProperties: (nsdProperties: NSDPropertiesState) => {
+            dispatch(setNSDProperties(nsdProperties));
         }, 
         handleSFCPopup: (showSFCPopup: boolean) => {
             dispatch(handleSFCPopup(showSFCPopup));

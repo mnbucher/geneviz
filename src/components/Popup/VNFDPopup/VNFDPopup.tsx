@@ -4,10 +4,10 @@ import './VNFDPopup.css';
 import '../Popup.css';
 import {StoreState, VNFDPropertiesState, VNFPackage} from "../../../types";
 import {connect} from "react-redux";
-import {resetVNFDProperties, setVNFDProperties, updateVNFDInVNFPackage, handleVNFDPopup} from "../../../actions";
+import {resetVNFDProperties, setVNFDProperties, updateVNFD, handleVNFDPopup} from "../../../actions";
 import {Dispatch} from "redux";
 
-class VNFDPopup extends React.Component<{vnfdPropertiesState: VNFDPropertiesState, vnfd: object, vnfPackages: VNFPackage[], setVNFDProperties: any, resetVNFDProperties: any, updateVNFDinVNFPackage: any, handleVNFDPopup: any}> {
+class VNFDPopup extends React.Component<{vnfdPropertiesState: VNFDPropertiesState, vnfPackages: VNFPackage[], setVNFDProperties: any, resetVNFDProperties: any, updateVNFD: any, handleVNFDPopup: any}> {
     vnfdWrapperRef: any;
     vnfdPopupRef: any;
 
@@ -53,9 +53,14 @@ class VNFDPopup extends React.Component<{vnfdPropertiesState: VNFDPropertiesStat
         this.props.handleVNFDPopup(false);
     }
 
-    updateVNFDinVNFPackage = () => {
+    updateVNFD = () => {
         this.closePopup();
-        this.props.updateVNFDinVNFPackage(this.props.vnfdPropertiesState, this.props.vnfd);
+        const vnfPackage = this.props.vnfPackages.find(vnfPackage => {
+            return vnfPackage.uuid == this.props.vnfdPropertiesState.uuid
+        });
+        if(typeof vnfPackage !== 'undefined'){
+            this.props.updateVNFD(this.props.vnfdPropertiesState, vnfPackage.vnfd);
+        }
     }
 
     render() {
@@ -77,7 +82,7 @@ class VNFDPopup extends React.Component<{vnfdPropertiesState: VNFDPropertiesStat
                     </div>
 
                     <div className="popup-buttons">
-                        <button className="popup-button-apply" onClick={this.updateVNFDinVNFPackage}>Apply Changes</button>
+                        <button className="popup-button-apply" onClick={this.updateVNFD}>Apply Changes</button>
                         <button className="popup-button-cancel" onClick={this.closePopup}>Cancel</button>
                     </div>
                 </div>
@@ -89,7 +94,6 @@ class VNFDPopup extends React.Component<{vnfdPropertiesState: VNFDPropertiesStat
 export function mapStateToProps(state: StoreState) {
     return {
         vnfdPropertiesState: state.userInterfaceState.drawingBoardState.vnfdPropertiesState,
-        vnfd: state.userInterfaceState.drawingBoardState.vnfd,
         vnfPackages: state.sfcPackageState.vnfPackages,
     }
 }
@@ -102,8 +106,8 @@ export function mapDispatchToProps(dispatch: Dispatch) {
         resetVNFDProperties: () => {
             dispatch(resetVNFDProperties());
         },
-        updateVNFDinVNFPackage: (vnfdProperties: VNFDPropertiesState, vnfd: object) => {
-            dispatch<any>(updateVNFDInVNFPackage(vnfdProperties, vnfd));
+        updateVNFD: (vnfdProperties: VNFDPropertiesState, vnfd: object) => {
+            dispatch<any>(updateVNFD(vnfdProperties, vnfd));
         },
         handleVNFDPopup: (showVNFDPopup: boolean) => {
             dispatch(handleVNFDPopup(showVNFDPopup));

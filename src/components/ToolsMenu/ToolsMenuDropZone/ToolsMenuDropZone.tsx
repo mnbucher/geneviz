@@ -8,6 +8,7 @@ import './ToolsMenuDropZone.css';
 import { connect } from "react-redux";
 import { uploadVNFTemplate } from "../../../actions";
 import { Dispatch } from "redux";
+import { toast } from 'react-toastify';
 
 class ToolsMenuDropZone extends React.Component<{addVNF: any, vnfTemplates: VNFTemplate[]}> {
 
@@ -41,7 +42,7 @@ class ToolsMenuDropZone extends React.Component<{addVNF: any, vnfTemplates: VNFT
                             fileBase64: fileBase64,
                             uuid: uuidv1()
                         };
-                        this.isAlreadyAdded(fileBase64 as string) ? alert('This File was already added!') : this.props.addVNF(vnfTemplate);
+                        this.isAlreadyAdded(fileBase64 as string) ? toast.error('This .zip file was already added.') : this.props.addVNF(vnfTemplate);
                     });
                 });
             };

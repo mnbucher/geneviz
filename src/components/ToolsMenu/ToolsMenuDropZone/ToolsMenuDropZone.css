@@ -1,15 +1,15 @@
 .toolsMenu-add-vnfs {
-    border: 1px dashed #d7d7d7;
+    border: 1px dashed #9DA9CF;
     -webkit-border-radius: 10px 10px 10px 10px;
     border-radius: 10px 10px 10px 10px;
     padding: 25px 15px;
     margin: 0 30px 100px;
-    color: #d7d7d7;
+    color: #626a81;
     line-height: 1.5;
 }
 
 .toolsMenu-add-vnfs p {
-    width: 50%;
+    width: 80%;
     margin: 0 auto;
     text-align: center;
 }

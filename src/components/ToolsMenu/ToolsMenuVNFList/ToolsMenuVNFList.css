@@ -3,7 +3,7 @@
 }
 
 .tools-menu-empty-state {
-    color: #d7d7d7;
+    color: #626a81;
     padding: 50px;
     width: 50%;
     margin: 0 auto;
@@ -11,11 +11,13 @@
     text-align: center;
 }
 
-.tools-menu-vnf-list-element {
-    border: 1px solid #222;
-    background-color: #585f67;
-    -webkit-box-shadow: 0 3px 10px 5px #333;
-    box-shadow: 0 3px 10px 5px #333;
+.vnf-list-element {
+    /*border: 1px solid #222;
+    background-color: #585f67;*/
+    background-color: #F0F1F5;
+    border: 1px solid #D1D8ED;
+    -webkit-box-shadow: 0 3px 10px 3px #efefef;
+    box-shadow: 0 3px 10px 3px #efefef;
     -webkit-border-radius: 10px 10px 10px 10px;
     border-radius: 10px 10px 10px 10px;
     padding: 25px 15px;
@@ -23,23 +25,10 @@
     position: relative;
 }
 
-.tools-menu-vnf-list-element-number {
-    text-transform: uppercase;
-    font-size: 1rem;
-    color: #3D4247;
-    letter-spacing: 1px;
-    padding-bottom: 0.618em;
-}
-
-.tools-menu-subtitle {
-    font-size: 1.618rem;
-    padding-bottom: 1em;
-}
-
 .vnf-list-element-name {
-    margin-bottom: 1em;
     font-size: 1.309rem;
-    color: #ffffff;
+    margin-bottom: 1em;
+    color: #323642;
 }
 
 .vnf-list-element-buttons span {
@@ -51,16 +40,19 @@
 }
 
 .vnf-list-element-add-to-sfc {
-    background-color: #3D4247;
-    color: #C8CFE0;
+    border: 1px solid #4562ef;
+    color: #4562ef;
+}
+
+.vnf-list-element-add-to-sfc:hover {
+    background-color: #CED4F2;
 }
 
 .vnf-list-element-remove {
-    color: #333;
-    border: 2px solid #3D4247;
+    color: #d2625e;
+    border: 1px solid #d2625e;
 }
 
-.tools-menu-vnf-list-element-remove:hover {
-    cursor: pointer;
-    text-decoration: underline;
+.vnf-list-element-remove:hover {
+    background-color: #F2E7E6;
 }

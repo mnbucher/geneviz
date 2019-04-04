@@ -40,6 +40,10 @@
     left: 30px !important;
 }
 
+.view-wrapper {
+    background: #FFFFFF !important;
+}
+
 .graph-controls .slider-wrapper, .graph-controls .slider-button {
     -webkit-border-radius: 10px 10px 10px 10px !important;
     border-radius: 10px 10px 10px 10px !important;
@@ -50,8 +54,8 @@
     display: flex;
     align-content: center;
     padding: 0 15px !important;
-    -webkit-box-shadow: 0 3px 10px 5px #e7e7e7;
-    box-shadow: 0 3px 10px 5px #e7e7e7;
+    -webkit-box-shadow: 0 3px 10px 3px #efefef;
+    box-shadow: 0 3px 10px 3px #efefef;
 }
 
 .view-wrapper .graph-controls > .slider-wrapper > span {
@@ -71,8 +75,8 @@
     width: 45px !important;
     display: flex;
     align-content: center;
-    -webkit-box-shadow: 0 3px 10px 5px #e7e7e7;
-    box-shadow: 0 3px 10px 5px #e7e7e7;
+    -webkit-box-shadow: 0 3px 10px 3px #efefef;
+    box-shadow: 0 3px 10px 3px #efefef;
 }
 
 .view-wrapper .graph-controls > .slider-button svg {
@@ -103,10 +107,11 @@
     -webkit-border-radius: 10px 10px 10px 10px;
     border-radius: 10px 10px 10px 10px;
     -webkit-appearance: none;
-    -webkit-box-shadow: 0 3px 10px 5px #e7e7e7;
-    box-shadow: 0 3px 10px 5px #e7e7e7;
-    border: 1px solid #666;
-    background-color: #c7c7c7;
+    -webkit-box-shadow: 0 3px 10px 3px #efefef;
+    box-shadow: 0 3px 10px 3px #efefef;
+    border: 1px solid #4562ef;
+    background-color: #F0F1F5;
+    color: #4562ef;
     cursor: pointer;
     margin-left: 25px;
 }

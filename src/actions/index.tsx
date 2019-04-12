@@ -367,6 +367,7 @@ export function removeNodeFromGraph(newNodes: INode[], uuid: string, oldEdges: I
             return edge.source !== uuid && edge.target !== uuid;
         });
         dispatch(updateGraph(newEdges, newNodes));
+        dispatch(selectNodeOrEdge({} as INode));
 
         return dispatch(updateVNFPackages(vnfPackages.filter(vnfPackage => vnfPackage.uuid !== uuid)));
     }

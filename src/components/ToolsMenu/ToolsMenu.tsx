@@ -47,9 +47,9 @@ class ToolsMenu extends React.Component<{ sfcPackageState: SFCPackageState, hand
                             <ToolsMenuDropZone />
                         </div>
 
-                        {this.props.sfcPackageState.vnfPackages.length > 0 ?
-                            <div className='tools-menu-download-sfc'>
-                                <button onClick={this.generateSFCPackage}>Generate SFC Package</button>
+                        {this.props.sfcPackageState.vnfPackages.length >= 2 ?
+                            <div className='tools-menu-download-sfc bounceInUp'>
+                                <button onClick={this.generateSFCPackage}><span className="tools-menu-download-sfc-text">Generate SFC Package</span></button>
                             </div>
                             : null}
                     </div>

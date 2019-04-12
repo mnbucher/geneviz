@@ -54,8 +54,7 @@
     display: flex;
     align-content: center;
     padding: 0 15px !important;
-    -webkit-box-shadow: 0 3px 10px 3px #efefef;
-    box-shadow: 0 3px 10px 3px #efefef;
+    color: #4562ef !important;
 }
 
 .view-wrapper .graph-controls > .slider-wrapper > span {
@@ -75,13 +74,22 @@
     width: 45px !important;
     display: flex;
     align-content: center;
-    -webkit-box-shadow: 0 3px 10px 3px #efefef;
-    box-shadow: 0 3px 10px 3px #efefef;
+    fill: #4562ef !important;
+}
+
+.view-wrapper .graph-controls > .slider-button, .view-wrapper .graph-controls > .slider-wrapper, .vnffgd-button {
+    -webkit-box-shadow: 0 3px 10px 3px #f5f5f5;
+    box-shadow: 0 3px 10px 3px #f5f5f5;
+    border: 1px solid #CED4F2 !important;
 }
 
 .view-wrapper .graph-controls > .slider-button svg {
     width: 60% !important;
     margin: 0 auto;
+}
+
+.view-wrapper .node .node-text {
+    font-family: 'Roboto Mono', 'Courier New', monospace;
 }
 
 .view-wrapper .node .node-text.selected {
@@ -134,23 +142,63 @@
 
 .vnffgd-button {
     font-family: 'Roboto', Arial, sans-serif;
-    font-size: 1rem;
+    font-size: 14px;
     padding-left: 15px;
     padding-right: 15px;
     height: 45px;
     -webkit-border-radius: 10px 10px 10px 10px;
     border-radius: 10px 10px 10px 10px;
     -webkit-appearance: none;
-    -webkit-box-shadow: 0 3px 10px 3px #efefef;
-    box-shadow: 0 3px 10px 3px #efefef;
-    border: 1px solid #4562ef;
-    background-color: #F0F1F5;
+    background-color: #FFFFFF;
     color: #4562ef;
     cursor: pointer;
     margin-left: 25px;
     font-family: 'Roboto Mono', 'Courier New', monospace;
+    position: relative;
+    -webkit-transform: translate3d(0, 10000px, 0);
+    transform: translate3d(0, 10000px, 0);
+}
+
+.vnffgd-button:disabled {
+    cursor: not-allowed;
+    color: #999;
+    background-color: #f2f2f2;
 }
 
 .vnffgd-button:hover {
     background-color: #CED4F2;
+}
+
+.show-vnfd-properties-button-text, .vnffgd-remove-element-button-text, .vnffgd-reset-button-text {
+    padding-left: 30px;
+}
+
+.show-vnfd-properties-button-text:before {
+    content: ' ';
+    background-image: url('../../svgs/edit.svg');
+    background-size: 20px 20px;
+    height: 20px;
+    width: 20px;
+    left: 15px;
+    position: absolute;
+}
+
+.vnffgd-remove-element-button-text:before {
+    content: ' ';
+    background-image: url('../../svgs/trash.svg');
+    background-size: 20px 20px;
+    height: 20px;
+    width: 20px;
+    left: 15px;
+    position: absolute;
+}
+
+.vnffgd-reset-button-text:before {
+    content: ' ';
+    background-image: url('../../svgs/reset.svg');
+    background-size: 20px 20px;
+    height: 20px;
+    width: 20px;
+    left: 15px;
+    position: absolute;
 }

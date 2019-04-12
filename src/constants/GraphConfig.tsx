@@ -8,8 +8,8 @@ export const EMPTY_EDGE = 'emptyEdge';
 // Shapes
 
 const VNFNodeShape = (
-    <symbol viewBox="0 0 154 154" width="154" height="154" id="vnfNode">
-        <circle cx="77" cy="77" r="76" />
+    <symbol viewBox="0 0 200 200" width="200" height="200" id="vnfNode">
+        <circle cx="100" cy="100" r="98" />
     </symbol>
 );
 

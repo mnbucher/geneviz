@@ -23,6 +23,12 @@ export interface VNFTemplate {
     uuid: string;
 }
 
+export interface SFCTemplate {
+    name: string;
+    fileBase64: string;
+    uuid: string;
+}
+
 export interface VNFDPropertiesState {
     numCPUs: string;
     memSize: string;
@@ -48,11 +54,13 @@ export interface UserInterfaceState {
     drawingBoardState: DrawingBoardState;
     showSFCPopup: boolean;
     showVNFDPopup: boolean;
+    showVNFList: boolean;
 }
 
 export interface StoreState {
     sfcPackageState: SFCPackageState;
     vnfTemplates: VNFTemplate[];
+    sfcTemplates: SFCTemplate[];
     userInterfaceState: UserInterfaceState;
 }
 

@@ -6,11 +6,17 @@ export type GENEVIZ_FILE_API = typeof GENEVIZ_FILE_API;
 
 // General Actions
 
-export const UPLOAD_VNF_TEMPLATE = 'UPLOAD_VNF_TEMPLATE';
-export type UPLOAD_VNF_TEMPLATE = typeof UPLOAD_VNF_TEMPLATE;
+export const ADD_VNF_TEMPLATE = 'ADD_VNF_TEMPLATE';
+export type ADD_VNF_TEMPLATE = typeof ADD_VNF_TEMPLATE;
 
 export const DELETE_VNF_TEMPLATE = 'DELETE_VNF_TEMPLATE';
 export type DELETE_VNF_TEMPLATE = typeof DELETE_VNF_TEMPLATE;
+
+export const ADD_SFC_TEMPLATE = 'ADD_SFC_TEMPLATE';
+export type ADD_SFC_TEMPLATE = typeof ADD_SFC_TEMPLATE;
+
+export const DELETE_SFC_TEMPLATE = 'DELETE_SFC_TEMPLATE';
+export type DELETE_SFC_TEMPLATE = typeof DELETE_SFC_TEMPLATE
 
 export const UPDATE_VNF_PACKAGES = 'UPDATE_VNF_PACKAGES';
 export type UPDATE_VNF_PACKAGES = typeof UPDATE_VNF_PACKAGES;
@@ -50,6 +56,10 @@ export type HANDLE_VNFD_POPUP = typeof HANDLE_VNFD_POPUP;
 
 export const HANDLE_SFC_POPUP = 'HANDLE_SFC_POPUP';
 export type HANDLE_SFC_POPUP = typeof HANDLE_SFC_POPUP;
+
+export const HANDLE_VNF_LIST = 'HANDLE_VNF_LIST';
+export type HANDLE_VNF_LIST = typeof HANDLE_VNF_LIST;
+
 
 // Error Handler Actions
 

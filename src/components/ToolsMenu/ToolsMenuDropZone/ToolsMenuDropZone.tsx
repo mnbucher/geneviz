@@ -1,28 +1,28 @@
 import React from 'react';
 import classNames from 'classnames';
 import Dropzone from 'react-dropzone';
-import { StoreState, VNFTemplate } from "../../../types";
+import { StoreState, VNFTemplate, SFCTemplate } from "../../../types";
 const JSZip = require("jszip");
 import uuidv1 from 'uuid';
 import './ToolsMenuDropZone.css';
 import { connect } from "react-redux";
-import { uploadVNFTemplate } from "../../../actions";
 import { Dispatch } from "redux";
 import { toast } from 'react-toastify';
+import { addVNFTemplate, addSFCTemplate } from 'src/actions';
 
-class ToolsMenuDropZone extends React.Component<{addVNF: any, vnfTemplates: VNFTemplate[]}> {
+class ToolsMenuDropZone extends React.Component<{addVNFTemplate: any, addSFCTemplate: any, vnfTemplates: VNFTemplate[], sfcTemplates: SFCTemplate[], showVNFList: boolean}> {
 
-    isAlreadyAdded = (fileBase64: string) => {
-        const currentVNFs = this.props.vnfTemplates;
-        let sameFileWasFound: boolean = false;
+    isTemplateAlreadyAdded = (fileBase64: string) => {
+        const templates = this.props.showVNFList ? this.props.vnfTemplates : this.props.sfcTemplates;
 
-        currentVNFs.map((vnf) => {
-            if (vnf.fileBase64 == fileBase64 as string){
-                sameFileWasFound = true;
+        const template = templates.find((template) => {
+            if (template.fileBase64 == fileBase64 as string){
+                return true;
             }
+            return false;
         });
 
-        return sameFileWasFound;
+        return typeof template == 'undefined' ? false : true;
     }
 
     onDrop = (acceptedFiles: File[]) => {
@@ -42,7 +42,16 @@ class ToolsMenuDropZone extends React.Component<{addVNF: any, vnfTemplates: VNFT
                             fileBase64: fileBase64,
                             uuid: uuidv1()
                         };
-                        this.isAlreadyAdded(fileBase64 as string) ? toast.error('This .zip file was already added.') : this.props.addVNF(vnfTemplate);
+
+                        if(this.isTemplateAlreadyAdded(fileBase64 as string)) {
+                            toast.error('This .zip file was already added.')
+                        }
+                        else if (this.props.showVNFList) {
+                            this.props.addVNFTemplate(vnfTemplate);
+                        }
+                        else {
+                            this.props.addSFCTemplate(vnfTemplate);
+                        }
                     });
                 });
             };
@@ -64,7 +73,7 @@ class ToolsMenuDropZone extends React.Component<{addVNF: any, vnfTemplates: VNFT
                                 {
                                     isDragActive ?
                                         <p>Drop files here...</p> :
-                                        <p>Upload a VNF Package by dropping the file directly here or by clicking here to select a file (only .zip files allowed).</p>
+                                        <p>Upload a {this.props.showVNFList ? "VNF Package" : "SFC Package"} by dropping the file directly here or by clicking here to select a file (only .zip files allowed).</p>
                                 }
                             </div>
                         )
@@ -78,14 +87,19 @@ class ToolsMenuDropZone extends React.Component<{addVNF: any, vnfTemplates: VNFT
 
 export function mapStateToProps(state: StoreState) {
     return {
-        vnfTemplates: state.vnfTemplates
+        vnfTemplates: state.vnfTemplates,
+        sfcTemplates: state.sfcTemplates,
+        showVNFList: state.userInterfaceState.showVNFList
     }
 }
 
 export function mapDispatchToProps(dispatch: Dispatch) {
     return {
-        addVNF: (vnfTemplate: VNFTemplate) => {
-            dispatch(uploadVNFTemplate(vnfTemplate));
+        addVNFTemplate: (vnfTemplate: VNFTemplate) => {
+            dispatch(addVNFTemplate(vnfTemplate));
+        },
+        addSFCTemplate: (sfcTemplate: SFCTemplate) => {
+            dispatch(addSFCTemplate(sfcTemplate));
         }
     }
 }

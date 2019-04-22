@@ -1,21 +1,19 @@
 import {
     GenevizAction,
-    VNFTemplateAction,
     SFCAction,
     UserInterfaceAction,
     GraphAction,
     DrawingBoardAction,
+    TemplateAction,
 } from '../actions';
 import {
     DrawingBoardState,
     GraphViewState,
     SFCPackageState,
     StoreState,
-    UserInterfaceState, VNFDPropertiesState,
-    VNFTemplate
+    UserInterfaceState, VNFDPropertiesState
 } from '../types/index';
 import {
-    UPLOAD_VNF_TEMPLATE,
     DELETE_VNF_TEMPLATE,
     FAILED_TO_CREATE_VNFP,
     SET_VNFD_PROPERTIES,
@@ -31,7 +29,11 @@ import {
     HANDLE_SFC_POPUP,
     HANDLE_VNFD_POPUP,
     SET_NSD_PROPERTIES,
-    UPDATE_GRAPH
+    UPDATE_GRAPH,
+    HANDLE_VNF_LIST,
+    ADD_VNF_TEMPLATE,
+    ADD_SFC_TEMPLATE,
+    DELETE_SFC_TEMPLATE
 } from '../constants/index';
 import {INode} from "react-digraph";
 
@@ -39,15 +41,23 @@ import {INode} from "react-digraph";
 // Updating the store is serious, complicated business. Don't contaminate it with other logic
 // Hence, only take the data given in the action object and replace the old state by the new state. That's it.
 
-export function vnfTemplates(state: VNFTemplate[], action: VNFTemplateAction): VNFTemplate[] {
+export function templates(state: StoreState, action: TemplateAction): StoreState {
     switch (action.type) {
-        case UPLOAD_VNF_TEMPLATE: {
-            let newState: VNFTemplate[] = state.slice();
-            newState.push(action.vnfTemplate);
-            return newState;
+        case ADD_VNF_TEMPLATE: {
+            let newVNFTemplates = state.vnfTemplates.slice();
+            newVNFTemplates.push(action.vnfTemplate);
+            return {...state, vnfTemplates: newVNFTemplates};
         }
         case DELETE_VNF_TEMPLATE: {
-            return state.filter(vnf => vnf.uuid !== action.uuid);
+            return {...state, vnfTemplates: state.vnfTemplates.filter(vnf => vnf.uuid !== action.uuid)};
+        }
+        case ADD_SFC_TEMPLATE: {
+            let newSFCTemplates = state.sfcTemplates.slice();
+            newSFCTemplates.push(action.sfcTemplate);
+            return {...state, sfcTemplates: newSFCTemplates};
+        }
+        case DELETE_SFC_TEMPLATE : {
+            return {...state, sfcTemplates: state.sfcTemplates.filter(sfc => sfc.uuid !== action.uuid)};
         }
         default:
             return state;
@@ -150,6 +160,8 @@ export function userInterface(state: UserInterfaceState, action: UserInterfaceAc
             return {...state, showSFCPopup: action.showSFCPopup}
         case HANDLE_VNFD_POPUP:
             return {...state, showVNFDPopup: action.showVNFDPopup}
+        case HANDLE_VNF_LIST:
+            return {...state, showVNFList: action.showVNFList}
         case SET_VNFD_PROPERTIES:
         case RESET_VNFD_PROPERTIES:
         case UPDATE_EDGES:
@@ -168,7 +180,6 @@ export function userInterface(state: UserInterfaceState, action: UserInterfaceAc
 const initialState: StoreState = {
     sfcPackageState: {
         vnfPackages: [],
-        vnffgd: {},
         nsd: {
             name: "",
             vendor: "",
@@ -176,6 +187,7 @@ const initialState: StoreState = {
         }
     },
     vnfTemplates: [],
+    sfcTemplates: [],
     userInterfaceState: {
         notification: "",
         drawingBoardState: {
@@ -197,15 +209,18 @@ const initialState: StoreState = {
             },
         },
         showSFCPopup: false,
-        showVNFDPopup: false
+        showVNFDPopup: false,
+        showVNFList: true
     }
 }
 
 export function geneviz(state: StoreState = initialState, action: GenevizAction): StoreState {
     switch (action.type) {
-        case UPLOAD_VNF_TEMPLATE:
+        case ADD_VNF_TEMPLATE:
         case DELETE_VNF_TEMPLATE:
-            return {...state, vnfTemplates: vnfTemplates(state.vnfTemplates, action)};
+        case ADD_SFC_TEMPLATE:
+        case DELETE_SFC_TEMPLATE:
+            return templates(state, action);
         case UPDATE_VNF_PACKAGES:
         case SET_NSD_PROPERTIES:
         case SET_VNFD:
@@ -222,6 +237,7 @@ export function geneviz(state: StoreState = initialState, action: GenevizAction)
         case INCREASE_X_OFFSET:
         case HANDLE_SFC_POPUP:
         case HANDLE_VNFD_POPUP:
+        case HANDLE_VNF_LIST:
             return {...state, userInterfaceState: userInterface(state.userInterfaceState, action)};
         default:
             return state;

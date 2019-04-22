@@ -5,9 +5,9 @@ import ToolsMenuDropZone from './ToolsMenuDropZone/ToolsMenuDropZone';
 import { connect } from "react-redux";
 import { SFCPackageState, StoreState, GraphViewState } from "../../types";
 import { Dispatch } from 'redux';
-import { handleSFCPopup } from 'src/actions';
+import { handleSFCPopup, handleVNFList } from 'src/actions';
 
-class ToolsMenu extends React.Component<{ sfcPackageState: SFCPackageState, graphView: GraphViewState, showVNFList: boolean, handleSFCPopup: any }> {
+class ToolsMenu extends React.Component<{ sfcPackageState: SFCPackageState, graphView: GraphViewState, showVNFList: boolean, handleSFCPopup: any, handleVNFList: any}> {
 
     concatUUIDsForURL = () => {
         const uuids = this.props.sfcPackageState.vnfPackages.map(vnfPackage => vnfPackage.uuid);
@@ -68,8 +68,8 @@ class ToolsMenu extends React.Component<{ sfcPackageState: SFCPackageState, grap
                 <div className="tools-menu-inner-wrapper">
                     <div className="tools-menu">
                         <div className="tools-menu-tab-bar">
-                            <span className={this.props.showVNFList ? "tools-menu-headline-active tools-menu-headline" : "tools-menu-headline"}>VNF Packages</span>
-                            <span className={this.props.showVNFList ? "tools-menu-headline" : "tools-menu-headline-active tools-menu-headline"}>SFC Packages</span>
+                            <span onClick={() => this.props.handleVNFList(true)} className={this.props.showVNFList ? "tools-menu-headline tools-menu-headline-active" : "tools-menu-headline"}>VNF Packages</span>
+                            <span onClick={() => this.props.handleVNFList(false)} className={this.props.showVNFList ? "tools-menu-headline" : "tools-menu-headline tools-menu-headline-active"}>SFC Packages</span>
                         </div>
                         <div className="tools-menu-vnfs">
                             <ToolsMenuList />
@@ -100,6 +100,9 @@ export function mapDispatchToProps(dispatch: Dispatch) {
     return {
         handleSFCPopup: (showSFCPopup: boolean) => {
             dispatch(handleSFCPopup(showSFCPopup));
+        },
+        handleVNFList: (showVNFList: boolean) => {
+            dispatch(handleVNFList(showVNFList));
         }
     }
 }

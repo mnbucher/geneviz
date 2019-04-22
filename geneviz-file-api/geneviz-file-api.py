@@ -35,10 +35,10 @@ def storeVNF():
     vnf_file = base64.b64decode(content['file_base_64'])
 
     try:
-        if not os.path.isfile(get_zip_file_path(vnf_name)):
-            with open(get_zip_file_path(vnf_name), "xb") as f:
+        if not os.path.isfile(get_absolute_zip_file_path(vnf_name)):
+            with open(get_absolute_zip_file_path(vnf_name), "xb") as f:
                 f.write(vnf_file)
-        with zipfile.ZipFile(get_zip_file_path(vnf_name), 'a') as archive:
+        with zipfile.ZipFile(get_absolute_zip_file_path(vnf_name), 'a') as archive:
             with archive.open(get_vnfd_parent_path(vnf_name), 'r') as vnfd_parent:
                 vnfd_parent_content = json.loads(
                     vnfd_parent.read().decode("utf-8"))
@@ -46,10 +46,11 @@ def storeVNF():
             archive.writestr(get_vnfd_path(uuid, vnf_name),
                              json.dumps(vnfd_parent_content, indent=4))
             return json.dumps({"success": True}), 200, {'ContentType': 'application/json'}
-    except FileExistsError:
+    except Exception as e:
+        print(e)
         return json.dumps({
             "success": False,
-            "message": "The File already exists and could not be stored"
+            "message": "The File already exists or could not be stored"
         }), 400, {'ContentType': 'application/json'}
 
 
@@ -58,7 +59,7 @@ def getVNFD(uuid, vnf_name):
     """ Get the VNF Descriptor of a certain VNF Package """
 
     try:
-        with zipfile.ZipFile(get_zip_file_path(vnf_name), 'r') as archive:
+        with zipfile.ZipFile(get_absolute_zip_file_path(vnf_name), 'r') as archive:
             with archive.open(get_vnfd_path(uuid, vnf_name)) as vnfd:
                 vnfd_json = json.loads(vnfd.read().decode("utf-8"))
                 return json.dumps(vnfd_json)
@@ -74,7 +75,7 @@ def updateVNFD(uuid, vnf_name):
     new_vnfd_json = json.dumps(request.get_json(), indent=4)
 
     try:
-        with zipfile.ZipFile(get_zip_file_path(vnf_name), 'a') as archive:
+        with zipfile.ZipFile(get_absolute_zip_file_path(vnf_name), 'a') as archive:
             with archive.open(get_vnfd_path(uuid, vnf_name), 'w') as vnfd:
                 vnfd.write(new_vnfd_json.encode())
 
@@ -88,26 +89,61 @@ def updateVNFD(uuid, vnf_name):
 
 
 @app.route('/sfc', methods=['POST'])
+def importSFC():
+    """ Import SFC in order to modify it through the Service Construction Visualziation """
+    
+    content = request.get_json()
+    sfc_file = base64.b64decode(content)
+    sfc_uuid = str(uuid1())
+
+    try:
+        with open(get_absolute_zip_file_path("sfc-" + sfc_uuid), "xb") as f:
+                f.write(sfc_file)   
+        with zipfile.ZipFile(get_absolute_zip_file_path("sfc-" + sfc_uuid), 'r') as sfc_archive:
+
+            
+            file_list = [(file_name, sfc_archive.read(file_name))
+                            for file_name in sfc_archive.namelist()]
+            
+            # Get folder names of VNFs inside the SFC Package
+            vnf_list = []
+            for file in file_list:
+                if(file[0].count("/") is 3 and "sfc-package/sfc/" in file[0] and "__MACOSX/" not in file[0] and file[0] is not "" and file[0] not in vnf_list):
+                    vnf_list.append(file[0])
+
+            # Extract VNF Packages from SFC Package and store in new .zip file        
+            for vnf in vnf_list:
+                vnf_uuid = str(uuid1())
+                with zipfile.ZipFile(get_absolute_zip_file_path(vnf_uuid), 'a') as vnf_archive:
+                    for file in file_list:
+                        if(file[0].find(vnf) is 0):
+                            vnf_archive.writestr(file[0].split("/sfc/")[1], file[1])
+
+            #with archive.open(get_vnfd_parent_path(vnf_name), 'r') as vnfd_parent:
+
+        return json.dumps({"success": True}), 200, {'ContentType': 'application/json'}
+    except Exception as e:
+        return json.dumps({
+            "success": False,
+            "message": "The SFC could not be imported"
+        }), 400, {'ContentType': 'application/json'}
+
+
+@app.route('/sfc', methods=['GET'])
 def createSFC():
     """ Create a new SFC package based on the UUIDs (i.e. VNF Packages) passed by in the body """
 
     content = request.get_json()
     vnf_packages = content['vnf_packages']
     nsd_properties = content['nsd_properties']
+    path = content['path']
     sfc_package_name = "sfc-" + str(uuid1())
 
     try:
-        with zipfile.ZipFile(get_zip_file_path(sfc_package_name), 'w') as sfcPackage:
-            vnfds = []
-
+        with zipfile.ZipFile(get_absolute_zip_file_path(sfc_package_name), 'w') as sfcPackage:
             for vnf_name, uuids in vnf_packages.items():
-
-                # Get path names of each VNFD for the NSD
-                for uuid in uuids:
-                    vnfds.append(get_vnfd_path(vnf_name, uuid))
-
                 # Store each VNF Package inside the SFC Package
-                with zipfile.ZipFile(get_zip_file_path(vnf_name), 'r') as vnfPackageZip:
+                with zipfile.ZipFile(get_absolute_zip_file_path(vnf_name), 'r') as vnfPackageZip:
                     file_list = [(file_name, vnfPackageZip.read(file_name))
                                  for file_name in vnfPackageZip.namelist()]
                     for file in file_list:
@@ -121,6 +157,11 @@ def createSFC():
                         else:
                             sfcPackage.writestr(file[0], file[1])
 
+            # Get path names of each VNFD for the NSD
+            vnfds = []
+            for vnf in path:
+                vnfds.append(get_vnfd_path(vnf['uuid'], vnf['name']))
+
             # Generate NSD based on the VNF Packages
             nsd = {
                 "name": nsd_properties['name'],
@@ -128,30 +169,10 @@ def createSFC():
                 "version": nsd_properties['version'],
                 "vnfd": vnfds,
                 "vld": [{"name": "private"}],
-                "vnf_dependency": [{
-                    "source": {
-                        "name": "firewall-1.0-uzh"
-                    },
-                    "target": {
-                        "name": "dns-1.0-uzh"
-                    },
-                    "parameters": [
-                        "private"
-                    ]}
-                ]
             }
-
             sfcPackage.writestr('nsd.json', json.dumps(nsd, indent=4).encode())
 
-            # Generate VNFFGD based on the provided Graph and the VNF Packages
-            vnffgd = {
-
-            }
-
-            sfcPackage.writestr(
-                'vnffgd.json', json.dumps(nsd, indent=4).encode())
-
-        return send_file(get_zip_file_path(sfc_package_name),
+        return send_file(get_absolute_zip_file_path(sfc_package_name),
                          mimetype='application/zip',
                          attachment_filename='sfc-' + sfc_package_name + '.zip',
                          as_attachment=True)
@@ -160,7 +181,7 @@ def createSFC():
         return json.dumps({"success": False}), 500, {'ContentType': 'application/json'}
 
 
-def get_zip_file_path(file_name):
+def get_absolute_zip_file_path(file_name):
     return STORAGE + '/' + file_name + '.zip'
 
 

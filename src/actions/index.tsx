@@ -1,5 +1,5 @@
 import * as constants from '../constants';
-import { VNFPackage, VNFTemplate, VNFDTO, VNFDPropertiesState, NSDPropertiesState } from "../types";
+import { VNFPackage, VNFTemplate, VNFDTO, VNFDPropertiesState, NSDPropertiesState, SFCTemplate } from "../types";
 import { Dispatch } from "redux";
 import fetch from "cross-fetch";
 import { GENEVIZ_FILE_API } from "../constants";
@@ -13,8 +13,8 @@ import { toast } from 'react-toastify';
 
 // VNFTemplateAction
 
-export interface UploadVNFTemplate {
-    type: constants.UPLOAD_VNF_TEMPLATE;
+export interface AddVNFTemplate {
+    type: constants.ADD_VNF_TEMPLATE;
     vnfTemplate: VNFTemplate;
 }
 
@@ -23,7 +23,17 @@ export interface DeleteVNFTemplate {
     uuid: string;
 }
 
-export type VNFTemplateAction = UploadVNFTemplate | DeleteVNFTemplate;
+export interface AddSFCTemplate {
+    type: constants.ADD_SFC_TEMPLATE;
+    sfcTemplate: SFCTemplate;
+}
+
+export interface DeleteSFCTemplate {
+    type: constants.DELETE_SFC_TEMPLATE;
+    uuid: string;
+}
+
+export type TemplateAction = AddVNFTemplate | DeleteVNFTemplate | AddSFCTemplate | DeleteSFCTemplate;
 
 
 // SFCAction
@@ -119,19 +129,24 @@ export interface HandleVNFDPopup {
     showVNFDPopup: boolean;
 }
 
-export type UserInterfaceAction = FailedToCreateVNFP | FailedToExtractPropertiesFromVNFD | FailedToUpdateVNFDInVNFPackage | DrawingBoardAction | HandleSFCPopup | HandleVNFDPopup;
+export interface HandleVNFList {
+    type: constants.HANDLE_VNF_LIST;
+    showVNFList: boolean;
+}
+
+export type UserInterfaceAction = FailedToCreateVNFP | FailedToExtractPropertiesFromVNFD | FailedToUpdateVNFDInVNFPackage | DrawingBoardAction | HandleSFCPopup | HandleVNFDPopup | HandleVNFList;
 
 
 // GenevizAction
 
-export type GenevizAction = VNFTemplateAction | SFCAction | UserInterfaceAction;
+export type GenevizAction = TemplateAction | SFCAction | UserInterfaceAction;
 
 
 // Action Creators (Like stamps for not using the raw object construct of Actions every time you need them
 
-export function uploadVNFTemplate(vnfTemplate: VNFTemplate) {
+export function addVNFTemplate(vnfTemplate: VNFTemplate) {
     return {
-        type: constants.UPLOAD_VNF_TEMPLATE,
+        type: constants.ADD_VNF_TEMPLATE,
         vnfTemplate: vnfTemplate
     }
 }
@@ -139,6 +154,20 @@ export function uploadVNFTemplate(vnfTemplate: VNFTemplate) {
 export function deleteVNFTemplate(uuid: string) {
     return {
         type: constants.DELETE_VNF_TEMPLATE,
+        uuid: uuid
+    }
+}
+
+export function addSFCTemplate(sfcTemplate: SFCTemplate) {
+    return {
+        type: constants.ADD_SFC_TEMPLATE,
+        sfcTemplate: sfcTemplate
+    }
+}
+
+export function deleteSFCTemplate(uuid: string) {
+    return {
+        type: constants.DELETE_SFC_TEMPLATE,
         uuid: uuid
     }
 }
@@ -392,4 +421,19 @@ export function setNSDProperties(nsdProperties: NSDPropertiesState) {
         type: constants.SET_NSD_PROPERTIES,
         nsdProperties: nsdProperties
     }
+}
+
+export function handleVNFList(showVNFList: boolean) {
+    return {
+        type: constants.HANDLE_VNF_LIST,
+        showVNFList: showVNFList
+    }
+}
+
+export function importSFC(template: SFCTemplate) {
+    
+}
+
+export function validateSFC(template: SFCTemplate) {
+
 }

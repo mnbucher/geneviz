@@ -7,6 +7,8 @@ import { selectNodeOrEdge, getVNFDProperties, updateEdges, removeNodeFromGraph, 
 import { Dispatch } from "redux";
 import { GraphView, IEdge, INode } from 'react-digraph';
 import GraphConfig from "../../constants/GraphConfig";
+import { toast } from 'react-toastify';
+import { getSFCPath } from 'src/constants/GraphHelper';
 
 class DrawingBoard extends React.Component<{ selectNodeOrEdge: any, getVNFDProperties: any, updateEdges: any, removeNodeFromGraph: any, updateGraph: any, updateVNFPackages: any, sfcPackageState: SFCPackageState, drawingBoardState: DrawingBoardState }> {
     showVNFDPropertiesRef: any;
@@ -27,6 +29,9 @@ class DrawingBoard extends React.Component<{ selectNodeOrEdge: any, getVNFDPrope
 
         // If the graph is not empty anymore, show the Remove and Clear Buttons
         if (this.props.drawingBoardState.graphViewState.graph.nodes.length > 0 || this.props.drawingBoardState.graphViewState.graph.edges.length > 0) {
+            
+            this.handleVNFNodeNumbering();
+            
             if (!vnffgdRemoveElementNode.classList.contains("bounceInUp")) {
                 vnffgdRemoveElementNode.classList.remove("bounceInDown");
                 vnffgdRemoveElementNode.classList.add("bounceInUp");
@@ -83,6 +88,23 @@ class DrawingBoard extends React.Component<{ selectNodeOrEdge: any, getVNFDPrope
         }
     }
 
+    handleVNFNodeNumbering = () => {
+        const sfcPath = getSFCPath(this.props.sfcPackageState.vnfPackages, this.props.drawingBoardState.graphViewState.graph.edges);
+        let number = 1;
+        sfcPath.forEach(vnf => {
+            let nodeDOM = document.getElementById("node-" + vnf['uuid']);
+            if(nodeDOM){
+                let textNode = nodeDOM.getElementsByClassName("node-text");
+                if(textNode[0]){
+                    let tspan = textNode[0].getElementsByTagName("tspan");
+                    if(tspan[0]){
+                        tspan[0].innerHTML = "VNF #" + number++;
+                    }
+                }
+            }
+        })
+    }
+
     getVNFPackage = (uuid: string) => {
         return this.props.sfcPackageState.vnfPackages.find(vnfPackage => {
             return vnfPackage.uuid == uuid;
@@ -130,6 +152,39 @@ class DrawingBoard extends React.Component<{ selectNodeOrEdge: any, getVNFDPrope
         }
     }
 
+    isEdgeAllowed = (newEdge: IEdge) => {
+
+        // Don't allow loops on the same node
+        if (newEdge.source == newEdge.target) {
+            return false;
+        }
+        
+        // Don't allow two edges from the same node or to the same node
+        if(typeof this.props.drawingBoardState.graphViewState.graph.edges.find(edge => {
+            if(edge.source == newEdge.source){
+                toast.error("Multiple Paths are not allowed for an SFC");
+                return true;
+            }
+            else if(edge.target == newEdge.target){
+                toast.error("Multiple Paths are not allowed for an SFC");
+                return true;
+            }
+            else {
+                return false;
+            }
+        }) !== 'undefined') {
+            return false;
+        }
+
+        // Don't allow circles
+        if(this.props.drawingBoardState.graphViewState.graph.edges.length == this.props.drawingBoardState.graphViewState.graph.nodes.length - 1){
+            toast.error("Loops are not allowed for an SFC");
+            return false;
+        }
+
+        return true;
+    }
+
     onCreateEdge = (sourceNode: INode, targetNode: INode) => {
         const sourceId = sourceNode[this.props.drawingBoardState.graphViewState.nodeKey];
         const targetId = targetNode[this.props.drawingBoardState.graphViewState.nodeKey]
@@ -140,7 +195,7 @@ class DrawingBoard extends React.Component<{ selectNodeOrEdge: any, getVNFDPrope
             type: this.getEdgeType(sourceId, targetId)
         };
 
-        if (newEdge.source !== newEdge.target) {
+        if (this.isEdgeAllowed(newEdge)) {
             const edges: IEdge[] = this.props.drawingBoardState.graphViewState.graph.edges;
             this.props.updateEdges([...edges, newEdge]);
         }
@@ -191,7 +246,7 @@ class DrawingBoard extends React.Component<{ selectNodeOrEdge: any, getVNFDPrope
                 return vnfPackage.uuid == selectedNode.id
             });
             if (typeof vnfPackage !== 'undefined') {
-                this.props.getVNFDProperties(selectedNode, vnfPackage.vnfd);
+                this.props.getVNFDProperties(vnfPackage.uuid, vnfPackage.name, vnfPackage.vnfd);
             }
         }
     }
@@ -213,6 +268,7 @@ class DrawingBoard extends React.Component<{ selectNodeOrEdge: any, getVNFDPrope
     }
 
     handleResetGraph = () => {
+        this.props.selectNodeOrEdge({} as INode);
         this.props.updateGraph([] as INode[], [] as IEdge[]);
         this.props.updateVNFPackages([]);
     }
@@ -262,8 +318,8 @@ export function mapDispatchToProps(dispatch: Dispatch) {
         selectNodeOrEdge: (selected: INode | IEdge) => {
             dispatch(selectNodeOrEdge(selected));
         },
-        getVNFDProperties: (node: INode, vnfd: object) => {
-            dispatch<any>(getVNFDProperties(node.id, node.title, vnfd));
+        getVNFDProperties: (uuid: string, name: string, vnfd: object) => {
+            dispatch<any>(getVNFDProperties(uuid, name, vnfd));
         },
         updateEdges: (edges: IEdge[]) => {
             dispatch(updateEdges(edges));

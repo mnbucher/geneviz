@@ -238,7 +238,7 @@ export function createVNFPAndAddNodeToSFC(vnfTemplate: VNFTemplate, nodes: INode
                 newNodes.push(node);
                 dispatch(updateNodes(newNodes));
 
-                dispatch(increaseXOffset(xOffset + 250));
+                dispatch(increaseXOffset(xOffset + 400));
 
                 return dispatch(selectNodeOrEdge(node));
             },

@@ -97,7 +97,8 @@
 }
 
 .view-wrapper .node tspan {
-    font-size: 14px !important;
+    font-size: 16px !important;
+    baseline-shift: 5px;
 }
 
 .view-wrapper .node .shape > use.node {
@@ -121,7 +122,6 @@
 }
 
 .view-wrapper .edge.selected {
-    stroke: #4562ef !important;
     color: #4562ef !important;
 }
 
@@ -140,6 +140,18 @@
     right: 30px;
 }
 
+.vnfNode:before {
+    content: 'VNF #1';
+    position: absolute;
+    top: 0;
+    width: 50px;
+    height: 50px;
+    background-size: 50px 50px;
+    background-color: black;
+    left: 0;
+    z-index: 9999;
+}
+
 .vnffgd-button {
     font-family: 'Roboto', Arial, sans-serif;
     font-size: 14px;
@@ -149,8 +161,8 @@
     -webkit-border-radius: 10px 10px 10px 10px;
     border-radius: 10px 10px 10px 10px;
     -webkit-appearance: none;
-    background-color: #FFFFFF;
-    color: #4562ef;
+    color: #FFFFFF;
+    background-color: #4562ef;
     cursor: pointer;
     margin-left: 25px;
     font-family: 'Roboto Mono', 'Courier New', monospace;
@@ -159,14 +171,8 @@
     transform: translate3d(0, 10000px, 0);
 }
 
-.vnffgd-button:disabled {
-    cursor: not-allowed;
-    color: #999;
-    background-color: #f2f2f2;
-}
-
 .vnffgd-button:hover {
-    background-color: #CED4F2;
+    background-color: #374DBD;
 }
 
 .show-vnfd-properties-button-text, .vnffgd-remove-element-button-text, .vnffgd-reset-button-text {

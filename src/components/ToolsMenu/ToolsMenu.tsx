@@ -1,13 +1,13 @@
 import React from 'react';
 import './ToolsMenu.css';
-import ToolsMenuVNFList from './ToolsMenuVNFList/ToolsMenuVNFList';
+import ToolsMenuList from './ToolsMenuList/ToolsMenuList';
 import ToolsMenuDropZone from './ToolsMenuDropZone/ToolsMenuDropZone';
 import { connect } from "react-redux";
-import { SFCPackageState, StoreState } from "../../types";
+import { SFCPackageState, StoreState, GraphViewState } from "../../types";
 import { Dispatch } from 'redux';
 import { handleSFCPopup } from 'src/actions';
 
-class ToolsMenu extends React.Component<{ sfcPackageState: SFCPackageState, handleSFCPopup: any }> {
+class ToolsMenu extends React.Component<{ sfcPackageState: SFCPackageState, graphView: GraphViewState, showVNFList: boolean, handleSFCPopup: any }> {
 
     concatUUIDsForURL = () => {
         const uuids = this.props.sfcPackageState.vnfPackages.map(vnfPackage => vnfPackage.uuid);
@@ -30,6 +30,32 @@ class ToolsMenu extends React.Component<{ sfcPackageState: SFCPackageState, hand
         this.props.handleSFCPopup(true);
     }
 
+    isGraphValid = () => {
+        if (this.props.sfcPackageState.vnfPackages.length < 2) {
+            return false;
+        }
+
+        let allNodesWithEdges: string[] = [];
+        this.props.graphView.graph.edges.forEach(edge => {
+            if (!allNodesWithEdges.includes(edge.source)) {
+                allNodesWithEdges.push(edge.source);
+            }
+            if (!allNodesWithEdges.includes(edge.target)) {
+                allNodesWithEdges.push(edge.target);
+            }
+        });
+
+        let allNodes: string[] = this.props.graphView.graph.nodes.map(node => {
+            return node.id
+        });
+
+        if (JSON.stringify(allNodesWithEdges.sort()) !== JSON.stringify(allNodes.sort())) {
+            return false;
+        }
+
+        return true;
+    }
+
     render() {
         return (
             <div className="tools-menu-wrapper">
@@ -41,13 +67,16 @@ class ToolsMenu extends React.Component<{ sfcPackageState: SFCPackageState, hand
 
                 <div className="tools-menu-inner-wrapper">
                     <div className="tools-menu">
-                        <p className="tools-menu-headline">Imported VNF Packages</p>
+                        <div className="tools-menu-tab-bar">
+                            <span className={this.props.showVNFList ? "tools-menu-headline-active tools-menu-headline" : "tools-menu-headline"}>VNF Packages</span>
+                            <span className={this.props.showVNFList ? "tools-menu-headline" : "tools-menu-headline-active tools-menu-headline"}>SFC Packages</span>
+                        </div>
                         <div className="tools-menu-vnfs">
-                            <ToolsMenuVNFList />
+                            <ToolsMenuList />
                             <ToolsMenuDropZone />
                         </div>
 
-                        {this.props.sfcPackageState.vnfPackages.length >= 2 ?
+                        {this.isGraphValid() ?
                             <div className='tools-menu-download-sfc bounceInUp'>
                                 <button onClick={this.generateSFCPackage}><span className="tools-menu-download-sfc-text">Generate SFC Package</span></button>
                             </div>
@@ -61,7 +90,9 @@ class ToolsMenu extends React.Component<{ sfcPackageState: SFCPackageState, hand
 
 export function mapStateToProps(state: StoreState) {
     return {
-        sfcPackageState: state.sfcPackageState
+        sfcPackageState: state.sfcPackageState,
+        graphView: state.userInterfaceState.drawingBoardState.graphViewState,
+        showVNFList: state.userInterfaceState.showVNFList
     }
 }
 

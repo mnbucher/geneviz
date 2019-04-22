@@ -78,11 +78,11 @@
 }
 
 .popup-buttons button.popup-button-apply {
-    border-color: #00a6ed;
-    color: #00a6ed;
+    border-color: #4562ef;
+    color: #4562ef;
 }
 
 .popup-buttons button.popup-button-apply:hover {
-    background-color: #00a6ed;
+    background-color: #4562ef;
     color: #fff;
 }

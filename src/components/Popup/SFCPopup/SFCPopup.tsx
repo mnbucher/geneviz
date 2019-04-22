@@ -4,13 +4,14 @@ import './SFCPopup.css';
 import '../Popup.css';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
-import { StoreState, SFCPackageState, SFCPackageDTO, NSDPropertiesState } from 'src/types';
+import { StoreState, SFCPackageState, SFCPackageDTO, NSDPropertiesState, GraphViewState } from 'src/types';
 import fileDownload from 'js-file-download';
 import { GENEVIZ_FILE_API } from 'src/constants';
 import { handleSFCPopup, setNSDProperties } from 'src/actions';
 import { toast } from 'react-toastify';
+import { getSFCPath } from 'src/constants/GraphHelper';
 
-class SFCPopup extends React.Component<{handleSFCPopup: any, setNSDProperties: any, sfcPackageState: SFCPackageState}> {
+class SFCPopup extends React.Component<{handleSFCPopup: any, setNSDProperties: any, sfcPackageState: SFCPackageState, graphView: GraphViewState}> {
     sfcWrapperRef: any;
     sfcPopupRef: any;
 
@@ -50,12 +51,12 @@ class SFCPopup extends React.Component<{handleSFCPopup: any, setNSDProperties: a
      
              const sfcPackageDTO: SFCPackageDTO = {
                vnf_packages: groupedVNFPackages,
-               vnffgd: this.props.sfcPackageState.vnffgd,
+               path: getSFCPath(this.props.sfcPackageState.vnfPackages, this.props.graphView.graph.edges),
                nsd_properties: this.props.sfcPackageState.nsd
              };
      
              fetch(GENEVIZ_FILE_API + "/sfc", {
-                 method: "POST",
+                 method: "GET",
                  body: JSON.stringify(sfcPackageDTO),
                  headers: {
                      "Content-Type": "application/json"
@@ -64,6 +65,7 @@ class SFCPopup extends React.Component<{handleSFCPopup: any, setNSDProperties: a
                  return response.blob();
              }).then(data => {
                  fileDownload(data, "sfc-package.zip");
+                 this.props.handleSFCPopup(false);
              }, error => {
                  console.log(error);
                  toast.error("Could not download the SFC Package");
@@ -116,7 +118,8 @@ class SFCPopup extends React.Component<{handleSFCPopup: any, setNSDProperties: a
 
 export function mapStateToProps(state: StoreState) {
     return {
-        sfcPackageState: state.sfcPackageState
+        sfcPackageState: state.sfcPackageState,
+        graphView: state.userInterfaceState.drawingBoardState.graphViewState
     }
 }
 

@@ -1,15 +1,8 @@
 import * as React from 'react';
 
-export const VNF_NODE = 'vnfNode'; // Empty node type
-export const CONNECTION_NODE = 'connectionNode';
-export const STANDARD_EDGE = 'standardEdge';
-export const EMPTY_EDGE = 'emptyEdge';
-
-// Shapes
-
 const VNFNodeShape = (
     <symbol viewBox="0 0 200 200" width="200" height="200" id="vnfNode">
-        <circle cx="100" cy="100" r="98" />
+        <rect x="2" y="2" width="196" height="196" rx="30"  ry="30"/>
     </symbol>
 );
 

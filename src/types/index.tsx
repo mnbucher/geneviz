@@ -2,7 +2,6 @@ import {IEdge, IGraphInput, INode} from "react-digraph";
 
 export interface SFCPackageState {
     vnfPackages: VNFPackage[];
-    vnffgd: object;
     nsd: NSDPropertiesState;
 }
 
@@ -65,6 +64,6 @@ export interface VNFDTO {
 
 export interface SFCPackageDTO {
     vnf_packages: object;
-    vnffgd: object;
+    path: object[];
     nsd_properties: NSDPropertiesState;
 }

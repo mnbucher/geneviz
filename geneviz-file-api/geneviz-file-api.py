@@ -8,6 +8,7 @@ import zipfile
 import json
 import os
 from uuid import uuid1
+import ethadapter
 
 # GENEVIZ FILE API
 # Version 1.0
@@ -24,6 +25,15 @@ CORS(app, resources={r"/*": {"origins": ["http://localhost:3000"]}})
 STORAGE = tempfile.mkdtemp(prefix="geneviz_")
 print("\n Storage Location:\n " + STORAGE + "\n")
 
+@app.route('/storePackageHash/',methods=['GET'])
+def storeBlockchain():
+    address = "0xC1479f489948670bf85B07d9B56dc9c474C4228e"
+    privkey = "99a8e59f28f533186c6daca32470a36905cc233ba41ff9279972c39228687ddb"
+    txhash = ethadapter.EthAPI.store("test",address,privkey)
+
+@app.route('/retrievePackageHash/',methods=['GET'])
+def retrieveBlockchain():
+    storedData = ethadapter.EthAPI.retrieve("0x70e676d32a70e55496c98d2390a0d42aec20414651d2bbf98ef8f1042af92f46")
 
 @app.route('/vnf', methods=['POST'])
 def storeVNF():

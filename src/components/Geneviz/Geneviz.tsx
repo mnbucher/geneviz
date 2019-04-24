@@ -20,7 +20,7 @@ class Geneviz extends React.Component<{showSFCPopup: boolean, showVNFDPopup: boo
             <div className="geneviz">
                 <ToolsMenu />
                 <DrawingBoard />
-                <ToastContainer />
+                <ToastContainer pauseOnFocusLoss={false} hideProgressBar={true}/>
                 {this.props.showSFCPopup ? <SFCPopup /> : null}
                 {this.props.showVNFDPopup ? <VNFDPopup /> : null}
             </div>

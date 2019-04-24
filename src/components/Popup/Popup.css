@@ -40,18 +40,28 @@
 }
 
 .popup-content p {
-    padding-bottom: 0.5em;
+    padding-bottom: 0.309em;
 }
 
 .popup-content input {
     font-size: 1rem;
     padding: 0.618em;
-    margin-bottom: 1em;
+    margin-bottom: 1.309em;
     -webkit-border-radius: 5px 5px 5px 5px;
     border-radius: 5px 5px 5px 5px;
     border: 1px solid #c2c2c2;
     width: 100%;
     box-sizing: border-box;
+}
+
+.popup-content label {
+    display: flex;
+    flex-direction: row-reverse;
+    line-height: 1.3;
+}
+
+.popup-content input[type="checkbox"] {
+    width: 20%;
 }
 
 .popup-buttons {

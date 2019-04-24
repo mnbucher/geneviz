@@ -1,8 +1,10 @@
 import {IEdge, IGraphInput, INode} from "react-digraph";
+import { SFCValidationStatus } from 'src/constants';
 
 export interface SFCPackageState {
     vnfPackages: VNFPackage[];
     nsd: NSDPropertiesState;
+    bc: BCPropertiesState;
 }
 
 export interface VNFPackage {
@@ -14,7 +16,13 @@ export interface VNFPackage {
 export interface NSDPropertiesState {
     name: string;
     vendor: string;
-    version: number;
+    version: string;
+}
+
+export interface BCPropertiesState {
+    storeOnBC: boolean;
+    address: string;
+    privateKey: string;
 }
 
 export interface VNFTemplate {
@@ -27,6 +35,7 @@ export interface SFCTemplate {
     name: string;
     fileBase64: string;
     uuid: string;
+    validationStatus: SFCValidationStatus
 }
 
 export interface VNFDPropertiesState {
@@ -65,13 +74,14 @@ export interface StoreState {
 }
 
 export interface VNFDTO {
-    file_base_64: string;
+    fileBase64: string;
     uuid: string;
-    vnf_name: string;
+    vnfName: string;
 }
 
 export interface SFCPackageDTO {
-    vnf_packages: object;
+    vnfPackages: object;
     path: object[];
-    nsd_properties: NSDPropertiesState;
+    nsd: NSDPropertiesState;
+    bc: BCPropertiesState;
 }

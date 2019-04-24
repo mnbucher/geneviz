@@ -4,14 +4,14 @@ import './SFCPopup.css';
 import '../Popup.css';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
-import { StoreState, SFCPackageState, SFCPackageDTO, NSDPropertiesState, GraphViewState } from 'src/types';
+import { StoreState, SFCPackageState, SFCPackageDTO, NSDPropertiesState, GraphViewState, BCPropertiesState } from 'src/types';
 import fileDownload from 'js-file-download';
 import { GENEVIZ_FILE_API } from 'src/constants';
-import { handleSFCPopup, setNSDProperties } from 'src/actions';
+import { handleSFCPopup, setNSDProperties, setBCProperties } from 'src/actions';
 import { toast } from 'react-toastify';
 import { getSFCPath } from 'src/constants/GraphHelper';
 
-class SFCPopup extends React.Component<{handleSFCPopup: any, setNSDProperties: any, sfcPackageState: SFCPackageState, graphView: GraphViewState}> {
+class SFCPopup extends React.Component<{handleSFCPopup: any, setNSDProperties: any, setBCProperties: any, sfcPackageState: SFCPackageState, graphView: GraphViewState}> {
     sfcWrapperRef: any;
     sfcPopupRef: any;
 
@@ -50,13 +50,14 @@ class SFCPopup extends React.Component<{handleSFCPopup: any, setNSDProperties: a
              }, {});
      
              const sfcPackageDTO: SFCPackageDTO = {
-               vnf_packages: groupedVNFPackages,
+               vnfPackages: groupedVNFPackages,
                path: getSFCPath(this.props.sfcPackageState.vnfPackages, this.props.graphView.graph.edges),
-               nsd_properties: this.props.sfcPackageState.nsd
+               nsd: this.props.sfcPackageState.nsd,
+               bc: this.props.sfcPackageState.bc,
              };
      
-             fetch(GENEVIZ_FILE_API + "/sfc", {
-                 method: "GET",
+             fetch(GENEVIZ_FILE_API + "/sfc/generate", {
+                 method: "POST",
                  body: JSON.stringify(sfcPackageDTO),
                  headers: {
                      "Content-Type": "application/json"
@@ -85,8 +86,16 @@ class SFCPopup extends React.Component<{handleSFCPopup: any, setNSDProperties: a
         this.props.setNSDProperties({... this.props.sfcPackageState.nsd, version: event.target.value});
     }
 
-    closePopup = () => {
-        this.props.handleSFCPopup(false);
+    handleShowBCPropertiesChange = (event: any) => {
+        this.props.setBCProperties({... this.props.sfcPackageState.bc, storeOnBC: event.target.checked});
+    }
+
+    handleAddressChange = (event: any) => {
+        this.props.setBCProperties({... this.props.sfcPackageState.bc, address: event.target.value});
+    }
+
+    handlePrivateKeyChange = (event: any) => {
+        this.props.setBCProperties({... this.props.sfcPackageState.bc, privateKey: event.target.value});
     }
 
     render() {
@@ -104,11 +113,25 @@ class SFCPopup extends React.Component<{handleSFCPopup: any, setNSDProperties: a
                         <input type="text" placeholder="Custom Network Service" value={this.props.sfcPackageState.nsd.vendor} onChange={this.handleVendorChange} />
                         <p>Version</p>
                         <input type="text" placeholder="1.0" value={this.props.sfcPackageState.nsd.version} onChange={this.handleVersionChange} />
+
+                        <label>
+                            Store Hash of SFC Package on the Ethereum Blockchain for later Verification
+                            <input type="checkbox" checked={this.props.sfcPackageState.bc.storeOnBC} onChange={this.handleShowBCPropertiesChange} />
+                        </label>
+
+                        {this.props.sfcPackageState.bc.storeOnBC ?
+                            <div className="sfc-popup-bc-properties">
+                                <p>Address of Ethereum Account</p>
+                                <input type="text" placeholder="Address of the Wallet" value={this.props.sfcPackageState.bc.address} onChange={this.handleAddressChange} />
+                                <p>Private Key of Ethereum Account</p>
+                                <input type="text" placeholder="Private Key to Sign the Transacation" value={this.props.sfcPackageState.bc.privateKey} onChange={this.handlePrivateKeyChange} />
+                            </div>
+                            : null}
                     </div>
 
                     <div className="popup-buttons">
                         <button className="popup-button-apply" onClick={this.downloadSFC}>Download SFC</button>
-                        <button className="popup-button-cancel" onClick={this.closePopup}>Cancel</button>
+                        <button className="popup-button-cancel" onClick={() => this.props.handleSFCPopup(false)}>Cancel</button>
                     </div>
                 </div>
             </div>
@@ -125,11 +148,14 @@ export function mapStateToProps(state: StoreState) {
 
 export function mapDispatchToProps(dispatch: Dispatch) {
     return {
-        setNSDProperties: (nsdProperties: NSDPropertiesState) => {
-            dispatch(setNSDProperties(nsdProperties));
+        setNSDProperties: (nsd: NSDPropertiesState) => {
+            dispatch(setNSDProperties(nsd));
         }, 
         handleSFCPopup: (showSFCPopup: boolean) => {
             dispatch(handleSFCPopup(showSFCPopup));
+        },
+        setBCProperties: (bc: BCPropertiesState) => {
+            dispatch(setBCProperties(bc));
         }
     }
 }

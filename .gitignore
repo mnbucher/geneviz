@@ -27,5 +27,5 @@ yarn-debug.log*
 yarn-error.log*
 
 # python stuff
-/geneviz-file-api/env
-/geneviz-file-api/__pycache__
+/geneviz-management-api/venv
+/geneviz-management-api/__pycache__

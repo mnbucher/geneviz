@@ -43,8 +43,31 @@
     color: #4562ef;
 }
 
-.tools-menu-list-element-blue:hover {
+.tools-menu-list-element-blue:hover, .sfc-unknown:hover  {
     background-color: #CED4F2;
+}
+
+.sfc-unknown {
+    border: 1px solid #4562ef;
+    color: #4562ef;
+}
+
+.sfc-valid  {
+    border: 1px dashed green;
+    color: green;
+    cursor: default !important;
+}
+
+.sfc-invalid {
+    border: 1px dashed red;
+    color: red;
+    cursor: default !important;
+}
+
+.sfc-pending {
+    color: #999;
+    border: 1px dashed #999;
+    cursor: default !important;
 }
 
 .tools-menu-list-element-remove {

@@ -1,5 +1,5 @@
 import * as constants from '../constants';
-import { VNFPackage, VNFTemplate, VNFDTO, VNFDPropertiesState, NSDPropertiesState, SFCTemplate } from "../types";
+import { VNFPackage, VNFTemplate, VNFDTO, VNFDPropertiesState, NSDPropertiesState, SFCTemplate, BCPropertiesState } from "../types";
 import { Dispatch } from "redux";
 import fetch from "cross-fetch";
 import { GENEVIZ_FILE_API } from "../constants";
@@ -33,7 +33,13 @@ export interface DeleteSFCTemplate {
     uuid: string;
 }
 
-export type TemplateAction = AddVNFTemplate | DeleteVNFTemplate | AddSFCTemplate | DeleteSFCTemplate;
+export interface SetSFCValidationStatus {
+    type: constants.SET_SFC_VALIDATION_STATUS;
+    uuid: string;
+    status: constants.SFCValidationStatus;
+}
+
+export type TemplateAction = AddVNFTemplate | DeleteVNFTemplate | AddSFCTemplate | DeleteSFCTemplate | SetSFCValidationStatus;
 
 
 // SFCAction
@@ -45,7 +51,7 @@ export interface UdpateVNFsInSFC {
 
 export interface SetNSDProperties {
     type: constants.SET_NSD_PROPERTIES;
-    nsdProperties: NSDPropertiesState;
+    nsd: NSDPropertiesState;
 }
 
 export interface SetVNFD {
@@ -54,7 +60,12 @@ export interface SetVNFD {
     vnfd: object;
 }
 
-export type SFCAction = UdpateVNFsInSFC | SetNSDProperties | SetVNFD;
+export interface SetBCProperties {
+    type: constants.SET_BC_PROPERTIES;
+    bc: BCPropertiesState;
+}
+
+export type SFCAction = UdpateVNFsInSFC | SetNSDProperties | SetVNFD | SetBCProperties;
 
 
 // GraphAction
@@ -228,9 +239,9 @@ export function createVNFPAndAddNodeToSFC(vnfTemplate: VNFTemplate, nodes: INode
 
         const uuid: string = uuidv1();
         const vnfDTO: VNFDTO = {
-            file_base_64: vnfTemplate.fileBase64,
+            fileBase64: vnfTemplate.fileBase64,
             uuid: uuid,
-            vnf_name: vnfTemplate.name
+            vnfName: vnfTemplate.name
         };
 
         fetch(GENEVIZ_FILE_API + "/vnf", {
@@ -416,10 +427,10 @@ export function handleVNFDPopup(showVNFDPopup: boolean) {
     }
 }
 
-export function setNSDProperties(nsdProperties: NSDPropertiesState) {
+export function setNSDProperties(nsd: NSDPropertiesState) {
     return {
         type: constants.SET_NSD_PROPERTIES,
-        nsdProperties: nsdProperties
+        nsd: nsd
     }
 }
 
@@ -430,10 +441,56 @@ export function handleVNFList(showVNFList: boolean) {
     }
 }
 
+export function setBCProperties(bc: BCPropertiesState) {
+    return {
+        type: constants.SET_BC_PROPERTIES,
+        bc: bc
+    }
+}
+
 export function importSFC(template: SFCTemplate) {
     
 }
 
-export function validateSFC(template: SFCTemplate) {
+export function setSFCValidationStatus(uuid: string, status: constants.SFCValidationStatus) {
+    return {
+        type: constants.SET_SFC_VALIDATION_STATUS,
+        uuid: uuid,
+        status: status
+    }
+}
 
+export function validateSFC(template: SFCTemplate) {
+    return (dispatch: Dispatch) => {
+        dispatch(setSFCValidationStatus(template.uuid, constants.SFCValidationStatus.SFC_VALIDATION_PENDING));
+        fetch(GENEVIZ_FILE_API + "/sfc/validate", {
+            method: "POST",
+            body: JSON.stringify(template.fileBase64),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }).then(response => {
+            return response;
+        }).then(
+            response => {
+                if(response.status == 200) {
+                    toast.success("The SFC Package is valid");
+                    return(dispatch(setSFCValidationStatus(template.uuid, constants.SFCValidationStatus.SFC_VALIDATION_VALID)));
+                }
+                else if(response.status == 404) {
+                    toast.error("The SFC Package is not valid");
+                    return(dispatch(setSFCValidationStatus(template.uuid, constants.SFCValidationStatus.SFC_VALIDATION_INVALID)));
+                }
+                else {
+                    toast.warn("The .zip files seems to have a wrong format");
+                    return(dispatch(setSFCValidationStatus(template.uuid, constants.SFCValidationStatus.SFC_VALIDATION_UNKNOWN)));
+                }
+            },
+            error => {
+                console.log(error);
+                toast.error("Coult not validate the SFC Package");
+                dispatch(setSFCValidationStatus(template.uuid, constants.SFCValidationStatus.SFC_VALIDATION_UNKNOWN));
+            }
+        );
+    }
 }

@@ -68,8 +68,10 @@ class ToolsMenu extends React.Component<{ sfcPackageState: SFCPackageState, grap
                 <div className="tools-menu-inner-wrapper">
                     <div className="tools-menu">
                         <div className="tools-menu-tab-bar">
-                            <span onClick={() => this.props.handleVNFList(true)} className={this.props.showVNFList ? "tools-menu-headline tools-menu-headline-active" : "tools-menu-headline"}>VNF Packages</span>
-                            <span onClick={() => this.props.handleVNFList(false)} className={this.props.showVNFList ? "tools-menu-headline" : "tools-menu-headline tools-menu-headline-active"}>SFC Packages</span>
+                            <p>
+                                <span onClick={() => this.props.handleVNFList(true)} className={this.props.showVNFList ? "tools-menu-headline tools-menu-headline-active" : "tools-menu-headline"}>VNF Packages</span>
+                                <span onClick={() => this.props.handleVNFList(false)} className={this.props.showVNFList ? "tools-menu-headline" : "tools-menu-headline tools-menu-headline-active"}>SFC Packages</span>
+                            </p>
                         </div>
                         <div className="tools-menu-vnfs">
                             <ToolsMenuList />

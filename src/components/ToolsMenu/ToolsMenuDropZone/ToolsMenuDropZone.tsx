@@ -9,6 +9,7 @@ import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import { toast } from 'react-toastify';
 import { addVNFTemplate, addSFCTemplate } from 'src/actions';
+import { SFCValidationStatus } from 'src/constants';
 
 class ToolsMenuDropZone extends React.Component<{addVNFTemplate: any, addSFCTemplate: any, vnfTemplates: VNFTemplate[], sfcTemplates: SFCTemplate[], showVNFList: boolean}> {
 
@@ -21,7 +22,6 @@ class ToolsMenuDropZone extends React.Component<{addVNFTemplate: any, addSFCTemp
             }
             return false;
         });
-
         return typeof template == 'undefined' ? false : true;
     }
 
@@ -36,21 +36,25 @@ class ToolsMenuDropZone extends React.Component<{addVNFTemplate: any, addSFCTemp
 
                 zip.loadAsync(zipAsBinaryString).then((zipFile: any) => {
                     zipFile.generateAsync({type:"base64"}).then((fileBase64: string) => {
-
-                        let vnfTemplate: VNFTemplate = {
-                            name: fileName,
-                            fileBase64: fileBase64,
-                            uuid: uuidv1()
-                        };
-
                         if(this.isTemplateAlreadyAdded(fileBase64 as string)) {
                             toast.error('This .zip file was already added.')
                         }
                         else if (this.props.showVNFList) {
+                            const vnfTemplate: VNFTemplate = {
+                                name: fileName,
+                                fileBase64: fileBase64,
+                                uuid: uuidv1()
+                            };
                             this.props.addVNFTemplate(vnfTemplate);
                         }
                         else {
-                            this.props.addSFCTemplate(vnfTemplate);
+                            const sfcTemplate: SFCTemplate = {
+                                name: fileName,
+                                fileBase64: fileBase64,
+                                uuid: uuidv1(),
+                                validationStatus: SFCValidationStatus.SFC_VALIDATION_UNKNOWN 
+                            };
+                            this.props.addSFCTemplate(sfcTemplate);
                         }
                     });
                 });

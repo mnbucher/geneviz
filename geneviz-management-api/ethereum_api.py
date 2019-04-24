@@ -1,21 +1,23 @@
 from web3 import Web3, HTTPProvider
 
-class EthAPI():
-    ENDPOINT_URI = 'HTTP://127.0.0.1:7545'
+class EthereumAPI():
+    ENDPOINT_URI = 'http://127.0.0.1:7545'
     web3 = Web3(HTTPProvider(ENDPOINT_URI))
     client = web3.eth
+    
+
+    # Store Hash of SFC Package
 
     @classmethod
-    def store(cls, text, address, privkey):
+    def store(cls, text, address, private_key):
         # start = int(round(time.time() * 1000))  # Milliseconds
         if not Web3.isChecksumAddress(address):
             address = Web3.toChecksumAddress(address)
-        transaction = cls.create_transaction(text,address)
-        signed_transaction = cls.sign_transaction(transaction,privkey)
+        transaction = cls.create_transaction(text, address)
+        signed_transaction = cls.sign_transaction(transaction, private_key)
         transaction_hash = cls.send_raw_transaction(signed_transaction)
         return transaction_hash
 
-    # ---STORE---
     @classmethod
     def create_transaction(cls, text, address):
         transaction = {
@@ -30,7 +32,7 @@ class EthAPI():
         return transaction
 
     @classmethod
-    def get_transaction_count(cls,address):
+    def get_transaction_count(cls, address):
         return cls.client.getTransactionCount(address)
 
     @classmethod
@@ -38,8 +40,8 @@ class EthAPI():
         return cls.client.estimateGas(transaction)
 
     @classmethod
-    def sign_transaction(cls, transaction, privkey):
-        signed = cls.client.account.signTransaction(transaction, privkey)
+    def sign_transaction(cls, transaction, private_key):
+        signed = cls.client.account.signTransaction(transaction, private_key)
         return signed.rawTransaction
 
     @classmethod
@@ -47,14 +49,14 @@ class EthAPI():
         transaction_hash = cls.client.sendRawTransaction(transaction)
         return transaction_hash.hex()
 
-    # ---RETRIEVE---
+
+    # Retriebe Hash OF SFC Package
 
     @classmethod
     def retrieve(cls, txhash):
         tx = cls.get_transaction(txhash)
-        packageHash = cls.extract_data(tx)
-        return cls.to_text(packageHash)
-
+        sfcPackageHash = cls.extract_data(tx)
+        return cls.to_text(sfcPackageHash)
 
     @classmethod
     def get_transaction(cls, transaction_hash):

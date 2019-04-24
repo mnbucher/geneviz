@@ -53,18 +53,25 @@
     flex-direction: column;
 }
 
+.tools-menu-tab-bar {
+    width: 100%;
+    box-sizing: border-box;
+    margin: 1em 0 1em 30px;
+}
+
 .tools-menu-headline {
     font-size: 1rem;
     text-transform: uppercase;
     color: #626a81;
     font-family: 'Roboto Mono', 'Courier New', monospace;
     letter-spacing: 1px;
-    margin-left: 30px;
-    padding: 0.618em 1.618em;
+    padding: 0.618em 1.309em;
+    margin-right: 20px;
     border: 1px solid #d7d7d7;
     -webkit-border-radius: 10px 10px 10px 10px;
     border-radius: 10px 10px 10px 10px;
     cursor: pointer;
+    box-sizing: border-box;
 }
 
 .tools-menu-headline-active {

@@ -33,7 +33,9 @@ import {
     HANDLE_VNF_LIST,
     ADD_VNF_TEMPLATE,
     ADD_SFC_TEMPLATE,
-    DELETE_SFC_TEMPLATE
+    DELETE_SFC_TEMPLATE,
+    SET_BC_PROPERTIES,
+    SET_SFC_VALIDATION_STATUS
 } from '../constants/index';
 import {INode} from "react-digraph";
 
@@ -49,7 +51,7 @@ export function templates(state: StoreState, action: TemplateAction): StoreState
             return {...state, vnfTemplates: newVNFTemplates};
         }
         case DELETE_VNF_TEMPLATE: {
-            return {...state, vnfTemplates: state.vnfTemplates.filter(vnf => vnf.uuid !== action.uuid)};
+            return {...state, vnfTemplates: state.vnfTemplates.filter(template => template.uuid !== action.uuid)};
         }
         case ADD_SFC_TEMPLATE: {
             let newSFCTemplates = state.sfcTemplates.slice();
@@ -57,7 +59,18 @@ export function templates(state: StoreState, action: TemplateAction): StoreState
             return {...state, sfcTemplates: newSFCTemplates};
         }
         case DELETE_SFC_TEMPLATE : {
-            return {...state, sfcTemplates: state.sfcTemplates.filter(sfc => sfc.uuid !== action.uuid)};
+            return {...state, sfcTemplates: state.sfcTemplates.filter(template => template.uuid !== action.uuid)};
+        }
+        case SET_SFC_VALIDATION_STATUS: {
+            return {...state, sfcTemplates: state.sfcTemplates.map(template => { 
+                if (template.uuid == action.uuid) {
+                    template.validationStatus = action.status
+                    return template;
+                }
+                else {
+                    return template;
+                }
+             })};
         }
         default:
             return state;
@@ -70,7 +83,7 @@ export function sfcPackage(state: SFCPackageState, action: SFCAction): SFCPackag
             return {...state, vnfPackages: action.vnfPackages};
         }
         case SET_NSD_PROPERTIES: {
-            return {...state, nsd: action.nsdProperties};
+            return {...state, nsd: action.nsd};
         }
         case SET_VNFD: {
             const newVNFPackages = state.vnfPackages.map(vnfPackage => {
@@ -82,6 +95,9 @@ export function sfcPackage(state: SFCPackageState, action: SFCAction): SFCPackag
                 return vnfPackage;
             });
             return {...state, vnfPackages: newVNFPackages};
+        }
+        case SET_BC_PROPERTIES: {
+            return {...state, bc: action.bc};
         }
         default:
             return state;
@@ -183,7 +199,12 @@ const initialState: StoreState = {
         nsd: {
             name: "",
             vendor: "",
-            version: 1.0
+            version: "1.0"
+        },
+        bc: {
+            storeOnBC: false,
+            address: "",
+            privateKey: ""
         }
     },
     vnfTemplates: [],
@@ -220,10 +241,12 @@ export function geneviz(state: StoreState = initialState, action: GenevizAction)
         case DELETE_VNF_TEMPLATE:
         case ADD_SFC_TEMPLATE:
         case DELETE_SFC_TEMPLATE:
+        case SET_SFC_VALIDATION_STATUS:
             return templates(state, action);
         case UPDATE_VNF_PACKAGES:
         case SET_NSD_PROPERTIES:
         case SET_VNFD:
+        case SET_BC_PROPERTIES:
             return {...state, sfcPackageState: sfcPackage(state.sfcPackageState, action)};
         case FAILED_TO_CREATE_VNFP:
         case SET_VNFD_PROPERTIES:

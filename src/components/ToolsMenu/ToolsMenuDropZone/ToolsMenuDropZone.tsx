@@ -52,7 +52,7 @@ class ToolsMenuDropZone extends React.Component<{addVNFTemplate: any, addSFCTemp
                                 name: fileName,
                                 fileBase64: fileBase64,
                                 uuid: uuidv1(),
-                                validationStatus: SFCValidationStatus.SFC_VALIDATION_UNKNOWN 
+                                validationStatus: SFCValidationStatus.SFC_VALIDATION_INITIAL 
                             };
                             this.props.addSFCTemplate(sfcTemplate);
                         }

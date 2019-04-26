@@ -3,14 +3,14 @@ import ReactDOM from 'react-dom';
 import './DrawingBoard.css';
 import { StoreState, DrawingBoardState, SFCPackageState, VNFPackage } from "../../types";
 import { connect } from 'react-redux';
-import { selectNodeOrEdge, getVNFDProperties, updateEdges, removeNodeFromGraph, updateGraph, updateVNFPackages } from "../../actions";
+import { selectNodeOrEdge, getVNFDProperties, updateEdges, removeNodeFromGraph, updateGraph, setVNFPackages } from "../../actions";
 import { Dispatch } from "redux";
 import { GraphView, IEdge, INode } from 'react-digraph';
 import GraphConfig from "../../constants/GraphConfig";
 import { toast } from 'react-toastify';
-import { getSFCPath } from 'src/constants/GraphHelper';
+import { getSFCPath, getEdgeType } from 'src/constants/GraphHelper';
 
-class DrawingBoard extends React.Component<{ selectNodeOrEdge: any, getVNFDProperties: any, updateEdges: any, removeNodeFromGraph: any, updateGraph: any, updateVNFPackages: any, sfcPackageState: SFCPackageState, drawingBoardState: DrawingBoardState }> {
+class DrawingBoard extends React.Component<{ selectNodeOrEdge: any, getVNFDProperties: any, updateEdges: any, removeNodeFromGraph: any, updateGraph: any, setVNFPackages: any, sfcPackageState: SFCPackageState, drawingBoardState: DrawingBoardState }> {
     showVNFDPropertiesRef: any;
     vnffgdRemoveElementRef: any;
     vnffgdResetRef: any;
@@ -105,53 +105,6 @@ class DrawingBoard extends React.Component<{ selectNodeOrEdge: any, getVNFDPrope
         })
     }
 
-    getVNFPackage = (uuid: string) => {
-        return this.props.sfcPackageState.vnfPackages.find(vnfPackage => {
-            return vnfPackage.uuid == uuid;
-        });
-    }
-
-    isFoundInOtherList = (list1: string[], list2: string[]) => {
-        let isRecommended: boolean = false;
-        list1.forEach(element => {
-            if (list2.includes(element)) {
-                isRecommended = true;
-            }
-        });
-        return isRecommended;
-    }
-
-    getEdgeType = (source: string, target: string) => {
-        const sourceVNFPackage = this.getVNFPackage(source);
-        const targetVNFPackage = this.getVNFPackage(target);
-        if (typeof sourceVNFPackage !== 'undefined' && typeof targetVNFPackage !== 'undefined') {
-            const sourceTargetRecommendation: string[] = sourceVNFPackage.vnfd['vnfd']['target_recommendation'];
-            const sourceTargetCaution: string[] = sourceVNFPackage.vnfd['vnfd']['target_caution'];
-            const targetServiceTypes: object[] = (targetVNFPackage.vnfd['vnfd']['service_types']);
-
-            if (typeof sourceTargetRecommendation !== 'undefined' && typeof sourceTargetCaution !== 'undefined' && typeof targetServiceTypes !== 'undefined') {
-                const targetServiceTypesAsList = targetServiceTypes.map(serviceType => {
-                    return serviceType['service_type'];
-                });
-                if (this.isFoundInOtherList(sourceTargetRecommendation, targetServiceTypesAsList)) {
-                    return 'recommendedEdge';
-                }
-                else if (this.isFoundInOtherList(sourceTargetCaution, targetServiceTypesAsList)) {
-                    return 'notRecommendedEdge';
-                }
-                else {
-                    return 'standardEdge';
-                }
-            }
-            else {
-                return 'standardEdge';
-            }
-        }
-        else {
-            return 'standardEdge';
-        }
-    }
-
     isEdgeAllowed = (newEdge: IEdge) => {
 
         // Don't allow loops on the same node
@@ -192,7 +145,7 @@ class DrawingBoard extends React.Component<{ selectNodeOrEdge: any, getVNFDPrope
         const newEdge: IEdge = {
             source: sourceId,
             target: targetId,
-            type: this.getEdgeType(sourceId, targetId)
+            type: getEdgeType(this.props.sfcPackageState.vnfPackages, sourceId, targetId)
         };
 
         if (this.isEdgeAllowed(newEdge)) {
@@ -270,7 +223,7 @@ class DrawingBoard extends React.Component<{ selectNodeOrEdge: any, getVNFDPrope
     handleResetGraph = () => {
         this.props.selectNodeOrEdge({} as INode);
         this.props.updateGraph([] as INode[], [] as IEdge[]);
-        this.props.updateVNFPackages([]);
+        this.props.setVNFPackages([]);
     }
 
     render() {
@@ -330,8 +283,8 @@ export function mapDispatchToProps(dispatch: Dispatch) {
         updateGraph: (edges: IEdge[], nodes: INode[]) => {
             dispatch(updateGraph(edges, nodes));
         },
-        updateVNFPackages: (vnfPackages: VNFPackage[]) => {
-            dispatch(updateVNFPackages(vnfPackages));
+        setVNFPackages: (vnfPackages: VNFPackage[]) => {
+            dispatch(setVNFPackages(vnfPackages));
         }
     }
 }

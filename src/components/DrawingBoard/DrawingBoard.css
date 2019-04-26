@@ -1,5 +1,5 @@
 .drawing-board {
-    width: 75%;
+    flex: 1;
     height: 100%;
     position: relative;
     overflow: hidden;
@@ -164,7 +164,7 @@
     color: #FFFFFF;
     background-color: #4562ef;
     cursor: pointer;
-    margin-left: 25px;
+    margin-left: 15px;
     font-family: 'Roboto Mono', 'Courier New', monospace;
     position: relative;
     -webkit-transform: translate3d(0, 10000px, 0);

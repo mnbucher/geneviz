@@ -1,5 +1,6 @@
 .tools-menu-wrapper {
     width: 25%;
+    min-width: 400px;
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -7,10 +8,8 @@
     border-right: 1px solid #e6e9f0;
 }
 
-
 .geneviz-header {
     width: 100%;
-    margin-bottom: 30px;
     border-bottom: 1px solid #dfdfdf;
     background-color: #e7e7e7;
 }
@@ -32,7 +31,7 @@
     width: 80%;
     padding-left: 30px;
     margin-bottom: 15px;
-    line-height: 1.1;
+    line-height: 1.2;
     color: #4F5669;
     font-family: 'Roboto Mono', 'Courier New', monospace;
 }
@@ -54,13 +53,12 @@
 }
 
 .tools-menu-tab-bar {
-    width: 100%;
-    box-sizing: border-box;
-    margin: 1em 0 1em 30px;
+    padding: 25px 0 25px 30px;
 }
 
 .tools-menu-headline {
     font-size: 1rem;
+    background: none;
     text-transform: uppercase;
     color: #626a81;
     font-family: 'Roboto Mono', 'Courier New', monospace;
@@ -68,6 +66,7 @@
     padding: 0.618em 1.309em;
     margin-right: 20px;
     border: 1px solid #d7d7d7;
+    -webkit-appearance: none;
     -webkit-border-radius: 10px 10px 10px 10px;
     border-radius: 10px 10px 10px 10px;
     cursor: pointer;
@@ -82,7 +81,6 @@
     position: relative;
     overflow-y: scroll;
     margin-bottom: auto;
-    padding-top: 1.618em;
 }
 
 .tools-menu-download-sfc {

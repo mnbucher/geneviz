@@ -5,30 +5,10 @@ import { StoreState, VNFPackage, VNFTemplate, SFCTemplate } from "../../../types
 import { createVNFPAndAddNodeToSFC, deleteVNFTemplate, importSFC, validateSFC, deleteSFCTemplate } from "../../../actions";
 import './ToolsMenuList.css';
 import { INode } from "react-digraph";
-import { GENEVIZ_FILE_API, SFCValidationStatus } from 'src/constants';
+import { SFCValidationStatus } from 'src/constants';
 import { toast } from 'react-toastify';
 
 class ToolsMenuList extends React.Component<{ removeVNF: any, createVNFPAndAddVNFTtoSFC: any, importSFC: any, validateSFC: any, removeSFC: any, vnfTemplates: VNFTemplate[], sfcTemplates: SFCTemplate[], nodes: INode[], vnfPackages: VNFPackage[], xOffset: number, showVNFList: boolean }> {
-
-    triggerImport = (template: SFCTemplate) => {
-        fetch(GENEVIZ_FILE_API + "/sfc", {
-            method: "POST",
-            body: JSON.stringify(template.fileBase64),
-            headers: {
-                "Content-Type": "application/json"
-            }
-        }).then(response => {
-            return response.json();
-        }).then(
-            data => {
-                toast.success("Imported SFC Package successfully");
-            },
-            error => {
-                console.log(error);
-                toast.error("Coult not import the SFC Package");
-            }
-        );
-    }
 
     getValidationButton = (template: SFCTemplate) => {
         if(template.validationStatus == SFCValidationStatus.SFC_VALIDATION_VALID){
@@ -40,8 +20,11 @@ class ToolsMenuList extends React.Component<{ removeVNF: any, createVNFPAndAddVN
         else if (template.validationStatus == SFCValidationStatus.SFC_VALIDATION_PENDING) {
             return <span className="sfc-pending">Pending...</span>
         }
+        else if (template.validationStatus == SFCValidationStatus.SFC_VALIDATION_UNKNOWN) {
+            return <span className="sfc-unknown">• Unknown</span>
+        }
         else {
-            return <span className="sfc-unknown" onClick={() => this.props.validateSFC(template as SFCTemplate)}>Validate</span>
+            return <span className="sfc-initial" onClick={() => this.props.validateSFC(template as SFCTemplate)}>Validate</span>
         }
     }
     
@@ -71,9 +54,9 @@ class ToolsMenuList extends React.Component<{ removeVNF: any, createVNFPAndAddVN
                 DOM.push(<div className='tools-menu-list-element' key={template.uuid}>
                     <p className='tools-menu-list-element-name'>{template.name}</p>
                     <p className='tools-menu-list-element-buttons'>
-                        <span className='tools-menu-list-element-blue'
-                            onClick={() => this.triggerImport(template as SFCTemplate)}>Import SFC</span>
                         {this.getValidationButton(template)}
+                        <span className='tools-menu-list-element-blue'
+                            onClick={() => this.props.importSFC(template as SFCTemplate)}>Import</span>
                         <span className='tools-menu-list-element-remove'
                             onClick={() => this.props.removeSFC(template.uuid)}>Remove</span>
                     </p>
@@ -112,14 +95,16 @@ export function mapDispatchToProps(dispatch: Dispatch) {
             dispatch<any>(createVNFPAndAddNodeToSFC(vnfTemplate, nodes, vnfPackages, xOffset));
         },
         importSFC: (template: SFCTemplate) => {
-            dispatch<any>(importSFC(template));
+            if (confirm("The import removes the currently constructed SFC and replaces it entirely. Do you really want to import this SFC Package?")) {
+                dispatch<any>(importSFC(template));
+            }
         },
         validateSFC: (template: SFCTemplate) => {
-            if(template.validationStatus == SFCValidationStatus.SFC_VALIDATION_UNKNOWN) {
+            if(template.validationStatus == SFCValidationStatus.SFC_VALIDATION_INITIAL) {
                 dispatch<any>(validateSFC(template));
             }
             else {
-                toast.info("This SFC was already validated");
+                toast.warn("This SFC was already validated");
             }
         },
         removeSFC: (uuid: string) => {

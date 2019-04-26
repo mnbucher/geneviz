@@ -21,7 +21,7 @@ import {
     UPDATE_EDGES,
     UPDATE_NODES,
     SELECT_NODE_OR_EDGE,
-    UPDATE_VNF_PACKAGES,
+    SET_VNF_PACKAGES,
     INCREASE_X_OFFSET,
     RESET_VNFD_PROPERTIES,
     SET_VNFD,
@@ -79,18 +79,18 @@ export function templates(state: StoreState, action: TemplateAction): StoreState
 
 export function sfcPackage(state: SFCPackageState, action: SFCAction): SFCPackageState {
     switch (action.type) {
-        case UPDATE_VNF_PACKAGES: {
+        case SET_VNF_PACKAGES: {
             return {...state, vnfPackages: action.vnfPackages};
         }
         case SET_NSD_PROPERTIES: {
             return {...state, nsd: action.nsd};
         }
         case SET_VNFD: {
+            console.log(action);
             const newVNFPackages = state.vnfPackages.map(vnfPackage => {
                 if(vnfPackage.uuid == action.uuid){
-                    let newVNFPackage = vnfPackage;
-                    newVNFPackage.vnfd = action.vnfd;
-                    return newVNFPackage;
+                    vnfPackage.vnfd = action.vnfd;
+                    return vnfPackage;
                 }
                 return vnfPackage;
             });
@@ -243,7 +243,7 @@ export function geneviz(state: StoreState = initialState, action: GenevizAction)
         case DELETE_SFC_TEMPLATE:
         case SET_SFC_VALIDATION_STATUS:
             return templates(state, action);
-        case UPDATE_VNF_PACKAGES:
+        case SET_VNF_PACKAGES:
         case SET_NSD_PROPERTIES:
         case SET_VNFD:
         case SET_BC_PROPERTIES:

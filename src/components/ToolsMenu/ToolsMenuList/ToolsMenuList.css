@@ -43,11 +43,11 @@
     color: #4562ef;
 }
 
-.tools-menu-list-element-blue:hover, .sfc-unknown:hover  {
+.tools-menu-list-element-blue:hover, .sfc-initial:hover  {
     background-color: #CED4F2;
 }
 
-.sfc-unknown {
+.sfc-initial {
     border: 1px solid #4562ef;
     color: #4562ef;
 }
@@ -64,7 +64,7 @@
     cursor: default !important;
 }
 
-.sfc-pending {
+.sfc-pending, .sfc-unknown {
     color: #999;
     border: 1px dashed #999;
     cursor: default !important;

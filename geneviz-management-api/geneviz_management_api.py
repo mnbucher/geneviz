@@ -64,10 +64,13 @@ def getVNFD(uuid, vnf_name):
         with zipfile.ZipFile(get_absolute_zip_file_path(vnf_name), 'r') as archive:
             with archive.open(get_vnfd_path(uuid, vnf_name)) as vnfd:
                 vnfd_json = json.loads(vnfd.read().decode("utf-8"))
-                return json.dumps(vnfd_json)
+                return json.dumps({"success": True, "vnfd": vnfd_json}), 200, {'ContentType': 'application/json'}
     except Exception as e:
         print(e)
-        return 'The VNF with the requested UUID does not exist or could not be returned'
+        return json.dumps({
+            "success": False,
+            "message": "The VNF with the requested UUID does not exist or could not be returned"
+        }), 400, {'ContentType': 'application/json'}
 
 
 # Update the VNF Descriptor of a certain VNF Package
@@ -93,34 +96,52 @@ def updateVNFD(uuid, vnf_name):
 @app.route('/sfc', methods=['POST'])
 def importSFC():
     content = request.get_json()
-    sfc_file = base64.b64decode(content)
     sfc_uuid = str(uuid1())
+    sfc_name = "sfc-" + sfc_uuid
+    sfc_wrapper_name = "sfc-wrapper-" + sfc_uuid
+    sfc_wrapper_file = base64.b64decode(content)
 
     try:
-        with open(get_absolute_zip_file_path("sfc-" + sfc_uuid), "xb") as f:
-                f.write(sfc_file)   
-        with zipfile.ZipFile(get_absolute_zip_file_path("sfc-" + sfc_uuid), 'r') as sfc_archive:
-
-            file_list = [(file_name, sfc_archive.read(file_name))
+        with open(get_absolute_zip_file_path(sfc_wrapper_name), "xb") as f_wrapper:
+                f_wrapper.write(sfc_wrapper_file)
+        with zipfile.ZipFile(get_absolute_zip_file_path(sfc_wrapper_name), 'r') as sfc_wrapper_archive:
+            with sfc_wrapper_archive.open('sfc.zip', 'r') as sfc:
+                sfc_data = sfc.read()
+                with open(get_absolute_zip_file_path(sfc_name), "xb") as f:
+                    f.write(sfc_data)
+        with zipfile.ZipFile(get_absolute_zip_file_path(sfc_name), 'r') as sfc_archive:
+            files = [(file_name, sfc_archive.read(file_name))
                             for file_name in sfc_archive.namelist()]
             
             # Get folder names of VNFs inside the SFC Package
-            vnf_list = []
-            for file in file_list:
-                if(file[0].count("/") is 3 and "sfc-package/sfc/" in file[0] and "__MACOSX/" not in file[0] and file[0] is not "" and file[0] not in vnf_list):
-                    vnf_list.append(file[0])
+            vnf_names = []
+            for file in files:
+                if(file[0].count("/") is 1 and "__MACOSX/" not in file[0] and file[0] is not "" and file[0] not in vnf_names):
+                    vnf_names.append(file[0].split('/')[0])
 
-            # Extract VNF Packages from SFC Package and store in new .zip file        
-            for vnf in vnf_list:
-                vnf_uuid = str(uuid1())
-                with zipfile.ZipFile(get_absolute_zip_file_path(vnf_uuid), 'a') as vnf_archive:
-                    for file in file_list:
-                        if(file[0].find(vnf) is 0):
-                            vnf_archive.writestr(file[0].split("/sfc/")[1], file[1])
-
-            #with archive.open(get_vnfd_parent_path(vnf_name), 'r') as vnfd_parent:
-
-        return json.dumps({"success": True}), 200, {'ContentType': 'application/json'}
+            # Extract VNF Packages from SFC Package and store in new .zip file
+            vnfs = []
+            nsd = {}
+            for vnf_name in vnf_names:
+                with zipfile.ZipFile(get_absolute_zip_file_path(vnf_name), 'a') as vnf_archive:
+                    for file in files:
+                        if(file[0].find(vnf_name) is 0):
+                            vnf_archive.writestr(file[0], file[1])
+                            if '/Descriptors/vnfd-' in file[0]:
+                                uuid = (file[0].split('/Descriptors/vnfd-'))[1].split('.')[0]
+                                vnf = {
+                                    "name": vnf_name,
+                                    "uuid": uuid,
+                                    "vnfd": json.loads(file[1].decode("utf-8"))
+                                }
+                                vnfs.append(vnf)
+                        if 'nsd.json' in file[0]:
+                            nsd = json.loads(file[1].decode("utf-8"))
+        return json.dumps({
+            "success": True,
+            "vnfs": vnfs,
+            "order": nsd['vnfd']
+        }), 200, {'ContentType': 'application/json'}
     except Exception as e:
         print(e)
         return json.dumps({
@@ -140,23 +161,27 @@ def validateSFC():
     try:
         with open(get_absolute_zip_file_path(sfc_wrapper_name), "xb") as f:
             f.write(sfc_wrapper_file)
-        
+            
         with zipfile.ZipFile(get_absolute_zip_file_path(sfc_wrapper_name)) as sfc_wrapper_archive:
-            for item in sfc_wrapper_archive.namelist():
-                print(item + '\n')
             with sfc_wrapper_archive.open("sfc.zip", 'r') as sfc:
                 sfc_data = sfc.read()
                 m.update(sfc_data)
                 with sfc_wrapper_archive.open("geneviz.json", 'r') as geneviz:
                         geneviz_content = json.loads(geneviz.read().decode("utf-8"))
-                        if m.hexdigest() == EthereumAPI.retrieve(geneviz_content['txhash']):
-                            return json.dumps({"success": True}), 200, {'ContentType': 'application/json'}
+                        if(geneviz_content['txHash'] != ""):
+                            try:
+                                sfcPackageHash = EthereumAPI.retrieve(geneviz_content['txHash'])
+                            except Exception as e:
+                                return json.dumps({"success": False}), 404, {'ContentType': 'application/json'}
+                            if m.hexdigest() == sfcPackageHash:
+                                return json.dumps({"success": True}), 200, {'ContentType': 'application/json'}
+                            else:
+                                return json.dumps({"success": False}), 404, {'ContentType': 'application/json'}
                         else:
-                            return json.dumps({"success": False}), 404, {'ContentType': 'application/json'}
+                            return json.dumps({"success": False}), 400, {'ContentType': 'application/json'}
     except Exception as e:
-        print(e.__class__.__name__)
         print(e)
-        return json.dumps({"success": False}), 400, {'ContentType': 'application/json'}
+        return json.dumps({"success": False}), 500, {'ContentType': 'application/json'}
 
     
 
@@ -174,9 +199,9 @@ def createSFC():
             for vnf_name, uuids in content['vnfPackages'].items():
                 # Store each VNF Package inside the SFC Package
                 with zipfile.ZipFile(get_absolute_zip_file_path(vnf_name), 'r') as vnf_package_zip:
-                    file_list = [(file_name, vnf_package_zip.read(file_name))
+                    files = [(file_name, vnf_package_zip.read(file_name))
                                  for file_name in vnf_package_zip.namelist()]
-                    for file in file_list:
+                    for file in files:
                         # Only consider those VNFDs which are included in the UUID list provided
                         if '/Descriptors/vnfd' in file[0]:
                             if '/Descriptors/vnfd.json' not in file[0]:
@@ -208,14 +233,13 @@ def createSFC():
                 sfc_wrapper.writestr('sfc.zip', sfc_data)
 
                 # Store Hash of the SFC Package on the Ethereum Blockchain if wished
-                if(content['bc']['storeOnBC']):
-                    m.update(sfc_data)
-                    txhash = EthereumAPI.store(m.hexdigest(), content['bc']['address'], content['bc']['privateKey'])
-                    geneviz = {
-                        "txHash": txhash,
-                        "address": content['bc']['address']
-                    }
-                    sfc_wrapper.writestr('geneviz.json', json.dumps(geneviz, indent=4).encode())
+                m.update(sfc_data)
+                txhash = EthereumAPI.store(m.hexdigest(), content['bc']['address'], content['bc']['privateKey']) if content['bc']['storeOnBC'] else ""
+                geneviz = {
+                    "txHash": txhash,
+                    "address": content['bc']['address']
+                }
+                sfc_wrapper.writestr('geneviz.json', json.dumps(geneviz, indent=4).encode())
         
         return send_file(get_absolute_zip_file_path(sfc_wrapper_name),
                         mimetype='application/zip',

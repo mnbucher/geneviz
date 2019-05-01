@@ -73,7 +73,7 @@ export interface StoreState {
     userInterfaceState: UserInterfaceState;
 }
 
-export interface VNFDTO {
+export interface VNFPackageDTO {
     fileBase64: string;
     uuid: string;
     vnfName: string;

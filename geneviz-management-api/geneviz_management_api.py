@@ -48,13 +48,15 @@ def storeVNF():
                 vnfd_parent_content['vnfd']['id'] = uuid
             archive.writestr(get_vnfd_path(uuid, vnf_name),
                              json.dumps(vnfd_parent_content, indent=4))
-            return json.dumps({"success": True}), 200, {'ContentType': 'application/json'}
+            return json.dumps({
+                "success": True
+            }), 200, {'ContentType': 'application/json'}
     except Exception as e:
         print(e)
         return json.dumps({
             "success": False,
-            "message": "The File already exists or could not be stored"
-        }), 400, {'ContentType': 'application/json'}
+            "message": "The VNF Package could not be stored"
+        }), 500, {'ContentType': 'application/json'}
 
 
 # Get the VNF Descriptor of a certain VNF Package
@@ -64,7 +66,10 @@ def getVNFD(uuid, vnf_name):
         with zipfile.ZipFile(get_absolute_zip_file_path(vnf_name), 'r') as archive:
             with archive.open(get_vnfd_path(uuid, vnf_name)) as vnfd:
                 vnfd_json = json.loads(vnfd.read().decode("utf-8"))
-                return json.dumps({"success": True, "vnfd": vnfd_json}), 200, {'ContentType': 'application/json'}
+                return json.dumps({
+                    "success": True, 
+                    "vnfd": vnfd_json
+                }), 200, {'ContentType': 'application/json'}
     except Exception as e:
         print(e)
         return json.dumps({
@@ -86,10 +91,14 @@ def updateVNFD(uuid, vnf_name):
                 # Q1: Maybe we should also try to change the modification date on the file with utime(), but does it also work on Windows?
                 # Q2: Try this also in Windows and Unix, maybe we have two VNFD.json files in the same folder --> Create new ZIP would be necessary
 
-                return json.dumps({"success": True}), 200, {'ContentType': 'application/json'}
+                return json.dumps({
+                    "success": True
+                }), 200, {'ContentType': 'application/json'}
     except Exception as e:
         print(e)
-        return json.dumps({"success": False}), 400, {'ContentType': 'application/json'}
+        return json.dumps({
+            "success": False
+        }), 400, {'ContentType': 'application/json'}
 
 
 # Import SFC in order to modify it through the Service Construction Visualziation
@@ -172,16 +181,26 @@ def validateSFC():
                             try:
                                 sfcPackageHash = EthereumAPI.retrieve(geneviz_content['txHash'])
                             except Exception as e:
-                                return json.dumps({"success": False}), 404, {'ContentType': 'application/json'}
+                                return json.dumps({
+                                    "success": False
+                                }), 404, {'ContentType': 'application/json'}
                             if m.hexdigest() == sfcPackageHash:
-                                return json.dumps({"success": True}), 200, {'ContentType': 'application/json'}
+                                return json.dumps({
+                                    "success": True
+                                }), 200, {'ContentType': 'application/json'}
                             else:
-                                return json.dumps({"success": False}), 404, {'ContentType': 'application/json'}
+                                return json.dumps({
+                                    "success": False
+                                }), 404, {'ContentType': 'application/json'}
                         else:
-                            return json.dumps({"success": False}), 400, {'ContentType': 'application/json'}
+                            return json.dumps({
+                                "success": False
+                            }), 400, {'ContentType': 'application/json'}
     except Exception as e:
         print(e)
-        return json.dumps({"success": False}), 500, {'ContentType': 'application/json'}
+        return json.dumps({
+            "success": False
+        }), 500, {'ContentType': 'application/json'}
 
     
 
@@ -247,7 +266,9 @@ def createSFC():
                         as_attachment=True)
     except Exception as e:
         print(e)
-        return json.dumps({"success": False}), 400, {'ContentType': 'application/json'}
+        return json.dumps({
+            "success": False
+        }), 400, {'ContentType': 'application/json'}
 
 
 def get_absolute_zip_file_path(file_name):

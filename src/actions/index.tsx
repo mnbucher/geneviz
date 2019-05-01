@@ -1,5 +1,5 @@
 import * as constants from '../constants';
-import { VNFPackage, VNFTemplate, VNFDTO, VNFDPropertiesState, NSDPropertiesState, SFCTemplate, BCPropertiesState } from "../types";
+import { VNFPackage, VNFTemplate, VNFPackageDTO, VNFDPropertiesState, NSDPropertiesState, SFCTemplate, BCPropertiesState } from "../types";
 import { Dispatch } from "redux";
 import fetch from "cross-fetch";
 import { GENEVIZ_FILE_API } from "../constants";
@@ -253,7 +253,8 @@ export function createVNFPAndAddNodeToSFC(vnfTemplate: VNFTemplate, nodes: INode
     return (dispatch: Dispatch) => {
 
         const uuid: string = uuidv1();
-        const vnfDTO: VNFDTO = {
+        
+        const vnfPackageDTO: VNFPackageDTO = {
             fileBase64: vnfTemplate.fileBase64,
             uuid: uuid,
             vnfName: vnfTemplate.name
@@ -261,7 +262,7 @@ export function createVNFPAndAddNodeToSFC(vnfTemplate: VNFTemplate, nodes: INode
 
         fetch(GENEVIZ_FILE_API + "/vnf", {
             method: "POST",
-            body: JSON.stringify(vnfDTO),
+            body: JSON.stringify(vnfPackageDTO),
             headers: {
                 "Content-Type": "application/json"
             }
@@ -271,7 +272,7 @@ export function createVNFPAndAddNodeToSFC(vnfTemplate: VNFTemplate, nodes: INode
             data => {
                 const newVNFPackage: VNFPackage = {
                     name: vnfTemplate.name,
-                    uuid: vnfDTO.uuid,
+                    uuid: vnfPackageDTO.uuid,
                     vnfd: {}
                 };
                 const newVNFPackages = vnfPackages.slice();
@@ -287,7 +288,7 @@ export function createVNFPAndAddNodeToSFC(vnfTemplate: VNFTemplate, nodes: INode
                 const newNodes: INode[] = nodes.slice();
                 newNodes.push(node);
 
-                return dispatch<any>(getVNFD(vnfDTO.uuid, vnfTemplate.name, newVNFPackages, newNodes, node, xOffset));
+                return dispatch<any>(getVNFD(vnfPackageDTO.uuid, vnfTemplate.name, newVNFPackages, newNodes, node, xOffset));
             },
             error => {
                 console.log(error);

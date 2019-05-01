@@ -29,9 +29,6 @@ class DrawingBoard extends React.Component<{ selectNodeOrEdge: any, getVNFDPrope
 
         // If the graph is not empty anymore, show the Remove and Clear Buttons
         if (this.props.drawingBoardState.graphViewState.graph.nodes.length > 0 || this.props.drawingBoardState.graphViewState.graph.edges.length > 0) {
-            
-            this.handleVNFNodeNumbering();
-            
             if (!vnffgdRemoveElementNode.classList.contains("bounceInUp")) {
                 vnffgdRemoveElementNode.classList.remove("bounceInDown");
                 vnffgdRemoveElementNode.classList.add("bounceInUp");
@@ -39,7 +36,6 @@ class DrawingBoard extends React.Component<{ selectNodeOrEdge: any, getVNFDPrope
                     vnffgdRemoveElementNode.classList.add("stayAtTop");
                 }, 500);
             }
-
             if (!vnffgdResetNode.classList.contains("bounceInUp")) {
                 vnffgdResetNode.classList.remove("bounceInDown");
                 vnffgdResetNode.classList.add("bounceInUp");
@@ -56,7 +52,6 @@ class DrawingBoard extends React.Component<{ selectNodeOrEdge: any, getVNFDPrope
                     vnffgdRemoveElementNode.classList.remove("stayAtTop");
                 }, 850);
             }
-
             if (!vnffgdResetNode.classList.contains("bounceInDown") && vnffgdResetNode.classList.contains("bounceInUp")) {
                 vnffgdResetNode.classList.remove("bounceInUp");
                 vnffgdResetNode.classList.add("bounceInDown");
@@ -155,7 +150,11 @@ class DrawingBoard extends React.Component<{ selectNodeOrEdge: any, getVNFDPrope
     }
 
     onCreateNode = (x: number, y: number) => {
-        // Creating a Node via DrawingBoard should not be allowed so do not do anything here.
+        // nop, but required for the GraphView component
+    }
+
+    afterRenderEdge = (id: string, element: any, edge: IEdge, edgeContainer: any, isEdgeSelected: boolean) => {
+        this.handleVNFNodeNumbering();
     }
 
     onDeleteEdge = (selectedEdge: IEdge, newEdges: IEdge[]) => {
@@ -177,11 +176,11 @@ class DrawingBoard extends React.Component<{ selectNodeOrEdge: any, getVNFDPrope
     }
 
     onSwapEdge = (sourceNode: INode, targetNode: INode, edge: IEdge) => {
-        // Callback when two edges are swapped, but don't do anything in this case
+        // nop, but required for the GraphView component
     }
 
     onUpdateNode = (node: INode) => {
-        // Callback when a node is updated, but don't do anything in this case
+       // nop, but required for the GraphView component
     }
 
     isNode = (object: any) => {
@@ -246,6 +245,7 @@ class DrawingBoard extends React.Component<{ selectNodeOrEdge: any, getVNFDPrope
                         onSelectNode={this.onSelectNode}
                         onSwapEdge={this.onSwapEdge}
                         onUpdateNode={this.onUpdateNode}
+                        afterRenderEdge={this.afterRenderEdge}
                     />
                 </div>
 

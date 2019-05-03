@@ -104,7 +104,7 @@ export function mapDispatchToProps(dispatch: Dispatch) {
                 dispatch<any>(validateSFC(template));
             }
             else {
-                toast.warn("This SFC was already validated");
+                toast.warn("This SFC was already validated.");
             }
         },
         removeSFC: (uuid: string) => {

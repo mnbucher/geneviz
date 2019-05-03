@@ -8,10 +8,10 @@ import './ToolsMenuDropZone.css';
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import { toast } from 'react-toastify';
-import { addVNFTemplate, addSFCTemplate } from 'src/actions';
+import { addVNFTemplate, addSFCTemplate, validateSFC } from 'src/actions';
 import { SFCValidationStatus } from 'src/constants';
 
-class ToolsMenuDropZone extends React.Component<{addVNFTemplate: any, addSFCTemplate: any, vnfTemplates: VNFTemplate[], sfcTemplates: SFCTemplate[], showVNFList: boolean}> {
+class ToolsMenuDropZone extends React.Component<{addVNFTemplate: any, addSFCTemplate: any, validateSFC: any, vnfTemplates: VNFTemplate[], sfcTemplates: SFCTemplate[], showVNFList: boolean}> {
 
     isTemplateAlreadyAdded = (fileBase64: string) => {
         const templates = this.props.showVNFList ? this.props.vnfTemplates : this.props.sfcTemplates;
@@ -55,6 +55,7 @@ class ToolsMenuDropZone extends React.Component<{addVNFTemplate: any, addSFCTemp
                                 validationStatus: SFCValidationStatus.SFC_VALIDATION_INITIAL 
                             };
                             this.props.addSFCTemplate(sfcTemplate);
+                            this.props.validateSFC(sfcTemplate);
                         }
                     });
                 });
@@ -104,6 +105,9 @@ export function mapDispatchToProps(dispatch: Dispatch) {
         },
         addSFCTemplate: (sfcTemplate: SFCTemplate) => {
             dispatch(addSFCTemplate(sfcTemplate));
+        },
+        validateSFC: (sfcTemmplate: SFCTemplate) => {
+            dispatch<any>(validateSFC(sfcTemmplate));
         }
     }
 }

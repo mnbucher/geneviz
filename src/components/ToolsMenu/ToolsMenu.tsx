@@ -3,11 +3,11 @@ import './ToolsMenu.css';
 import ToolsMenuList from './ToolsMenuList/ToolsMenuList';
 import ToolsMenuDropZone from './ToolsMenuDropZone/ToolsMenuDropZone';
 import { connect } from "react-redux";
-import { SFCPackageState, StoreState, GraphViewState } from "../../types";
+import { SFCPackageState, StoreState, GraphViewState, VNFTemplate, SFCTemplate } from "../../types";
 import { Dispatch } from 'redux';
 import { handleSFCPopup, handleVNFList } from 'src/actions';
 
-class ToolsMenu extends React.Component<{ sfcPackageState: SFCPackageState, graphView: GraphViewState, showVNFList: boolean, handleSFCPopup: any, handleVNFList: any}> {
+class ToolsMenu extends React.Component<{ vnfTemplates: VNFTemplate[], sfcTemplates: SFCTemplate[], sfcPackageState: SFCPackageState, graphView: GraphViewState, showVNFList: boolean, handleSFCPopup: any, handleVNFList: any}> {
 
     concatUUIDsForURL = () => {
         const uuids = this.props.sfcPackageState.vnfPackages.map(vnfPackage => vnfPackage.uuid);
@@ -24,10 +24,6 @@ class ToolsMenu extends React.Component<{ sfcPackageState: SFCPackageState, grap
             return path;
         }
         return "";
-    }
-
-    generateSFCPackage = () => {
-        this.props.handleSFCPopup(true);
     }
 
     isGraphValid = () => {
@@ -52,7 +48,6 @@ class ToolsMenu extends React.Component<{ sfcPackageState: SFCPackageState, grap
         if (JSON.stringify(allNodesWithEdges.sort()) !== JSON.stringify(allNodes.sort())) {
             return false;
         }
-
         return true;
     }
 
@@ -69,8 +64,8 @@ class ToolsMenu extends React.Component<{ sfcPackageState: SFCPackageState, grap
                     <div className="tools-menu">
                         <div className="tools-menu-tab-bar">
                             <p>
-                                <button onClick={() => this.props.handleVNFList(true)} className={this.props.showVNFList ? "tools-menu-headline tools-menu-headline-active" : "tools-menu-headline"}>VNFs</button>
-                                <button onClick={() => this.props.handleVNFList(false)} className={this.props.showVNFList ? "tools-menu-headline" : "tools-menu-headline tools-menu-headline-active"}>SFCs</button>
+                                <button onClick={() => this.props.handleVNFList(true)} className={this.props.showVNFList ? "tools-menu-headline tools-menu-headline-active" : "tools-menu-headline"}>VNFs ({this.props.vnfTemplates.length})</button>
+                                <button onClick={() => this.props.handleVNFList(false)} className={this.props.showVNFList ? "tools-menu-headline" : "tools-menu-headline tools-menu-headline-active"}>SFCs ({this.props.sfcTemplates.length})</button>
                             </p>
                         </div>
                         <div className="tools-menu-vnfs">
@@ -80,7 +75,7 @@ class ToolsMenu extends React.Component<{ sfcPackageState: SFCPackageState, grap
 
                         {this.isGraphValid() ?
                             <div className='tools-menu-download-sfc bounceInUp'>
-                                <button onClick={this.generateSFCPackage}><span className="tools-menu-download-sfc-text">Generate SFC Package</span></button>
+                                <button onClick={() => this.props.handleSFCPopup(true)}><span className="tools-menu-download-sfc-text">Generate SFC Package</span></button>
                             </div>
                             : null}
                     </div>
@@ -92,6 +87,8 @@ class ToolsMenu extends React.Component<{ sfcPackageState: SFCPackageState, grap
 
 export function mapStateToProps(state: StoreState) {
     return {
+        vnfTemplates: state.vnfTemplates,
+        sfcTemplates: state.sfcTemplates,
         sfcPackageState: state.sfcPackageState,
         graphView: state.userInterfaceState.drawingBoardState.graphViewState,
         showVNFList: state.userInterfaceState.showVNFList

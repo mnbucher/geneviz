@@ -110,11 +110,11 @@ class DrawingBoard extends React.Component<{ selectNodeOrEdge: any, getVNFDPrope
         // Don't allow two edges from the same node or to the same node
         if(typeof this.props.drawingBoardState.graphViewState.graph.edges.find(edge => {
             if(edge.source == newEdge.source){
-                toast.error("Multiple Paths are not allowed for an SFC");
+                toast.error("Multiple Paths are not allowed for an SFC.");
                 return true;
             }
             else if(edge.target == newEdge.target){
-                toast.error("Multiple Paths are not allowed for an SFC");
+                toast.error("Multiple Paths are not allowed for an SFC.");
                 return true;
             }
             else {
@@ -126,7 +126,7 @@ class DrawingBoard extends React.Component<{ selectNodeOrEdge: any, getVNFDPrope
 
         // Don't allow circles
         if(this.props.drawingBoardState.graphViewState.graph.edges.length == this.props.drawingBoardState.graphViewState.graph.nodes.length - 1){
-            toast.error("Loops are not allowed for an SFC");
+            toast.error("Loops are not allowed for an SFC.");
             return false;
         }
 

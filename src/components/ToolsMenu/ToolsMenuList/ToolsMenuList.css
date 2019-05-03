@@ -19,7 +19,7 @@
     -webkit-border-radius: 10px 10px 10px 10px;
     border-radius: 10px 10px 10px 10px;
     padding: 30px 20px;
-    margin: 0 30px 30px;
+    margin: 0 30px 20px;
     position: relative;
 }
 
@@ -53,14 +53,14 @@
 }
 
 .sfc-valid  {
-    border: 1px dashed green;
-    color: green;
+    border: 1px dashed #218544;
+    color: #218544;
     cursor: default !important;
 }
 
 .sfc-invalid {
-    border: 1px dashed red;
-    color: red;
+    border: 1px dashed #d2625e;
+    color: #d2625e;
     cursor: default !important;
 }
 
@@ -71,12 +71,10 @@
 }
 
 .tools-menu-list-element-remove {
-    color: #999;
-    border: 1px solid #999;
+    color: #d2625e;
+    border: 1px solid #d2625e;
 }
 
 .tools-menu-list-element-remove:hover {
-    color: #d2625e;
-    border: 1px solid #d2625e;
     background-color: #F2E7E6;
 }

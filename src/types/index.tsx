@@ -59,7 +59,6 @@ export interface DrawingBoardState {
 }
 
 export interface UserInterfaceState {
-    notification: string;
     drawingBoardState: DrawingBoardState;
     showSFCPopup: boolean;
     showVNFDPopup: boolean;

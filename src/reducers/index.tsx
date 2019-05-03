@@ -15,21 +15,18 @@ import {
 } from '../types/index';
 import {
     DELETE_VNF_TEMPLATE,
-    FAILED_TO_CREATE_VNFP,
     SET_VNFD_PROPERTIES,
-    FAILED_TO_EXTRACT_PROPERTIES_FROM_VNFD,
-    UPDATE_EDGES,
-    UPDATE_NODES,
+    SET_EDGES,
+    SET_NODES,
     SELECT_NODE_OR_EDGE,
     SET_VNF_PACKAGES,
     INCREASE_X_OFFSET,
     RESET_VNFD_PROPERTIES,
     SET_VNFD,
-    FAILED_TO_UPDATE_VNFD_IN_VNF_PACKAGE,
     HANDLE_SFC_POPUP,
     HANDLE_VNFD_POPUP,
     SET_NSD_PROPERTIES,
-    UPDATE_GRAPH,
+    SET_GRAPH,
     HANDLE_VNF_LIST,
     ADD_VNF_TEMPLATE,
     ADD_SFC_TEMPLATE,
@@ -106,16 +103,18 @@ export function sfcPackage(state: SFCPackageState, action: SFCAction): SFCPackag
 
 export function graphView(state: GraphViewState, action: GraphAction): GraphViewState {
     switch (action.type) {
-        case UPDATE_EDGES: {
+        case SET_EDGES: {
             const newGraph = {... state.graph, edges: action.edges};
             return {...state, graph: newGraph};
         }
-        case UPDATE_NODES: {
+        case SET_NODES: {
             const newGraph = {... state.graph, nodes: action.nodes};
             return {...state, graph: newGraph};
         }
-        case UPDATE_GRAPH: {
+        case SET_GRAPH: {
+            console.log(state.graph);
             const newGraph = {... state.graph, edges: action.edges, nodes: action.nodes, selected: {} as INode};
+            console.log(newGraph);
             return {...state, graph: newGraph};
         }
         case SELECT_NODE_OR_EDGE: {
@@ -144,9 +143,9 @@ export function drawingBoard(state: DrawingBoardState, action: DrawingBoardActio
             }
             return {...state, vnfdPropertiesState: resettedProperties};
         }
-        case UPDATE_EDGES:
-        case UPDATE_NODES:
-        case UPDATE_GRAPH: 
+        case SET_EDGES:
+        case SET_NODES:
+        case SET_GRAPH: 
         case SELECT_NODE_OR_EDGE:
         case INCREASE_X_OFFSET:
             return {...state, graphViewState: graphView(state.graphViewState, action)};
@@ -157,21 +156,6 @@ export function drawingBoard(state: DrawingBoardState, action: DrawingBoardActio
 
 export function userInterface(state: UserInterfaceState, action: UserInterfaceAction): UserInterfaceState {
     switch (action.type) {
-        case FAILED_TO_CREATE_VNFP: {
-            const message = "Failed to add the VNF Package " + action.vnfTemplate.name;
-            console.log(message);
-            return {...state, notification: message};
-        }
-        case FAILED_TO_EXTRACT_PROPERTIES_FROM_VNFD: {
-            const message = "Could not get VNF Descriptor of " + action.name;
-            console.log(message);
-            return {...state, notification: message};
-        }
-        case FAILED_TO_UPDATE_VNFD_IN_VNF_PACKAGE: {
-            const message = "Could not update VNF Descriptor of " + action.name;
-            console.log(message);
-            return {...state, notification: message};
-        }
         case HANDLE_SFC_POPUP:
             return {...state, showSFCPopup: action.showSFCPopup}
         case HANDLE_VNFD_POPUP:
@@ -180,9 +164,9 @@ export function userInterface(state: UserInterfaceState, action: UserInterfaceAc
             return {...state, showVNFList: action.showVNFList}
         case SET_VNFD_PROPERTIES:
         case RESET_VNFD_PROPERTIES:
-        case UPDATE_EDGES:
-        case UPDATE_NODES:
-        case UPDATE_GRAPH:
+        case SET_EDGES:
+        case SET_NODES:
+        case SET_GRAPH:
         case SELECT_NODE_OR_EDGE:
         case INCREASE_X_OFFSET:
             return {...state, drawingBoardState: drawingBoard(state.drawingBoardState, action)};
@@ -210,7 +194,6 @@ const initialState: StoreState = {
     vnfTemplates: [],
     sfcTemplates: [],
     userInterfaceState: {
-        notification: "",
         drawingBoardState: {
             vnfdPropertiesState: {
                 numCPUs: "",
@@ -248,14 +231,11 @@ export function geneviz(state: StoreState = initialState, action: GenevizAction)
         case SET_VNFD:
         case SET_BC_PROPERTIES:
             return {...state, sfcPackageState: sfcPackage(state.sfcPackageState, action)};
-        case FAILED_TO_CREATE_VNFP:
         case SET_VNFD_PROPERTIES:
         case RESET_VNFD_PROPERTIES:
-        case FAILED_TO_EXTRACT_PROPERTIES_FROM_VNFD:
-        case FAILED_TO_UPDATE_VNFD_IN_VNF_PACKAGE:
-        case UPDATE_EDGES:
-        case UPDATE_NODES:
-        case UPDATE_GRAPH:
+        case SET_EDGES:
+        case SET_NODES:
+        case SET_GRAPH:
         case SELECT_NODE_OR_EDGE:
         case INCREASE_X_OFFSET:
         case HANDLE_SFC_POPUP:

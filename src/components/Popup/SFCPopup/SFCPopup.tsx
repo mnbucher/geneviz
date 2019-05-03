@@ -37,7 +37,7 @@ class SFCPopup extends React.Component<{handleSFCPopup: any, setNSDProperties: a
 
     downloadSFC = () => {
         if(this.props.sfcPackageState.nsd.name === ""){
-            toast.error("Please provide a name for the Network Service");
+            toast.error("Please provide a name for the Network Service.");
         }
         else {
             let groupedVNFPackages = this.props.sfcPackageState.vnfPackages.reduce((acc, obj) => {
@@ -56,20 +56,28 @@ class SFCPopup extends React.Component<{handleSFCPopup: any, setNSDProperties: a
                bc: this.props.sfcPackageState.bc,
              };
      
-             fetch(GENEVIZ_FILE_API + "/sfc/generate", {
+             fetch(GENEVIZ_FILE_API + "/sfcs/generate", {
                  method: "POST",
                  body: JSON.stringify(sfcPackageDTO),
                  headers: {
                      "Content-Type": "application/json"
                  }
              }).then(response => {
-                 return response.blob();
+                 return response;
              }).then(data => {
-                 fileDownload(data, "sfc-package.zip");
-                 this.props.handleSFCPopup(false);
+                 if(data.status == 400){
+                     toast.error("SFC Package could not be generated.");
+                     this.props.handleSFCPopup(false);
+                 }
+                 else {
+                     data.blob().then(file => {
+                         fileDownload(file, "sfc-package.zip");
+                         this.props.handleSFCPopup(false);
+                    });
+                }
              }, error => {
                  console.log(error);
-                 toast.error("Could not download the SFC Package");
+                 toast.error("SFC Package could not be generated.");
              });
         }
     }

@@ -72,17 +72,17 @@ export type SFCAction = SetVNFPackages | SetNSDProperties | SetVNFD | SetBCPrope
 // GraphAction
 
 export interface UpdateEdges {
-    type: constants.UPDATE_EDGES;
+    type: constants.SET_EDGES;
     edges: IEdge[];
 }
 
 export interface UpdateNodes {
-    type: constants.UPDATE_NODES;
+    type: constants.SET_NODES;
     nodes: INode[];
 }
 
 export interface UpdateGraph {
-    type: constants.UPDATE_GRAPH;
+    type: constants.SET_GRAPH;
     edges: IEdge[];
     nodes: INode[];
 }
@@ -116,21 +116,6 @@ export type DrawingBoardAction = SetVNFDProperties | ResetVNFDProperties | Graph
 
 // UserInterfaceAction
 
-export interface FailedToCreateVNFP {
-    type: constants.FAILED_TO_CREATE_VNFP;
-    vnfTemplate: VNFTemplate;
-}
-
-export interface FailedToExtractPropertiesFromVNFD {
-    type: constants.FAILED_TO_EXTRACT_PROPERTIES_FROM_VNFD;
-    name: string;
-}
-
-export interface FailedToUpdateVNFDInVNFPackage {
-    type: constants.FAILED_TO_UPDATE_VNFD_IN_VNF_PACKAGE;
-    name: string;
-}
-
 export interface HandleSFCPopup {
     type: constants.HANDLE_SFC_POPUP;
     showSFCPopup: boolean;
@@ -146,7 +131,7 @@ export interface HandleVNFList {
     showVNFList: boolean;
 }
 
-export type UserInterfaceAction = FailedToCreateVNFP | FailedToExtractPropertiesFromVNFD | FailedToUpdateVNFDInVNFPackage | DrawingBoardAction | HandleSFCPopup | HandleVNFDPopup | HandleVNFList;
+export type UserInterfaceAction = DrawingBoardAction | HandleSFCPopup | HandleVNFDPopup | HandleVNFList;
 
 
 // GenevizAction
@@ -191,13 +176,6 @@ export function setVNFPackages(vnfPackages: VNFPackage[]) {
     }
 }
 
-export function failedToCreateVNFP(vnfTemplate: VNFTemplate) {
-    return {
-        type: constants.FAILED_TO_CREATE_VNFP,
-        vnfTemplate: vnfTemplate
-    }
-}
-
 export function selectNodeOrEdge(selected: INode | IEdge) {
     return {
         type: constants.SELECT_NODE_OR_EDGE,
@@ -212,10 +190,10 @@ export function increaseXOffset(xOffset: number) {
     }
 }
 
-export function getVNFD(uuid: string, name: string, newVNFPackages: VNFPackage[], newNodes: INode[], node: INode, xOffset: number) {
+export function getVNFD(uuid: string, name: string, newVNFPackages: VNFPackage[], nodes: INode[], xOffset: number) {
     return (dispatch: Dispatch) => {
 
-        fetch(GENEVIZ_FILE_API + "/vnf/" + uuid + "/" + name, {
+        fetch(GENEVIZ_FILE_API + "/vnfs/" + name + "/" + uuid, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
@@ -232,18 +210,28 @@ export function getVNFD(uuid: string, name: string, newVNFPackages: VNFPackage[]
                         }
                         return vnfPackage;
                     })));
+ 
+                    const node: INode = {
+                        title: data['vnfd']['vnfd']['name'],
+                        id: uuid,
+                        x: xOffset,
+                        y: 500,
+                        type: 'vnfNode'
+                    }
+                    const newNodes: INode[] = nodes.slice();
+                    newNodes.push(node);
+
                     dispatch(increaseXOffset(xOffset + 400));
                     dispatch(updateNodes(newNodes));
                     return dispatch(selectNodeOrEdge(node));
                 }
                 else {
-                    return toast.error("The VNF seems to have a wrong format. Could not get VNFD.");    
+                    return toast.error("The VNF Package seems to have a wrong format. Could not get VNF Descriptor.");    
                 }
             },
             error => {
                 console.log(error);
-                toast.error("Coult not get VNF Descriptor");
-                return dispatch(failedToExtractPropertiesFromVNFD(name));
+                return toast.error("The VNF Package seems to have a wrong format. Could not get VNF Descriptor.");
             }
         );
     }
@@ -260,7 +248,7 @@ export function createVNFPAndAddNodeToSFC(vnfTemplate: VNFTemplate, nodes: INode
             vnfName: vnfTemplate.name
         };
 
-        fetch(GENEVIZ_FILE_API + "/vnf", {
+        fetch(GENEVIZ_FILE_API + "/vnfs", {
             method: "POST",
             body: JSON.stringify(vnfPackageDTO),
             headers: {
@@ -270,39 +258,26 @@ export function createVNFPAndAddNodeToSFC(vnfTemplate: VNFTemplate, nodes: INode
             return response.json();
         }).then(
             data => {
-                const newVNFPackage: VNFPackage = {
-                    name: vnfTemplate.name,
-                    uuid: vnfPackageDTO.uuid,
-                    vnfd: {}
-                };
-                const newVNFPackages = vnfPackages.slice();
-                newVNFPackages.push(newVNFPackage);
+                if(data['success']) {
+                    const newVNFPackage: VNFPackage = {
+                        name: vnfTemplate.name,
+                        uuid: vnfPackageDTO.uuid,
+                        vnfd: {}
+                    };
+                    const newVNFPackages = vnfPackages.slice();
+                    newVNFPackages.push(newVNFPackage);
 
-                const node: INode = {
-                    title: vnfTemplate.name,
-                    id: uuid,
-                    x: xOffset,
-                    y: 500,
-                    type: 'vnfNode'
+                    return dispatch<any>(getVNFD(vnfPackageDTO.uuid, vnfTemplate.name, newVNFPackages, nodes, xOffset));
                 }
-                const newNodes: INode[] = nodes.slice();
-                newNodes.push(node);
-
-                return dispatch<any>(getVNFD(vnfPackageDTO.uuid, vnfTemplate.name, newVNFPackages, newNodes, node, xOffset));
+                else {
+                    return toast.error("Coult not add VNF Package.");
+                }
             },
             error => {
                 console.log(error);
-                toast.error("Coult not reach GENEVIZ File API");
-                return dispatch(failedToCreateVNFP(vnfTemplate));
+                return toast.error("Coult not add VNF Package.");
             }
         )
-    }
-}
-
-export function failedToExtractPropertiesFromVNFD(name: string) {
-    return {
-        type: constants.FAILED_TO_EXTRACT_PROPERTIES_FROM_VNFD,
-        name: name
     }
 }
 
@@ -342,44 +317,30 @@ export function getVNFDProperties(uuid: string, name: string, vnfd: object) {
             return dispatch(handleVNFDPopup(true));
         }
         catch (e) {
-            return toast.error("The VNFD seems to have a wrong format.");
+            return toast.error("The VNF Descriptor seems to have a wrong format.");
         }
     }
 }
 
 export function updateEdges(edges: IEdge[]) {
     return {
-        type: constants.UPDATE_EDGES,
+        type: constants.SET_EDGES,
         edges: edges
     }
 }
 
 export function updateNodes(nodes: INode[]) {
     return {
-        type: constants.UPDATE_NODES,
+        type: constants.SET_NODES,
         nodes: nodes
     }
 }
 
 export function updateGraph(edges: IEdge[], nodes: INode[]) {
     return {
-        type: constants.UPDATE_GRAPH,
+        type: constants.SET_GRAPH,
         edges: edges,
         nodes: nodes
-    }
-}
-
-export function updatedVNFDInVNFPackage(name: string) {
-    return {
-        type: constants.UPDATED_VNFD_IN_VNF_PACKAGE,
-        name: name
-    }
-}
-
-export function failedToUpdateVNFDInVNFPackage(name: string) {
-    return {
-        type: constants.FAILED_TO_UPDATE_VNFD_IN_VNF_PACKAGE,
-        name: name
     }
 }
 
@@ -389,7 +350,7 @@ export function updateVNFD(vnfdProperties: VNFDPropertiesState, vnfd: object) {
         vnfd['vnfd']['attributes']['vnfd']['topology_template']['node_templates']['VDU1']['capabilities']['nfv_compute']['properties']['mem_size'] = vnfdProperties.memSize;
         vnfd['vnfd']['attributes']['vnfd']['topology_template']['node_templates']['VDU1']['capabilities']['nfv_compute']['properties']['disk_size'] = vnfdProperties.diskSize;
 
-        fetch(GENEVIZ_FILE_API + "/vnf/" + vnfdProperties.uuid + "/" + vnfdProperties.name, {
+        fetch(GENEVIZ_FILE_API + "/vnfs/" + vnfdProperties.name + "/" + vnfdProperties.uuid, {
             method: "PUT",
             body: JSON.stringify(vnfd),
             headers: {
@@ -399,13 +360,17 @@ export function updateVNFD(vnfdProperties: VNFDPropertiesState, vnfd: object) {
             return response.json();
         }).then(
             data => {
-                toast.success("Updated VNFD successfully");
-                return dispatch(setVNFD(vnfdProperties.uuid, vnfd));
+                if(data['success']) {
+                    toast.success("Updated VNF Descriptor successfully.");
+                    return dispatch(setVNFD(vnfdProperties.uuid, vnfd));
+                }
+                else {
+                    return toast.error("Coult not update the VNF Descriptor.");
+                }
             },
             error => {
                 console.log(error);
-                toast.error("Coult not update the VNF Descriptor");
-                return dispatch(failedToUpdateVNFDInVNFPackage(vnfdProperties.name));
+                return toast.error("Coult not update the VNF Descriptor.");
             }
         );
     }
@@ -460,7 +425,7 @@ export function setBCProperties(bc: BCPropertiesState) {
 
 export function importSFC(template: SFCTemplate) {
     return (dispatch: Dispatch) => {
-        fetch(GENEVIZ_FILE_API + "/sfc", {
+        fetch(GENEVIZ_FILE_API + "/sfcs", {
             method: "POST",
             body: JSON.stringify(template.fileBase64),
             headers: {
@@ -502,11 +467,11 @@ export function importSFC(template: SFCTemplate) {
                 }
 
                 dispatch(updateGraph(edges, nodes));
-                toast.success("Imported SFC Package successfully");
+                toast.success("Imported SFC Package successfully.");
             },
             error => {
                 console.log(error);
-                toast.error("Coult not import the SFC Package");
+                toast.error("Coult not import the SFC Package.");
             }
         );
     }
@@ -523,7 +488,7 @@ export function setSFCValidationStatus(uuid: string, status: constants.SFCValida
 export function validateSFC(template: SFCTemplate) {
     return (dispatch: Dispatch) => {
         dispatch(setSFCValidationStatus(template.uuid, constants.SFCValidationStatus.SFC_VALIDATION_PENDING));
-        fetch(GENEVIZ_FILE_API + "/sfc/validate", {
+        fetch(GENEVIZ_FILE_API + "/sfcs/validate", {
             method: "POST",
             body: JSON.stringify(template.fileBase64),
             headers: {
@@ -534,25 +499,25 @@ export function validateSFC(template: SFCTemplate) {
         }).then(
             response => {
                 if(response.status == 200) {
-                    toast.success("The SFC Package is valid");
+                    toast.success("The SFC Package is valid.");
                     return(dispatch(setSFCValidationStatus(template.uuid, constants.SFCValidationStatus.SFC_VALIDATION_VALID)));
                 }
                 else if(response.status == 404) {
-                    toast.error("The SFC Package is not valid");
+                    toast.error("The SFC Package is not valid.");
                     return(dispatch(setSFCValidationStatus(template.uuid, constants.SFCValidationStatus.SFC_VALIDATION_INVALID)));
                 }
                 else if (response.status == 400) {
-                    toast.error("The SFC Package is unknown");
+                    toast.error("The SFC Package is unknown.");
                     return(dispatch(setSFCValidationStatus(template.uuid, constants.SFCValidationStatus.SFC_VALIDATION_UNKNOWN)));
                 }
                 else {
-                    toast.warn("The .zip files seems to have a wrong format");
+                    toast.warn("The .zip files seems to have a wrong format.");
                     return(dispatch(setSFCValidationStatus(template.uuid, constants.SFCValidationStatus.SFC_VALIDATION_UNKNOWN)));
                 }
             },
             error => {
                 console.log(error);
-                toast.error("Coult not validate the SFC Package");
+                toast.error("Coult not validate the SFC Package.");
                 dispatch(setSFCValidationStatus(template.uuid, constants.SFCValidationStatus.SFC_VALIDATION_INITIAL));
             }
         );

@@ -49,27 +49,49 @@ const isFoundInOtherList = (list1: string[], list2: string[]) => {
 const getEdgeType = (vnfPackages: VNFPackage[], source: string, target: string) => {
     const sourceVNFPackage = getVNFPackage(vnfPackages, source);
     const targetVNFPackage = getVNFPackage(vnfPackages, target);
+    
     if (typeof sourceVNFPackage !== 'undefined' && typeof targetVNFPackage !== 'undefined') {
         const sourceTargetRecommendation: string[] = sourceVNFPackage.vnfd['vnfd']['target_recommendation'];
         const sourceTargetCaution: string[] = sourceVNFPackage.vnfd['vnfd']['target_caution'];
         const targetServiceTypes: object[] = (targetVNFPackage.vnfd['vnfd']['service_types']);
 
-        if (typeof sourceTargetRecommendation !== 'undefined' && typeof sourceTargetCaution !== 'undefined' && typeof targetServiceTypes !== 'undefined') {
-            const targetServiceTypesAsList = targetServiceTypes.map(serviceType => {
+        let targetServiceTypesAsList: string[] = [];
+        if (typeof targetServiceTypes !== 'undefined' && targetServiceTypes.length > 0) {
+            targetServiceTypesAsList = targetServiceTypes.map(serviceType => {
                 return serviceType['service_type'];
             });
+        }
+
+        if (typeof sourceTargetRecommendation !== 'undefined') {
             if (isFoundInOtherList(sourceTargetRecommendation, targetServiceTypesAsList)) {
                 return 'recommendedEdge';
             }
-            else if (isFoundInOtherList(sourceTargetCaution, targetServiceTypesAsList)) {
-                return 'notRecommendedEdge';
+            else {
+                if (typeof sourceTargetCaution !== 'undefined') {
+                    if (isFoundInOtherList(sourceTargetCaution, targetServiceTypesAsList)) {
+                        return 'notRecommendedEdge';
+                    }
+                    else {
+                        return 'standardEdge';
+                    }
+                }
+                else {
+                    return 'standardEdge';
+                }
+            }
+        }
+        else {
+            if (typeof sourceTargetCaution !== 'undefined') {
+                if (isFoundInOtherList(sourceTargetCaution, targetServiceTypesAsList)) {
+                    return 'notRecommendedEdge';
+                }
+                else {
+                    return 'standardEdge';
+                }
             }
             else {
                 return 'standardEdge';
             }
-        }
-        else {
-            return 'standardEdge';
         }
     }
     else {

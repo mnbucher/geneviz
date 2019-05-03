@@ -1,10 +1,10 @@
-// General Constants
+// Constants
 
 export const GENEVIZ_FILE_API = 'http://127.0.0.1:5000';
 export type GENEVIZ_FILE_API = typeof GENEVIZ_FILE_API;
 
 
-// General Actions
+// Actions
 
 export const ADD_VNF_TEMPLATE = 'ADD_VNF_TEMPLATE';
 export type ADD_VNF_TEMPLATE = typeof ADD_VNF_TEMPLATE;
@@ -30,17 +30,14 @@ export type RESET_VNFD_PROPERTIES = typeof RESET_VNFD_PROPERTIES;
 export const SET_VNFD = 'SET_VNFD';
 export type SET_VNFD = typeof SET_VNFD;
 
-export const UPDATED_VNFD_IN_VNF_PACKAGE = 'UPDATED_VNFD_IN_VNF_PACKAGE';
-export type UPDATED_VNFD_IN_VNF_PACKAGE = typeof UPDATED_VNFD_IN_VNF_PACKAGE;
+export const SET_EDGES = 'SET_EDGES';
+export type SET_EDGES = typeof SET_EDGES;
 
-export const UPDATE_EDGES = 'UPDATE_EDGES';
-export type UPDATE_EDGES = typeof UPDATE_EDGES;
+export const SET_NODES = 'SET_NODES';
+export type SET_NODES = typeof SET_NODES;
 
-export const UPDATE_NODES = 'UPDATE_NODES';
-export type UPDATE_NODES = typeof UPDATE_NODES;
-
-export const UPDATE_GRAPH = 'UPDATE_GRAPH';
-export type UPDATE_GRAPH = typeof UPDATE_GRAPH;
+export const SET_GRAPH = 'SET_GRAPH';
+export type SET_GRAPH = typeof SET_GRAPH;
 
 export const SELECT_NODE_OR_EDGE = 'SELECT_NODE_OR_EDGE';
 export type SELECT_NODE_OR_EDGE = typeof SELECT_NODE_OR_EDGE;
@@ -63,23 +60,11 @@ export type HANDLE_VNF_LIST = typeof HANDLE_VNF_LIST;
 export const SET_BC_PROPERTIES = 'SET_BC_PROPERTIES';
 export type SET_BC_PROPERTIES = 'SET_BC_PROPERTIES';
 
-
-// Error Handler Actions
-
-export const FAILED_TO_CREATE_VNFP = 'FAILED_TO_CREATE_VNFP';
-export type FAILED_TO_CREATE_VNFP = typeof FAILED_TO_CREATE_VNFP;
-
-export const FAILED_TO_EXTRACT_PROPERTIES_FROM_VNFD = 'FAILED_TO_EXTRACT_PROPERTIES_FROM_VNFD';
-export type FAILED_TO_EXTRACT_PROPERTIES_FROM_VNFD = typeof FAILED_TO_EXTRACT_PROPERTIES_FROM_VNFD;
-
-export const FAILED_TO_UPDATE_VNFD_IN_VNF_PACKAGE = 'FAILED_TO_UPDATE_VNFD_IN_VNF_PACKAGE';
-export type FAILED_TO_UPDATE_VNFD_IN_VNF_PACKAGE = typeof FAILED_TO_UPDATE_VNFD_IN_VNF_PACKAGE;
-
-
-// SFC Validation
-
 export const SET_SFC_VALIDATION_STATUS = 'SET_SFC_VALIDATION_STATUS';
 export type SET_SFC_VALIDATION_STATUS = typeof SET_SFC_VALIDATION_STATUS; 
+
+
+// Other
 
 export enum SFCValidationStatus {
     SFC_VALIDATION_INITIAL,

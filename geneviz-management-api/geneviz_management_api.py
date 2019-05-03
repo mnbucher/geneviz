@@ -30,7 +30,7 @@ print("\n Storage Location:\n " + STORAGE + "\n")
 
 
 # Create a new .ZIP file with the content of the VNF Package passed as a string in Base64 encoding
-@app.route('/vnf', methods=['POST'])
+@app.route('/vnfs', methods=['POST'])
 def storeVNF():
     content = request.get_json()
     uuid = content['uuid']
@@ -43,8 +43,7 @@ def storeVNF():
                 f.write(vnf_file)
         with zipfile.ZipFile(get_absolute_zip_file_path(vnf_name), 'a') as archive:
             with archive.open(get_vnfd_parent_path(vnf_name), 'r') as vnfd_parent:
-                vnfd_parent_content = json.loads(
-                    vnfd_parent.read().decode("utf-8"))
+                vnfd_parent_content = json.loads(vnfd_parent.read().decode("utf-8"))
                 vnfd_parent_content['vnfd']['id'] = uuid
             archive.writestr(get_vnfd_path(uuid, vnf_name),
                              json.dumps(vnfd_parent_content, indent=4))
@@ -54,13 +53,12 @@ def storeVNF():
     except Exception as e:
         print(e)
         return json.dumps({
-            "success": False,
-            "message": "The VNF Package could not be stored"
-        }), 500, {'ContentType': 'application/json'}
+            "success": False
+        }), 400, {'ContentType': 'application/json'}
 
 
 # Get the VNF Descriptor of a certain VNF Package
-@app.route('/vnf/<uuid>/<vnf_name>', methods=['GET'])
+@app.route('/vnfs/<vnf_name>/<uuid>', methods=['GET'])
 def getVNFD(uuid, vnf_name):
     try:
         with zipfile.ZipFile(get_absolute_zip_file_path(vnf_name), 'r') as archive:
@@ -73,18 +71,17 @@ def getVNFD(uuid, vnf_name):
     except Exception as e:
         print(e)
         return json.dumps({
-            "success": False,
-            "message": "The VNF with the requested UUID does not exist or could not be returned"
+            "success": False
         }), 400, {'ContentType': 'application/json'}
 
 
 # Update the VNF Descriptor of a certain VNF Package
-@app.route('/vnf/<uuid>/<vnf_name>', methods=['PUT'])
+@app.route('/vnfs/<vnf_name>/<uuid>', methods=['PUT'])
 def updateVNFD(uuid, vnf_name):
     new_vnfd_json = json.dumps(request.get_json(), indent=4)
 
     try:
-        with zipfile.ZipFile(get_absolute_zip_file_path(vnf_name), 'a') as archive:
+        with zipfile.ZipFile(get_absolute_zip_file_path(vnf_name), 'w') as archive:
             with archive.open(get_vnfd_path(uuid, vnf_name), 'w') as vnfd:
                 vnfd.write(new_vnfd_json.encode())
 
@@ -102,7 +99,7 @@ def updateVNFD(uuid, vnf_name):
 
 
 # Import SFC in order to modify it through the Service Construction Visualziation
-@app.route('/sfc', methods=['POST'])
+@app.route('/sfcs', methods=['POST'])
 def importSFC():
     content = request.get_json()
     sfc_uuid = str(uuid1())
@@ -132,7 +129,7 @@ def importSFC():
             vnfs = []
             nsd = {}
             for vnf_name in vnf_names:
-                with zipfile.ZipFile(get_absolute_zip_file_path(vnf_name), 'a') as vnf_archive:
+                with zipfile.ZipFile(get_absolute_zip_file_path(vnf_name), 'w') as vnf_archive:
                     for file in files:
                         if(file[0].find(vnf_name) is 0):
                             vnf_archive.writestr(file[0], file[1])
@@ -154,12 +151,11 @@ def importSFC():
     except Exception as e:
         print(e)
         return json.dumps({
-            "success": False,
-            "message": "The SFC could not be imported"
+            "success": False
         }), 400, {'ContentType': 'application/json'}
 
 # Validate an existing SFC if the hash of the SFC Package was stored on the Ethereum Blockchain
-@app.route('/sfc/validate', methods=['POST'])
+@app.route('/sfcs/validate', methods=['POST'])
 def validateSFC():
     content = request.get_json()
     sfc_uuid = str(uuid1())
@@ -200,13 +196,13 @@ def validateSFC():
         print(e)
         return json.dumps({
             "success": False
-        }), 500, {'ContentType': 'application/json'}
+        }), 400, {'ContentType': 'application/json'}
 
     
 
-# Create a new SFC package based on the UUIDs (i.e. VNF Packages) passed by in the body
-@app.route('/sfc/generate', methods=['POST'])
-def createSFC():
+# Generate (Create) a new SFC package based on the UUIDs (i.e. VNF Packages) passed by in the body
+@app.route('/sfcs/generate', methods=['POST'])
+def generateSFC():
     content = request.get_json()
     sfc_uuid = str(uuid1())
     sfc_name = "sfc-" + sfc_uuid
@@ -256,7 +252,7 @@ def createSFC():
                 txhash = EthereumAPI.store(m.hexdigest(), content['bc']['address'], content['bc']['privateKey']) if content['bc']['storeOnBC'] else ""
                 geneviz = {
                     "txHash": txhash,
-                    "address": content['bc']['address']
+                    "address": content['bc']['address'] if content['bc']['storeOnBC'] else ""
                 }
                 sfc_wrapper.writestr('geneviz.json', json.dumps(geneviz, indent=4).encode())
         

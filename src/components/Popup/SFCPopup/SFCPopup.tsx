@@ -71,8 +71,9 @@ class SFCPopup extends React.Component<{handleSFCPopup: any, setNSDProperties: a
                  }
                  else {
                      data.blob().then(file => {
-                         fileDownload(file, "sfc-package.zip");
-                         this.props.handleSFCPopup(false);
+                        toast.success("SFC Package has been downloaded.");
+                        fileDownload(file, "sfc-package.zip");
+                        this.props.handleSFCPopup(false);
                     });
                 }
              }, error => {

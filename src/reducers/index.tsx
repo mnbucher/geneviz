@@ -20,7 +20,7 @@ import {
     SET_NODES,
     SELECT_NODE_OR_EDGE,
     SET_VNF_PACKAGES,
-    INCREASE_X_OFFSET,
+    SET_X_OFFSET,
     RESET_VNFD_PROPERTIES,
     SET_VNFD,
     HANDLE_SFC_POPUP,
@@ -120,7 +120,7 @@ export function graphView(state: GraphViewState, action: GraphAction): GraphView
         case SELECT_NODE_OR_EDGE: {
             return {... state, selected: action.selected};
         }
-        case INCREASE_X_OFFSET: {
+        case SET_X_OFFSET: {
             return {... state, xOffset: action.xOffset};
         }
         default:
@@ -147,7 +147,7 @@ export function drawingBoard(state: DrawingBoardState, action: DrawingBoardActio
         case SET_NODES:
         case SET_GRAPH: 
         case SELECT_NODE_OR_EDGE:
-        case INCREASE_X_OFFSET:
+        case SET_X_OFFSET:
             return {...state, graphViewState: graphView(state.graphViewState, action)};
         default:
             return state;
@@ -168,7 +168,7 @@ export function userInterface(state: UserInterfaceState, action: UserInterfaceAc
         case SET_NODES:
         case SET_GRAPH:
         case SELECT_NODE_OR_EDGE:
-        case INCREASE_X_OFFSET:
+        case SET_X_OFFSET:
             return {...state, drawingBoardState: drawingBoard(state.drawingBoardState, action)};
         default:
             return state;
@@ -237,7 +237,7 @@ export function geneviz(state: StoreState = initialState, action: GenevizAction)
         case SET_NODES:
         case SET_GRAPH:
         case SELECT_NODE_OR_EDGE:
-        case INCREASE_X_OFFSET:
+        case SET_X_OFFSET:
         case HANDLE_SFC_POPUP:
         case HANDLE_VNFD_POPUP:
         case HANDLE_VNF_LIST:

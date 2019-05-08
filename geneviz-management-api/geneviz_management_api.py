@@ -179,7 +179,7 @@ def validateSFC():
                             except Exception as e:
                                 return json.dumps({
                                     "success": False
-                                }), 404, {'ContentType': 'application/json'}
+                                }), 404, {'ContentType': 'application/json'}                               
                             if m.hexdigest() == sfcPackageHash:
                                 return json.dumps({
                                     "success": True

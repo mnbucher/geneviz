@@ -42,8 +42,8 @@ export type SET_GRAPH = typeof SET_GRAPH;
 export const SELECT_NODE_OR_EDGE = 'SELECT_NODE_OR_EDGE';
 export type SELECT_NODE_OR_EDGE = typeof SELECT_NODE_OR_EDGE;
 
-export const INCREASE_X_OFFSET = 'INCREASE_X_OFFSET';
-export type INCREASE_X_OFFSET = typeof INCREASE_X_OFFSET;
+export const SET_X_OFFSET = 'SET_X_OFFSET';
+export type SET_X_OFFSET = typeof SET_X_OFFSET;
 
 export const SET_NSD_PROPERTIES = 'SET_NSD_PROPERTIES';
 export type SET_NSD_PROPERTIES = typeof SET_NSD_PROPERTIES;

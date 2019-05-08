@@ -92,12 +92,12 @@ export interface SelectNodeOrEdge {
     selected: INode | IEdge;
 }
 
-export interface IncreaseXOffset {
-    type: constants.INCREASE_X_OFFSET;
+export interface SetXOffset {
+    type: constants.SET_X_OFFSET;
     xOffset: number;
 }
 
-export type GraphAction = UpdateEdges | UpdateNodes | UpdateGraph | SelectNodeOrEdge | IncreaseXOffset;
+export type GraphAction = UpdateEdges | UpdateNodes | UpdateGraph | SelectNodeOrEdge | SetXOffset;
 
 
 // DrawingBoardAction
@@ -183,9 +183,9 @@ export function selectNodeOrEdge(selected: INode | IEdge) {
     }
 }
 
-export function increaseXOffset(xOffset: number) {
+export function setXOffset(xOffset: number) {
     return {
-        type: constants.INCREASE_X_OFFSET,
+        type: constants.SET_X_OFFSET,
         xOffset: xOffset
     }
 }
@@ -221,7 +221,7 @@ export function getVNFD(uuid: string, name: string, newVNFPackages: VNFPackage[]
                     const newNodes: INode[] = nodes.slice();
                     newNodes.push(node);
 
-                    dispatch(increaseXOffset(xOffset + 400));
+                    dispatch(setXOffset(xOffset + 400));
                     dispatch(updateNodes(newNodes));
                     return dispatch(selectNodeOrEdge(node));
                 }

@@ -3,14 +3,14 @@ import ReactDOM from 'react-dom';
 import './DrawingBoard.css';
 import { StoreState, DrawingBoardState, SFCPackageState, VNFPackage } from "../../types";
 import { connect } from 'react-redux';
-import { selectNodeOrEdge, getVNFDProperties, updateEdges, removeNodeFromGraph, updateGraph, setVNFPackages } from "../../actions";
+import { selectNodeOrEdge, getVNFDProperties, updateEdges, removeNodeFromGraph, updateGraph, setVNFPackages, setXOffset } from "../../actions";
 import { Dispatch } from "redux";
 import { GraphView, IEdge, INode } from 'react-digraph';
 import GraphConfig from "../../constants/GraphConfig";
 import { toast } from 'react-toastify';
 import { getSFCPath, getEdgeType } from 'src/constants/GraphHelper';
 
-class DrawingBoard extends React.Component<{ selectNodeOrEdge: any, getVNFDProperties: any, updateEdges: any, removeNodeFromGraph: any, updateGraph: any, setVNFPackages: any, sfcPackageState: SFCPackageState, drawingBoardState: DrawingBoardState }> {
+class DrawingBoard extends React.Component<{ selectNodeOrEdge: any, getVNFDProperties: any, updateEdges: any, removeNodeFromGraph: any, updateGraph: any, setVNFPackages: any, setXOffset: any, sfcPackageState: SFCPackageState, drawingBoardState: DrawingBoardState }> {
     showVNFDPropertiesRef: any;
     vnffgdRemoveElementRef: any;
     vnffgdResetRef: any;
@@ -223,6 +223,7 @@ class DrawingBoard extends React.Component<{ selectNodeOrEdge: any, getVNFDPrope
         this.props.selectNodeOrEdge({} as INode);
         this.props.updateGraph([] as INode[], [] as IEdge[]);
         this.props.setVNFPackages([]);
+        this.props.setXOffset(500);
     }
 
     render() {
@@ -285,6 +286,9 @@ export function mapDispatchToProps(dispatch: Dispatch) {
         },
         setVNFPackages: (vnfPackages: VNFPackage[]) => {
             dispatch(setVNFPackages(vnfPackages));
+        },
+        setXOffset: (xOffset: number) => {
+            dispatch(setXOffset(xOffset));
         }
     }
 }

@@ -8,11 +8,8 @@ import { IEdge, INode } from "react-digraph";
 import { toast } from 'react-toastify';
 import { getEdgeType } from 'src/constants/GraphHelper';
 
-// Actions only describe what happened, but don't describe how the application's state changes.
 
-// Action Types (Used finally for the GenevizAction type)
-
-// VNFTemplateAction
+// TemplateAction
 
 export interface AddVNFTemplate {
     type: constants.ADD_VNF_TEMPLATE;
@@ -192,7 +189,6 @@ export function setXOffset(xOffset: number) {
 
 export function getVNFD(uuid: string, name: string, newVNFPackages: VNFPackage[], nodes: INode[], xOffset: number) {
     return (dispatch: Dispatch) => {
-
         fetch(GENEVIZ_FILE_API + "/vnfs/" + name + "/" + uuid, {
             method: "GET",
             headers: {
@@ -239,9 +235,7 @@ export function getVNFD(uuid: string, name: string, newVNFPackages: VNFPackage[]
 
 export function createVNFPAndAddNodeToSFC(vnfTemplate: VNFTemplate, nodes: INode[], vnfPackages: VNFPackage[], xOffset: number) {
     return (dispatch: Dispatch) => {
-
         const uuid: string = uuidv1();
-        
         const vnfPackageDTO: VNFPackageDTO = {
             fileBase64: vnfTemplate.fileBase64,
             uuid: uuid,
@@ -383,7 +377,6 @@ export function removeNodeFromGraph(newNodes: INode[], uuid: string, oldEdges: I
         });
         dispatch(updateGraph(newEdges, newNodes));
         dispatch(selectNodeOrEdge({} as INode));
-
         return dispatch(setVNFPackages(vnfPackages.filter(vnfPackage => vnfPackage.uuid !== uuid)));
     }
 }

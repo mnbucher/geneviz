@@ -100,13 +100,12 @@ const getEdgeType = (vnfPackages: VNFPackage[], source: string, target: string) 
 }
 
 const getSFCPath = (vnfPackages: VNFPackage[], edges: IEdge[]) => {
-    const totalLength = edges.length;
     let path: object[] = [];
 
-    for(var i=0; i < totalLength; i++){
+    for(var i=0; i < edges.length; i++){
         const firstEdge = findFirstEdge(edges);
         if (typeof firstEdge != 'undefined') {
-            if(i == totalLength - 1){
+            if(i == edges.length - 1){
                 // Last edge, so add both source and target
                 path.push({ name: (getVNFName(vnfPackages, firstEdge.source) as VNFPackage).name, uuid: firstEdge.source});
                 path.push({ name: (getVNFName(vnfPackages, firstEdge.target) as VNFPackage).name, uuid: firstEdge.target});

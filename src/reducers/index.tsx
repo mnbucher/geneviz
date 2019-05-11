@@ -36,10 +36,6 @@ import {
 } from '../constants/index';
 import {INode} from "react-digraph";
 
-// Reducers. They should be pure functions with no side-effects.
-// Updating the store is serious, complicated business. Don't contaminate it with other logic
-// Hence, only take the data given in the action object and replace the old state by the new state. That's it.
-
 export function templates(state: StoreState, action: TemplateAction): StoreState {
     switch (action.type) {
         case ADD_VNF_TEMPLATE: {
@@ -174,8 +170,6 @@ export function userInterface(state: UserInterfaceState, action: UserInterfaceAc
             return state;
     }
 }
-
-/* Root Reducer */
 
 const initialState: StoreState = {
     sfcPackageState: {

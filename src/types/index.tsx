@@ -1,4 +1,4 @@
-import {IEdge, IGraphInput, INode} from "react-digraph";
+import { IEdge, IGraphInput, INode } from "react-digraph";
 import { SFCValidationStatus } from 'src/constants';
 
 export interface SFCPackageState {

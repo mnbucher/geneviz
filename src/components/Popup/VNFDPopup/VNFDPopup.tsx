@@ -2,10 +2,10 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './VNFDPopup.css';
 import '../Popup.css';
-import {StoreState, VNFDPropertiesState, VNFPackage} from "../../../types";
-import {connect} from "react-redux";
-import {resetVNFDProperties, setVNFDProperties, updateVNFD, handleVNFDPopup} from "../../../actions";
-import {Dispatch} from "redux";
+import { StoreState, VNFDPropertiesState, VNFPackage } from "../../../types";
+import { connect} from "react-redux";
+import { resetVNFDProperties, setVNFDProperties, updateVNFD, handleVNFDPopup } from "../../../actions";
+import { Dispatch } from "redux";
 
 class VNFDPopup extends React.Component<{vnfdPropertiesState: VNFDPropertiesState, vnfPackages: VNFPackage[], setVNFDProperties: any, resetVNFDProperties: any, updateVNFD: any, handleVNFDPopup: any}> {
     vnfdWrapperRef: any;

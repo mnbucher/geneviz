@@ -1,13 +1,20 @@
 from web3 import Web3, HTTPProvider
 
+# Ethereum API for GENEVIZ
+#
+# Version 1.0
+#
+# Date: 13.05.2019
+# Author: Martin Juan José Bucher
+# Bachelor Thesis @ University of Zurich
+
 class EthereumAPI():
     ENDPOINT_URI = 'http://127.0.0.1:7545'
     web3 = Web3(HTTPProvider(ENDPOINT_URI))
     client = web3.eth
     
 
-    # Store Hash of SFC Package
-
+    # Store the hash of an SFC Package
     @classmethod
     def store(cls, text, address, private_key):
         # start = int(round(time.time() * 1000))  # Milliseconds
@@ -50,8 +57,7 @@ class EthereumAPI():
         return transaction_hash.hex()
 
 
-    # Retriebe Hash OF SFC Package
-
+    # Retrieve the hash of an SFC Package
     @classmethod
     def retrieve(cls, txhash):
         tx = cls.get_transaction(txhash)

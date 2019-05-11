@@ -12,16 +12,16 @@ from hashlib import md5
 from ethereum_api import EthereumAPI
 
 # GENEVIZ MANAGEMENT API 
-# (Data Layer of GENEVIZ Conceptual Architecture)
 #
 # Version 1.0
 #
-# Date: 25.03.2019
+# Date: 13.05.2019
 # Author: Martin Juan José Bucher
 # Bachelor Thesis @ University of Zurich
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": ["http://localhost:3000"]}})
+
 
 # Temporary storage for all VNF Packages.
 # The location of the temp folder heavily depends on the operating system.
@@ -29,7 +29,7 @@ STORAGE = tempfile.mkdtemp(prefix="geneviz_")
 print("\n Storage Location:\n " + STORAGE + "\n")
 
 
-# Create a new .ZIP file with the content of the VNF Package passed as a string in Base64 encoding
+# Create a new ZIP file with the content of the VNF Package passed as a string in Base64 encoding
 @app.route('/vnfs', methods=['POST'])
 def storeVNF():
     content = request.get_json()
@@ -84,13 +84,9 @@ def updateVNFD(uuid, vnf_name):
         with zipfile.ZipFile(get_absolute_zip_file_path(vnf_name), 'w') as archive:
             with archive.open(get_vnfd_path(uuid, vnf_name), 'w') as vnfd:
                 vnfd.write(new_vnfd_json.encode())
-
-                # Q1: Maybe we should also try to change the modification date on the file with utime(), but does it also work on Windows?
-                # Q2: Try this also in Windows and Unix, maybe we have two VNFD.json files in the same folder --> Create new ZIP would be necessary
-
-                return json.dumps({
-                    "success": True
-                }), 200, {'ContentType': 'application/json'}
+        return json.dumps({
+            "success": True
+        }), 200, {'ContentType': 'application/json'}
     except Exception as e:
         print(e)
         return json.dumps({
@@ -98,7 +94,7 @@ def updateVNFD(uuid, vnf_name):
         }), 400, {'ContentType': 'application/json'}
 
 
-# Import SFC in order to modify it through the Service Construction Visualziation
+# Import SFC in order to modify it through the Service Construction visualziation
 @app.route('/sfcs', methods=['POST'])
 def importSFC():
     content = request.get_json()
@@ -125,7 +121,7 @@ def importSFC():
                 if(file[0].count("/") is 1 and "__MACOSX/" not in file[0] and file[0] is not "" and file[0] not in vnf_names):
                     vnf_names.append(file[0].split('/')[0])
 
-            # Extract VNF Packages from SFC Package and store in new .zip file
+            # Extract VNF Packages from SFC Package and store in new ZIP file
             vnfs = []
             nsd = {}
             for vnf_name in vnf_names:
@@ -200,7 +196,7 @@ def validateSFC():
 
     
 
-# Generate (Create) a new SFC package based on the UUIDs (i.e. VNF Packages) passed by in the body
+# Generate (Create) a new SFC Package based on the UUIDs (i.e. VNF Packages) passed by in the body
 @app.route('/sfcs/generate', methods=['POST'])
 def generateSFC():
     content = request.get_json()

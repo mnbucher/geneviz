@@ -21,11 +21,11 @@ This chapter provides the necessary information to install and run the component
 
 ### Setting up the Web Application
 
-Setting up the User Interface of the GENEVIZ Prototype requires in a first step the installation of the Node Package Manager (npm). The distribution of npm comes along with Node.js and can be installed from the website:
+Setting up the User Interface of the GENEVIZ Prototype requires first the installation of the Node Package Manager (npm). The distribution of npm comes along with Node.js and can be installed from the website:
 
 [https://www.npmjs.com/get-npm](https://www.npmjs.com/get-npm)
 
-After navigating into the root directory of the source code, all necessary node packages defined in the ```packages.json``` file need to be installed in a first step by running the following command through the Command-Line Interface (CLI):
+After navigating into the root directory of the source code, all necessary node packages defined in the ```packages.json``` file need to be installed by running the following command through the Command-Line Interface (CLI):
 
 ```
 npm install
@@ -37,13 +37,13 @@ This should have successfully installed all node modules in the ```node_modules`
 node_modules/react-digraph/package.json
 ```
 
-Now, the ```package.json``` file needs to appended by adding a new attribute called typings in the first hierarchy-level of the JSON to refer to the following path:
+Now, the ```package.json``` file needs to appended by adding a new attribute called ```typings``` in the first hierarchy-level of the JSON in order to refer to the following path:
 
 ```json
 "typings": "./typings/index.d.ts"
 ```
 
-After saving the edited package.json of the react-digraph module, the web application should now be ready to be properly compiled in development mode. The development mode comes with an integrated development server on ```localhost```, which enables live reloading if the source code has changed. In favor of this, not all source code files are fully optimized. To start the development mode, run the following command through the CLI, which also shows up the respective port for the web application:
+After saving the edited ```package.json``` of the react-digraph module, the web application should now be ready to be properly compiled in development mode. The development mode comes with an integrated development server on ```localhost```, which enables live reloading if the source code has changed. In favor of this, not all source code files are fully optimized. To start the development mode, run the following command through the CLI, which also shows up the respective port for the web application:
 
 ```
 npm run dev
@@ -91,17 +91,17 @@ Next, the FLASK_APP environment variable needs to be set on the local machine ba
 export FLASK_APP=absolute/path/to/geneviz_management_api.py
 ```
 
-As a last step, still being in the virtual environment, Flask can finally be runned with the following command:
+Lastly, still being in the virtual environment, Flask can finally be started with the following command:
 
 ```
 flask run
 ```
 
-This should have started Flask on the port given in console log.
+This should have started Flask on the port given in the console log.
 
-Due to access control checks, depending on the locations of both the web application, as well as the Management API, the respective origins of the web application need to be defined in the Management API. If npm run dev is called for the web application, running on port 3000, and the Management API is running on the same local machine, the communication should work properly. 
+Due to access control checks, depending on the locations of both the web application, as well as the Management API, the respective origins of the web application need to be defined in the Management API. If ```npm run dev``` is called for the web application, running on port ```3000```, and the Management API is running on the same local machine, the communication should work properly. 
 
-If this settings differs slightly (e.g. another port or by putting the Management API on a remote server), the respective origin of the web application may need to be set in the Management API by appending or changing the ```origins``` array on line 24 of the ```geneviz_management_api.py``` file:
+If these settings differ slightly (e.g. another port or by putting the Management API on a remote server), the respective origin of the web application may need to be set in the Management API by appending or changing the ```origins``` array on line 24 of the ```geneviz_management_api.py``` file:
 
 ```
 CORS(app, resources={r"/*": {"origins": [ "http://localhost:3000"]}})

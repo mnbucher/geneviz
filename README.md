@@ -55,9 +55,9 @@ To compile the application in production mode, run the following command:
 npm run build
 ```
 
-### Setting up the Management API
+### Setting up the Data Layer
 
-In order to run the Management API of GENEVIZ, Python 3.7 needs to be installed first, which can be done through the Website:
+In order to run the Data Layer of GENEVIZ, Python 3.7 needs to be installed first, which can be done through the Website:
 
 [https://www.python.org/downloads/](https://www.python.org/downloads/)
 
@@ -67,7 +67,7 @@ After successfully installing Python 3.7, the global installation of the ```virt
 pip install virtualenv
 ```
 
-Now, one needs to navigate into the subfolder ```geneviz-management-api```, where the source code for the Management API is located. There, a new virtual environment needs to be set up with the following command:
+Now, one needs to navigate into the subfolder ```geneviz-management-api```, where the source code for the Data Layer is located. We have put all the necessary source code for the Data Layer inside the Management API. There, a new virtual environment needs to be set up with the following command:
 
 ```
 python3 -m venv venv

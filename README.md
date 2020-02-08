@@ -3,15 +3,17 @@
 
 Bachelor's Thesis at the University of Zurich (UZH)
 
-Author: Martin Juan José Bucher
+**Author:** Martin Juan José Bucher
 
-Supervisors: Muriel Figueredo Franco, Eder John Scheid
+*Supervisors:* Muriel Figueredo Franco, Eder John Scheid
 
-Date of Submission: May 2019
+*Date of Submission:* May 2019
 
 Communications Systems Group, Prof. Dr. Burkhard Stiller
 
-Abstract: [...]
+**Abstract**
+
+Network Function Virtualization (NFV) aims to decouple the package processing of net- work functions from dedicated hardware appliance by running Virtualized Network Func- tions (VNFs) on general-purpose hardware. Network operators can create customized network services by chaining multiple VNFs together, forming a so-called Service Func- tion Chaining (SFC). Although NFV becomes more popular and technically mature, the construction of such SFCs still needs in-depth knowledge about NFV technology. Fur- thermore, the creation of an SFC can only be done manually up until now. In this thesis, we introduce GENEVIZ, a tool providing a user-friendly interface both for the construc- tion and generation of completely new SFCs from scratch as well as for the import and adjustment of previously created SFCs in order to create new SFCs based on existing ones. Beyond that, we address the issue of data integrity and give the possibility to validate SFCs — received from an external source — through the usage of blockchain technology. GENEVIZ aims to provide a way to create SFCs more intuitive and easier. In addition, the number of steps necessary for different use cases is reduced. We conduct three case studies on our developed prototype, not only showing the technical feasibility of GENEVIZ, but also providing evidence of the usability of the different visualizations we proposed.
 
 This repository contains the source code for the GENEVIZ Prototype.
 

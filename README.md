@@ -1,25 +1,21 @@
-# GENEVIZ
-## Generation, Validation, and Visualization of SFC Packages
-
-Bachelor's Thesis at the University of Zurich (UZH)
+# uzh-bsc-thesis
+## Title: Generation, Validation, and Visualization of SFC Packages
 
 **Author:** Martin Juan José Bucher
 
-*Supervisors:* Muriel Figueredo Franco, Eder John Scheid
+Bachelor Thesis, BSc Informatics, University of Zurich (UZH)
 
-*Date of Submission:* May 2019
+submitted in May 2019
 
-Communications Systems Group, Prof. Dr. Burkhard Stiller
+*Supervisors:* Muriel Figueredo Franco, Eder John Scheid, Communications Systems Group, Prof. Dr. Burkhard Stiller
 
-**Abstract**
+## Abstract
 
 Network Function Virtualization (NFV) aims to decouple the package processing of net- work functions from dedicated hardware appliance by running Virtualized Network Func- tions (VNFs) on general-purpose hardware. Network operators can create customized network services by chaining multiple VNFs together, forming a so-called Service Func- tion Chaining (SFC). Although NFV becomes more popular and technically mature, the construction of such SFCs still needs in-depth knowledge about NFV technology. Fur- thermore, the creation of an SFC can only be done manually up until now. In this thesis, we introduce GENEVIZ, a tool providing a user-friendly interface both for the construc- tion and generation of completely new SFCs from scratch as well as for the import and adjustment of previously created SFCs in order to create new SFCs based on existing ones. Beyond that, we address the issue of data integrity and give the possibility to validate SFCs — received from an external source — through the usage of blockchain technology. GENEVIZ aims to provide a way to create SFCs more intuitive and easier. In addition, the number of steps necessary for different use cases is reduced. We conduct three case studies on our developed prototype, not only showing the technical feasibility of GENEVIZ, but also providing evidence of the usability of the different visualizations we proposed.
 
-This repository contains the source code for the GENEVIZ Prototype.
-
 ## Installation Guideline
 
-This chapter provides the necessary information to install and run the components of the GENEVIZ Prototype on a computer or virtual machine with a fresh installation of Apple's macOS. Setting up the components on another operating system based on UNIX should work quite similar, for Windows the steps could differ slightly more.
+This repository contains the source code for the GENEVIZ Prototype and provides the necessary information to install and run the components of the GENEVIZ Prototype on a computer or virtual machine. Pleaste note that this source code has so far only been tested for macOS. Setting up the components on another operating system based on UNIX should work quite similar, for Windows the steps could differ slightly more.
 
 ### Setting up the Web Application
 
@@ -59,9 +55,7 @@ npm run build
 
 ### Setting up the Data Layer
 
-In order to run the Data Layer of GENEVIZ, Python 3.7 needs to be installed first, which can be done through the Website:
-
-[https://www.python.org/downloads/](https://www.python.org/downloads/)
+In order to run the Data Layer of GENEVIZ, Python 3.7 needs to be installed first.
 
 After successfully installing Python 3.7, the global installation of the ```virtualenv``` package needs to be installed with the help of the Python Package Installer (pip). Pip should already be installed with the Python 3.7 distribution and can be accessed through the CLI by using ```pip```. Sometimes, the ```pip3``` command is necessary, in case that ```pip``` is not recognized as a command. The ```virtualenv``` package is installed as follows:
 

@@ -7,7 +7,7 @@ Bachelor Thesis, BSc Informatics, University of Zurich (UZH)
 
 submitted in May 2019
 
-*Supervisors:* Muriel Figueredo Franco, Eder John Scheid, Communications Systems Group, Prof. Dr. Burkhard Stiller
+*Advisors:* Muriel Figueredo Franco, Eder John Scheid, Communications Systems Group, Prof. Dr. Burkhard Stiller
 
 ## Abstract
 
